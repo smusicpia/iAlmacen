@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iAlmacen.Views.MainView"
+             Title="MainView"
+             NavigationPage.HasNavigationBar="False">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <ImageButton Source="ImagenFull/EntradaS.jpg" Aspect="AspectFill" Clicked="EntradaA_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Text="Entradas Almacen" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+
+            <ImageButton Grid.Column="1" Source="ImagenFull/EntradaS.jpg" Aspect="AspectFill" Clicked="SalidaA_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Grid.Column="1" Text="Salidas Almacen" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+
+            <ImageButton Grid.Column="2" Source="ImagenFull/BillsS.jpg" Aspect="AspectFill" Clicked="entradas_remision_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Grid.Column="2" Text="Entradas Sin Factura" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+
+            <ImageButton Grid.Row="1" Source="ImagenFull/ReposicionM.jpg" Aspect="AspectFill" Clicked="inventario_reposicion_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Grid.Row="1" Text="Inventario Reposicion" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+
+            <ImageButton Grid.Row="1" Grid.Column="1" Source="ImagenFull/ToolsM.jpg" Aspect="AspectFill" Clicked="invHerramientas_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Grid.Row="1" Grid.Column="1" Text="Herramientas" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+
+            <ImageButton Grid.Row="1" Grid.Column="2" Source="ImagenFull/RefaccionS.jpg" Aspect="AspectFill" Clicked="invArticulos_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Grid.Row="1" Grid.Column="2" Text="Inventario Refaccion" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

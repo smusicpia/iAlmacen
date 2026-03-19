@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iAlmacen.Page_Head_OrdenCompra"
+             Title="Orden de Compra">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10*" />
+                <RowDefinition Height="25*" />
+                <RowDefinition Height="15*" />
+                <RowDefinition Height="25*" />
+                <RowDefinition Height="8*" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Center">
+                <Label x:Name="lbl_sucursal" Text="Sucursal: " FontSize="30" TextColor="#006b5e" />
+                <!--<Button x:Name="imprimir" Text="imprimir" Clicked="imprimir_Clicked" />-->
+            </StackLayout>
+            <StackLayout Grid.Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="45*" />
+                        <ColumnDefinition Width="5*" />
+                        <ColumnDefinition Width="45*" />
+                        <ColumnDefinition Width="5*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" Padding="10">
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Numero Entrada: " HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_nentrada" Text="---" FontSize="Medium" WidthRequest="120" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Folio Orden:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_orden" Text="---" FontSize="Medium" WidthRequest="120" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Proveedor:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_clave_proveedor" Text="---" FontSize="Medium" WidthRequest="120" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Serie:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Entry x:Name="txt_serie" Placeholder="---" FontSize="Medium" WidthRequest="120" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Documento:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Entry x:Name="txt_documento" Placeholder="---" FontSize="Medium" WidthRequest="120" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Referencia:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Entry x:Name="txt_referencia" Placeholder="---" FontSize="Medium" WidthRequest="120" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Fecha Documento:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <DatePicker x:Name="dt_fecha_documento" Format="dd/MM/yyyy" WidthRequest="120" />
+                        </StackLayout>
+                    </StackLayout>
+                    <StackLayout Grid.Column="2" Padding="10">
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Fecha Entrada:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_fecha_entrada" Text="---" FontSize="Medium" WidthRequest="120" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Tipo:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_tipo_orden" Text="---" FontSize="Medium" WidthRequest="120" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                            <Label x:Name="lbl_nombre_proveedor" Text="Nombre Proveedor" HorizontalTextAlignment="Center" FontSize="Medium" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Factura " FontSize="Medium" TextColor="Gray" />
+                            <Switch x:Name="sw_tipo_documento" />
+                            <Label Text=" Remisión" FontSize="Medium" WidthRequest="140" TextColor="Gray" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Credito " FontSize="Medium" TextColor="Gray" />
+                            <Switch x:Name="sw_tipo_orden" />
+                            <Label Text=" Contado" FontSize="Medium" WidthRequest="140" TextColor="Gray" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Nacional " FontSize="Medium" TextColor="Gray" />
+                            <Switch x:Name="sw_ubicacion" />
+                            <Label Text=" Importación" FontSize="Medium" WidthRequest="140" TextColor="Gray" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Button x:Name="btnImprimirEtiquetas" BackgroundColor="#872200" Clicked="btnImprimirEtiquetas_Clicked" Text="Imprimir Etiquetas" FontSize="25" />
+                        </StackLayout>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="2" Padding="0,10,50,0">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                    <Label Text="Observaciones:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                    <Label x:Name="lbl_observaciones" Text="---" FontSize="Medium" WidthRequest="500" />
+                </StackLayout>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                    <Label Text="Comprador:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                    <Label x:Name="lbl_comprador" Text="---" FontSize="Medium" WidthRequest="500" />
+                </StackLayout>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                    <Label Text="Solicitante General:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                    <Label x:Name="lbl_solicitante" Text="---" FontSize="Medium" WidthRequest="500" />
+                </StackLayout>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                    <Label Text="Status Orden:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                    <Label x:Name="lbl_status_orden" Text="---" FontSize="Medium" WidthRequest="500" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Grid.Row="3">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" Padding="10">
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Moneda: " HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Button x:Name="btn_moneda" Text="MXN" BackgroundColor="#872200" FontSize="Medium" WidthRequest="120" Margin="0,-10,0,0" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label IsEnabled="false" Text="Tipo Cambio:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Entry x:Name="txt_tipo_cambio" Keyboard="Numeric" Placeholder="1.00" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="%" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Entry IsEnabled="false" x:Name="txt_porcentaje_descuento" Placeholder="0.00" FontSize="Medium" />
+                            <Label Text="Descuento:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_descuento" Text="---" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Subtotal:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_subtotal" Text="---" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="IVA:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_iva" Text="---" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Total:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_total" Text="---" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                    </StackLayout>
+                    <StackLayout x:Name="importe_calculo" Grid.Column="1" Padding="10,0,100,0">
+                        <StackLayout HeightRequest="35" />
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Subtotal: " TextColor="Gray" />
+                            <Label x:Name="lbl_importe_calculo" Text="---" WidthRequest="100" FontSize="Medium" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Descuento: " TextColor="Gray" />
+                            <Label x:Name="lbl_descuento_calculo" Text="---" WidthRequest="100" FontSize="Medium" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Subtotal: " TextColor="Gray" />
+                            <Label x:Name="lbl_subtotal_calculo" Text="---" WidthRequest="100" FontSize="Medium" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="IVA: " TextColor="Gray" />
+                            <Label x:Name="lbl_iva_calculo" Text="---" WidthRequest="100" FontSize="Medium" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Retencion: " TextColor="Gray" />
+                            <Label x:Name="lbl_retencion_calculo" Text="---" WidthRequest="100" FontSize="Medium" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Retencion ISR: " TextColor="Gray" />
+                            <Label x:Name="lbl_resico_calculo" Text="---" WidthRequest="100" FontSize="Medium" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                            <Label Text="Total: " TextColor="Gray" />
+                            <Label x:Name="lbl_total_calculo" Text="---" WidthRequest="100" FontSize="Medium" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" HorizontalOptions="Center">
+                        <Button x:Name="btn_continuar" BackgroundColor="#872200" Clicked="continuar_Clicked" Text="Detalle Articulos" FontSize="30" />
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" HorizontalOptions="Center">
+                        <Button x:Name="btn_finalizar" BackgroundColor="#872200" IsVisible="false" Clicked="finalizar_Clicked" Text="Finalizar" FontSize="30" />
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="5" Padding="25,0,25,0">
+                <ProgressBar x:Name="pb_log" />
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

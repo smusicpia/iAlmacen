@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iAlmacen.Page_Detail_OrdenCompra"
+             xmlns:local="clr-namespace:StepProgressBarSample"
+             Title="Contenido de la Orden de Compra">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*" />
+                <ColumnDefinition Width="90*" />
+            </Grid.ColumnDefinitions>
+            <StackLayout Grid.Column="0" Padding="5,20,10,20">
+                <local:StepProgressBarControl Orientation="Vertical" StepColor="#2196f3" Steps="0" StepSelected="0" x:Name="lista_items" />
+            </StackLayout>
+            <StackLayout Grid.Column="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5*" />
+                        <RowDefinition Height="30*" />
+                        <RowDefinition Height="15*" />
+                        <RowDefinition Height="40*" />
+                        <RowDefinition Height="10*" />
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label x:Name="lbl_index" FontSize="35" TextColor="#2196f3" />
+                        <Entry x:Name="cpos" BindingContext="{x:Reference lista_items}" IsVisible="false" Text="{Binding StepSelected, StringFormat='The Step Selected is {0}'}" TextChanged="Cambiar_index_TextChanged" />
+                    </StackLayout>
+                    <StackLayout Grid.Row="1">
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Clave Actual:" FontSize="Medium" TextColor="Gray" WidthRequest="250" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_clave" Text="{Binding codigo_articulo_}" FontSize="Medium" />
+                            <Label Text=" ||  Clave Anterior:" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_clave_anterior" Text="{Binding codigo_anterior_}" FontSize="Medium" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Descripcion:" FontSize="Medium" TextColor="Gray" WidthRequest="250" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_descripcion" Text="{Binding concepto_}" FontSize="Medium" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Medida:" FontSize="Medium" TextColor="Gray" WidthRequest="250" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_medida" Text="{Binding medida_}" FontSize="Medium" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Marca:" FontSize="Medium" TextColor="Gray" WidthRequest="250" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_marca" Text="{Binding marca_}" FontSize="Medium" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Numero Parte:" FontSize="Medium" TextColor="Gray" WidthRequest="250" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_parte" Text="{Binding parte_}" FontSize="Medium" />
+                        </StackLayout>
+                        <StackLayout HeightRequest="20" />
+                        <StackLayout HeightRequest="20" />
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Area:" FontSize="Medium" TextColor="Gray" WidthRequest="250" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_area" Text="{Binding area_}" FontSize="Medium" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Centro Costo:" FontSize="Medium" TextColor="Gray" WidthRequest="250" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_nivel1" Text="{Binding nivel1_}" FontSize="Medium" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Sub-Centro Costo:" FontSize="Medium" TextColor="Gray" WidthRequest="250" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_nivel2" Text="{Binding nivel2_}" FontSize="Medium" />
+                        </StackLayout>
+                    </StackLayout>
+                    <StackLayout Grid.Row="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30*" />
+                                <RowDefinition Height="30*" />
+                                <RowDefinition Height="30*" />
+                                <RowDefinition Height="10*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="15*" />
+                                <ColumnDefinition Width="15*" />
+                                <ColumnDefinition Width="15*" />
+                                <ColumnDefinition Width="20*" />
+                                <ColumnDefinition Width="20*" />
+                                <ColumnDefinition Width="15*" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnUbicacion" IsVisible="{Binding Ubicaciones}" BackgroundColor="#872200" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" Text="Escanear Ubicacion" Margin="250,0,250,0" FontSize="Medium" Clicked="btnUbicacion_Clicked" />
+                            <Label Grid.Row="1" Grid.Column="0" IsVisible="{Binding Ubicaciones}" Text="Seccion" TextColor="Gray" HorizontalTextAlignment="Center" />
+                            <Label Grid.Row="1" Grid.Column="1" IsVisible="{Binding Ubicaciones}" Text="Pasillo" TextColor="Gray" HorizontalTextAlignment="Center" />
+                            <Label Grid.Row="1" Grid.Column="2" IsVisible="{Binding Ubicaciones}" Text="Estanteria" TextColor="Gray" HorizontalTextAlignment="Center" />
+                            <Label Grid.Row="1" Grid.Column="3" IsVisible="{Binding Ubicaciones}" Text="Nivel" TextColor="Gray" HorizontalTextAlignment="Center" />
+                            <Label Grid.Row="1" Grid.Column="4" IsVisible="{Binding Ubicaciones}" Text="Tarima" TextColor="Gray" HorizontalTextAlignment="Center" />
+                            <Label Grid.Row="1" Grid.Column="5" IsVisible="{Binding Ubicaciones}" Text="Contenedor" TextColor="Gray" HorizontalTextAlignment="Center" />
+                            <Label x:Name="lblSeccion" IsVisible="{Binding Ubicaciones}" Grid.Row="2" Grid.Column="0" Text="{Binding uSeccion}" HorizontalTextAlignment="Center" />
+                            <Label x:Name="lblPasillo" IsVisible="{Binding Ubicaciones}" Grid.Row="2" Grid.Column="1" Text="{Binding uPasillo}" HorizontalTextAlignment="Center" />
+                            <Label x:Name="lblEstanteria" IsVisible="{Binding Ubicaciones}" Grid.Row="2" Grid.Column="2" Text="{Binding uEstanteria}" HorizontalTextAlignment="Center" />
+                            <Label x:Name="lblNivel" IsVisible="{Binding Ubicaciones}" Grid.Row="2" Grid.Column="3" Text="{Binding uNivel}" HorizontalTextAlignment="Center" />
+                            <Label x:Name="lblTarima" IsVisible="{Binding Ubicaciones}" Grid.Row="2" Grid.Column="4" Text="{Binding uTarima}" HorizontalTextAlignment="Center" />
+                            <Label x:Name="lblContenedor" IsVisible="{Binding Ubicaciones}" Grid.Row="2" Grid.Column="5" Text="{Binding uContenedor}" HorizontalTextAlignment="Center" />
+                        </Grid>
+                    </StackLayout>
+                    <StackLayout Grid.Row="3" HorizontalOptions="Center">
+                        <StackLayout HeightRequest="20" />
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Unidad:" FontSize="Medium" TextColor="Gray" WidthRequest="150" HorizontalTextAlignment="End" />
+                            <Entry Text="{Binding unidad_}" IsEnabled="false" Keyboard="Numeric" Placeholder="-" FontSize="Medium" WidthRequest="150" HorizontalTextAlignment="End" />
+                            <Label x:Name="lbl_estandar" Text="Estandar:" FontSize="Medium" TextColor="Gray" HorizontalTextAlignment="End" />
+                            <Picker x:Name="cb_unidad" Title="Seleccione" WidthRequest="150" IsVisible="false" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Cantidad:" FontSize="Medium" TextColor="Gray" WidthRequest="150" HorizontalTextAlignment="End" />
+                            <Entry Text="{Binding saldo_, StringFormat=\{0:N\}}" x:Name="txt_cantidad" Keyboard="Numeric" Placeholder="---" FontSize="Medium" WidthRequest="150" HorizontalTextAlignment="End" TextChanged="Handle_TextChanged" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Precio:" FontSize="Medium" TextColor="Gray" WidthRequest="150" HorizontalTextAlignment="End" />
+                            <Entry Text="{Binding precio_item_, StringFormat=\{0:N\}}" x:Name="txt_precio" Keyboard="Numeric" Placeholder="---" FontSize="Medium" WidthRequest="150" HorizontalTextAlignment="End" TextChanged="Handle_TextChanged" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="% Descuento:" FontSize="Medium" TextColor="Gray" WidthRequest="150" HorizontalTextAlignment="End" />
+                            <Entry Text="{Binding descuento_item_, StringFormat=\{0:N\}}" x:Name="txt_descuento" Keyboard="Numeric" Placeholder="---" FontSize="Medium" WidthRequest="150" HorizontalTextAlignment="End" TextChanged="Handle_TextChanged" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Iva:" FontSize="Medium" TextColor="Gray" WidthRequest="150" HorizontalTextAlignment="End" />
+                            <Picker x:Name="cb_iva" Title="Seleccione" SelectedItem="{Binding iva_item_}" SelectedIndexChanged="Iva_SelectedIndexChanged" WidthRequest="150">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>16.0000</x:String>
+                                        <x:String>0.0000</x:String>
+                                        <x:String>Exento</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </Picker>
+                        </StackLayout>
+                        <StackLayout HeightRequest="20" />
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End" Padding="0,0,115,0">
+                            <Label Text="Importe:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_subtotal" Text="{Binding subtotal_calculo_, StringFormat=\{0:C\}}" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End" Padding="0,0,115,0">
+                            <Label Text="Descuento:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_descuento" Text="{Binding descuento_calculo_, StringFormat=\{0:C\}}" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End" Padding="0,0,115,0">
+                            <Label Text="IVA:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_iva" Text="{Binding iva_calculo_, StringFormat=\{0:C\}}" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="End" Padding="0,0,115,0">
+                            <Label Text="Total:" HorizontalTextAlignment="End" FontSize="Medium" TextColor="Gray" />
+                            <Label x:Name="lbl_total" Text="{Binding total_calculo_, StringFormat=\{0:C\}}" FontSize="Medium" WidthRequest="120" HorizontalTextAlignment="End" />
+                        </StackLayout>
+                    </StackLayout>
+                    <StackLayout Grid.Row="4" Padding="0,30,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="33*" />
+                                <ColumnDefinition Width="33*" />
+                                <ColumnDefinition Width="33*" />
+                            </Grid.ColumnDefinitions>
+                            <StackLayout Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center">
+                                <Button x:Name="btn_anterior" BackgroundColor="#872200" TextColor="White" Clicked="Anterior_Clicked" Text="Anterior" FontSize="30" />
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Border x:Name="fvalidacion" HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" BackgroundColor="#872200">
+                                    <Button x:Name="btn_autorizar" BackgroundColor="#872200" Clicked="Autorizar_Clicked" Text="Autorizado" TextColor="White" FontSize="Large" />
+                                </Border>
+                            </StackLayout>
+                            <StackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="Center">
+                                <Button x:Name="btn_siguiente" BackgroundColor="#872200" TextColor="White" Clicked="Siguiente_Clicked" Text="Siguiente" FontSize="30" />
+                            </StackLayout>
+                        </Grid>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

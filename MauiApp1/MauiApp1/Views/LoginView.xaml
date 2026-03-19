@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iAlmacen.Views.LoginView"
+             xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+             Title="LoginView"
+             NavigationPage.HasNavigationBar="False">
+    <ContentPage.BindingContext>
+        <vm:LoginViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid RowDefinitions=".3*, .7*">
+        <Image Source="mapsa.jpg" Opacity="0.8" Aspect="AspectFill" />
+        <Grid BackgroundColor="#Fee4b9" Opacity=".2" />
+        <Grid ColumnDefinitions="*,*">
+            <Image Margin="0,0"
+                   HeightRequest="120"
+                   Source="name.png" />
+        </Grid>
+        <Grid Grid.Row="1" BackgroundColor="#fee4b9">
+            <RoundRectangle Margin="-5,-30,-5, -2"
+                            CornerRadius="30,30,0,0"
+                            Fill="#fee4b9" />
+            <VerticalStackLayout Padding="200,180,200,0" Margin="30,0,30,0">
+                <Grid Margin="0,30,0,0" ColumnDefinitions=".2*, .8*">
+                    <RoundRectangle Background="#FAA61A"
+                                    CornerRadius="10"
+                                    HeightRequest="60"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    WidthRequest="60" />
+                    <Image HorizontalOptions="Center" Source="user_avatar_icon.ico" />
+                    <Entry x:Name="txt_user"
+                           Grid.Column="1"
+                           HeightRequest="50"
+                           FontSize="medium"
+                           VerticalOptions="Center"
+                           Placeholder="Usuario"
+                           PlaceholderColor="#2D2D2D"
+                           FontAttributes="Bold"
+                           ClearButtonVisibility="WhileEditing"
+                           Keyboard="Default" />
+                </Grid>
+                <Grid Margin="0,10,0,0" ColumnDefinitions=".2*, .8*">
+                    <RoundRectangle Background="#FAA61A"
+                                    CornerRadius="10"
+                                    HeightRequest="60"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    WidthRequest="60" />
+                    <Image HorizontalOptions="Center" Source="key_silhouette.ico" />
+                    <Entry x:Name="txt_pass"
+                           Grid.Column="1"
+                           HeightRequest="50"
+                           FontSize="medium"
+                           Placeholder="Contraseña"
+                           PlaceholderColor="#2D2D2D"
+                           FontAttributes="Bold"
+                           ClearButtonVisibility="WhileEditing"
+                           IsPassword="True"
+                           Completed="btnIniciarSesion_Clicked" />
+                </Grid>
+                <Button x:Name="btnIniciarSesion"
+                        Margin="0,10,0,0"
+                        HeightRequest="70"
+                        Text="Iniciar sesion"
+                        BackgroundColor="#FAA61A"
+                        TextColor="White"
+                        Clicked="btnIniciarSesion_Clicked" FontSize="35" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

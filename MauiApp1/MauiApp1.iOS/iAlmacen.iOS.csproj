@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-ios</TargetFramework>
+		<SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>iAlmacen</RootNamespace>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseMaui>true</UseMaui>
+
+		<!-- Enable XAML source generation for faster build times and improved performance.
+		     This generates C# code from XAML at compile time instead of runtime inflation.
+		     To disable, remove this line.
+		     For individual files, you can override by setting Inflator metadata:
+		       <MauiXaml Update="MyPage.xaml" Inflator="Default" /> (reverts to defaults: Runtime for Debug, XamlC for Release)
+		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
+		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon1024.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon120.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon152.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon167.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon180.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon20.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon29.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon40.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon58.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon60.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon76.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon80.png" />
+	  <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\Icon87.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon1024.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon120.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon152.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon167.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon180.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon20.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon29.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon40.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon58.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon60.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon76.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon80.png" />
+	  <None Remove="Assets.xcassets\AppIcon.appiconset\Icon87.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MauiApp1\iAlmacen.csproj" />
+	</ItemGroup>
+
+</Project>

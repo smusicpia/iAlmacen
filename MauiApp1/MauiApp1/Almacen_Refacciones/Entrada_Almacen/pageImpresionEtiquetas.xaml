@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="iAlmacen.Almacen_Refacciones.Entrada_Almacen.pageImpresionEtiquetas"
+    Title="IMPRESION DE ETIQUETAS">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition />
+                <RowDefinition Height="120" />
+                <RowDefinition Height="60" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" Grid.ColumnSpan="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="10" />
+                    </Grid.ColumnDefinitions>
+                    <Picker x:Name="cbImpresora" Grid.Column="1" Margin="150,0,150,0" Grid.Row="1" Title="SELECCIONAR IMPRESORA DE ETIQUETAS" SelectedIndexChanged="cbImpresora_SelectedIndexChanged">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>TOSHIBA B-FV4 (300 dpi)</x:String>
+                                <x:String>Zebra ZD421 (300 dpi) - ZPL</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.ColumnSpan="2" Grid.Row="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10*" />
+                        <RowDefinition Height="80*" />
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Row="0">
+                        <Frame HasShadow="false" BorderColor="LightGray">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50*" />
+                                    <RowDefinition Height="50*" />
+                                </Grid.RowDefinitions>
+                                <StackLayout Grid.Row="0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="90*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="CLAVE" TextColor="Gray" />
+                                        <Label Grid.Column="1" Text="DESCRIPCION" TextColor="Gray" />
+                                    </Grid>
+                                </StackLayout>
+                                <StackLayout Grid.Row="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="33*" />
+                                            <ColumnDefinition Width="33*" />
+                                            <ColumnDefinition Width="33*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="MARCA" TextColor="Gray" />
+                                        <Label Grid.Column="1" Text="MEDIDA" TextColor="Gray" />
+                                        <Label Grid.Column="2" Text="No. PARTE" TextColor="Gray" />
+                                    </Grid>
+                                </StackLayout>
+                            </Grid>
+                        </Frame>
+                    </StackLayout>
+                    <StackLayout Grid.Row="1">
+                        <ListView x:Name="ItemsListView" VerticalOptions="FillAndExpand" HasUnevenRows="true" IsPullToRefreshEnabled="False" CachingStrategy="RecycleElement">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <StackLayout HeightRequest="100">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="32*" />
+                                                    <RowDefinition Height="32*" />
+                                                    <RowDefinition Height="34*" />
+                                                    <RowDefinition Height="2*" />
+                                                </Grid.RowDefinitions>
+                                                <StackLayout>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="2*" />
+                                                            <ColumnDefinition Width="10*" />
+                                                            <ColumnDefinition Width="88*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Label Grid.Column="1" FontAttributes="Bold" TextColor="#3E3E3E" Margin="0,15,0,0" Text="{Binding codigo_articulo}" />
+                                                        <Label Grid.Column="2" FontAttributes="Bold" TextColor="#3E3E3E" Margin="0,15,0,0" Text="{Binding descripcion_general}" />
+                                                    </Grid>
+                                                </StackLayout>
+                                                <StackLayout Grid.Row="1">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="2*" />
+                                                            <ColumnDefinition Width="33*" />
+                                                            <ColumnDefinition Width="33*" />
+                                                            <ColumnDefinition Width="32*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Label Grid.Column="1" TextColor="#3E3E3E" Text="{Binding desc_marca}" />
+                                                        <Label Grid.Column="2" TextColor="#3E3E3E" Text="{Binding desc_medida}" />
+                                                        <Label Grid.Column="3" TextColor="#3E3E3E" Text="{Binding desc_parte}" />
+                                                    </Grid>
+                                                </StackLayout>
+                                                <StackLayout Grid.Row="2">
+
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="150" />
+                                                            <ColumnDefinition Width="100" />
+                                                            <ColumnDefinition Width="90" />
+                                                            <ColumnDefinition Width="90" />
+                                                            <ColumnDefinition Width="50" />
+                                                            <ColumnDefinition Width="150" />
+                                                            <ColumnDefinition Width="50" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <RadioButton ScaleX="1.1" ScaleY="1.1" Content="**Nunca" Margin="10,0,0,0" IsChecked="{Binding Nunca}" />
+                                                        <RadioButton ScaleX="1.1" ScaleY="1.1" Content="*No" Grid.Column="1" IsChecked="{Binding No}" />
+                                                        <RadioButton ScaleX="1.1" ScaleY="1.1" Content="Si" Grid.Column="2" IsChecked="{Binding Si}" />
+                                                        <Label FontSize="Large" TextColor="#3E3E3E" Grid.Column="3" Text="Cantidad" Margin="0,4,0,0" HorizontalTextAlignment="End" />
+                                                        <Entry FontSize="Large" Grid.Column="4" Keyboard="Numeric" Text="{Binding Cantidad}" />
+                                                        <Label FontSize="Large" TextColor="#3E3E3E" Grid.Column="5" Text="Control Area" Margin="0,4,0,0" HorizontalTextAlignment="End" />
+                                                        <CheckBox x:Name="chkControlArea" ScaleX="1.3" ScaleY="1.3" Grid.Column="6" IsChecked="{Binding ControlArea}" />
+                                                    </Grid>
+                                                </StackLayout>
+                                            </Grid>
+                                        </StackLayout>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="2" Grid.ColumnSpan="2">
+                <Grid>
+                    <StackLayout VerticalOptions="End">
+                        <Frame HasShadow="False">
+                            <Frame HasShadow="False" BorderColor="LightGray">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" TextColor="Red" Text="*No, No imprime etiquetas por esta ocasiòn." />
+                                    <Label Grid.Row="1" TextColor="Red" Text="**Nunca, Marca en el Catalogo, que el seleccionado no requiere impresiòn de etiquetas" />
+                                </Grid>
+                            </Frame>
+                        </Frame>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="3" Grid.ColumnSpan="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btnImprimir" Text="IMPRIMIR" Grid.Column="1" FontSize="Large" Clicked="btnImprimir_Clicked" />
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iAlmacen.almacen_orden_compra">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20*" />
+                <RowDefinition Height="55*" />
+                <RowDefinition Height="25*" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" Padding="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="25*" />
+                        <ColumnDefinition Width="25*" />
+                        <ColumnDefinition Width="25*" />
+                        <ColumnDefinition Width="25*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="33*" />
+                        <RowDefinition Height="33*" />
+                        <RowDefinition Height="34*" />
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Column="0" Grid.Row="0" Orientation="Horizontal" HorizontalOptions="End">
+                        <Label Text="Entrada:" />
+                        <Entry Placeholder="Folio Entrada" WidthRequest="120" />
+                    </StackLayout>
+                    <StackLayout Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalOptions="End">
+                        <Label Text="Compra:" />
+                        <Entry Placeholder="Folio Orden" WidthRequest="120" />
+                    </StackLayout>
+                    <StackLayout Grid.Column="0" Grid.Row="2" Orientation="Horizontal" HorizontalOptions="End">
+                        <Label Text="Documento:" />
+                        <Entry Placeholder="Folio Docto" WidthRequest="120" />
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" Grid.Row="0" Orientation="Horizontal" HorizontalOptions="Center">
+                        <Label Text="Credito" HorizontalTextAlignment="End" WidthRequest="120" />
+                        <Switch />
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalOptions="Center">
+                        <Label Text="Nacional" HorizontalTextAlignment="End" WidthRequest="120" />
+                        <Switch />
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" Grid.Row="2" Orientation="Horizontal" HorizontalOptions="Center">
+                        <Label Text="Factura" HorizontalTextAlignment="End" WidthRequest="120" />
+                        <Switch />
+                    </StackLayout>
+                    <StackLayout Grid.Row="0" Grid.Column="2" Orientation="Horizontal" HorizontalOptions="Center">
+                        <Label Text="Entrada:" WidthRequest="100" HorizontalTextAlignment="End" />
+                        <DatePicker WidthRequest="120" />
+                    </StackLayout>
+                    <StackLayout Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalOptions="Center">
+                        <Label Text="Referencia:" WidthRequest="100" HorizontalTextAlignment="End" />
+                        <Entry Placeholder="Referencia" WidthRequest="120" />
+                    </StackLayout>
+                    <StackLayout Grid.Row="2" Grid.Column="2" Orientation="Horizontal" HorizontalOptions="Center">
+                        <Label Text="Documento:" WidthRequest="100" HorizontalTextAlignment="End" />
+                        <DatePicker WidthRequest="120" />
+                    </StackLayout>
+                    <StackLayout Grid.Row="0" Grid.Column="3" Orientation="Horizontal" HorizontalOptions="Center">
+                        <Label Text="Moneda:" HorizontalTextAlignment="End" WidthRequest="105" />
+                        <Button Text="MXN" WidthRequest="50" />
+                    </StackLayout>
+                    <StackLayout Grid.Row="1" Grid.Column="3" Orientation="Horizontal" HorizontalOptions="Center">
+                        <Label Text="Tipo Cambio:" HorizontalTextAlignment="End" WidthRequest="105" />
+                        <Entry Text="0" WidthRequest="50" />
+                    </StackLayout>
+                </Grid>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                    <Label Text="Proveedor: " />
+                    <Label Text="Prestador Servicio: " />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Grid.Row="1">
+            </StackLayout>
+            <StackLayout Grid.Row="2">
+                <Grid Padding="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="65*" />
+                        <ColumnDefinition Width="25*" />
+                        <ColumnDefinition Width="10*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0">
+                        <Label Text="Familia: " />
+                        <Label Text="Linea: " />
+                        <Label Text="Centro Costo: " />
+                        <Label Text="Area:" />
+                        <Label Text="Observacion: " />
+                    </StackLayout>
+                    <StackLayout Grid.Column="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40*" />
+                                <ColumnDefinition Width="60*" />
+                            </Grid.ColumnDefinitions>
+                            <StackLayout Grid.Column="0" HorizontalOptions="End" Padding="5">
+                                <Label Text="Importe:" HorizontalTextAlignment="End" />
+                                <Label Text="Descuento:" HorizontalTextAlignment="End" />
+                                <Label Text="Subtotal:" HorizontalTextAlignment="End" />
+                                <Label Text="IVA:" HorizontalTextAlignment="End" />
+                                <Label Text="Retencion:" HorizontalTextAlignment="End" />
+                                <Label Text="Total:" HorizontalTextAlignment="End" />
+                            </StackLayout>
+                            <StackLayout Grid.Column="1" HorizontalOptions="End" Padding="0,5,20,5">
+                                <Label Text="0.00" HorizontalTextAlignment="End" />
+                                <Label Text="0.00" HorizontalTextAlignment="End" />
+                                <Label Text="0.00" HorizontalTextAlignment="End" />
+                                <Label Text="0.00" HorizontalTextAlignment="End" />
+                                <Label Text="0.00" HorizontalTextAlignment="End" />
+                                <Label Text="0.00" HorizontalTextAlignment="End" />
+                            </StackLayout>
+                        </Grid>
+                    </StackLayout>
+                    <StackLayout Grid.Column="2">
+                        <Button ImageSource="ic_check_circle_black_48dp" HeightRequest="70" WidthRequest="70" />
+                        <Button ImageSource="ic_highlight_off_black_48dp" HeightRequest="70" WidthRequest="70" />
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

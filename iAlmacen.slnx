@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="MauiApp1/MauiApp1.Droid/iAlmacen.Droid.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="MauiApp1/MauiApp1.iOS/iAlmacen.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="MauiApp1/MauiApp1/iAlmacen.csproj" />
+</Solution>
