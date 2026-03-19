@@ -1,20 +1,19 @@
 ﻿using iAlmacen.Views;
 
-namespace iAlmacen.ViewModels
+namespace iAlmacen.ViewModels;
+
+public class LoginViewModel : BaseViewModel
 {
-    public class LoginViewModel : BaseViewModel
+    public Command LoginCommand { get; }
+
+    public LoginViewModel()
     {
-        public Command LoginCommand { get; }
+        LoginCommand = new Command(OnLoginClicked);
+    }
 
-        public LoginViewModel()
-        {
-            LoginCommand = new Command(OnLoginClicked);
-        }
-
-        private async void OnLoginClicked(object obj)
-        {
-            // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one
-            await Shell.Current.GoToAsync($"//{nameof(LoginView)}");
-        }
+    private async void OnLoginClicked(object obj)
+    {
+        // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one
+        await Shell.Current.GoToAsync($"//{nameof(LoginView)}");
     }
 }

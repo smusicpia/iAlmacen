@@ -1,6 +1,5 @@
 ﻿using iAlmacen.Clases;
 using iAlmacen.Models;
-using iAlmacen.Views;
 using iAlmacen.WebApi;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;

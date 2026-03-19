@@ -1,6 +1,6 @@
-﻿namespace iAlmacen.Models;
+namespace iAlmacen.Models;
 
-public class InventarioAlmacen
+public class InventarioAlmacenDetalle
 {
     public int id { get; set; }
     public string FolioInventario { get; set; }

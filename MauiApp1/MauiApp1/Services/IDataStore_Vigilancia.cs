@@ -1,15 +1,14 @@
-﻿namespace iAlmacen.Services
+﻿namespace iAlmacen.Services;
+
+public interface IDataStore_Vigilancia<T>
 {
-    public interface IDataStore_Vigilancia<T>
-    {
-        Task<bool> AddItemAsync(T item);
+    Task<bool> AddItemAsync(T item);
 
-        Task<bool> UpdateItemAsync(T item);
+    Task<bool> UpdateItemAsync(T item);
 
-        Task<bool> DeleteItemAsync(float id);
+    Task<bool> DeleteItemAsync(float id);
 
-        Task<T> GetItemAsync(float id);
+    Task<T> GetItemAsync(float id);
 
-        Task<IEnumerable<T>> GetItemsAsync(bool forceRefresh = false);
-    }
+    Task<IEnumerable<T>> GetItemsAsync(bool forceRefresh = false);
 }

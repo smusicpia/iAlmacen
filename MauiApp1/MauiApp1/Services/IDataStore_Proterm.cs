@@ -1,6 +1,6 @@
 ﻿namespace iAlmacen.Services;
 
-public interface IDataStore<T>
+public interface IDataStore_Proterm<T>
 {
     Task<bool> AddItemAsync(T item);
 

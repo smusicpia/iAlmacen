@@ -2,7 +2,7 @@
 
 namespace iAlmacen.Clases;
 
-public class clsArea
+public class clsSucursal
 {
     [PrimaryKey, AutoIncrement]
     public int ID { get; set; }

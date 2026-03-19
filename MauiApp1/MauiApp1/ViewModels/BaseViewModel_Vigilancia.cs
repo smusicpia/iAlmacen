@@ -1,7 +1,6 @@
 ﻿using iAlmacen.Models;
 using iAlmacen.Services;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace iAlmacen.ViewModels;
 
@@ -35,19 +34,6 @@ public class BaseViewModel_Vigilancia : INotifyPropertyChanged
             OnPropertyChanged(nameof(Title));
         }
     }
-
-    //protected bool SetProperty<T>(ref T backingStore, T value,
-    //    [CallerMemberName] string propertyName = "",
-    //    Action onChanged = null)
-    //{
-    //    if (EqualityComparer<T>.Default.Equals(backingStore, value))
-    //        return false;
-
-    //    backingStore = value;
-    //    onChanged?.Invoke();
-    //    OnPropertyChanged(propertyName);
-    //    return true;
-    //}
 
     #region INotifyPropertyChanged
 

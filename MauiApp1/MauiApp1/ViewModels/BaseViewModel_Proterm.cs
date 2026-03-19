@@ -1,13 +1,12 @@
-using iAlmacen.Models;
+﻿using iAlmacen.Models;
 using iAlmacen.Services;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
-namespace iAlmacen;
+namespace iAlmacen.ViewModels;
 
-public class BaseViewModel_Orden : INotifyPropertyChanged
+public class BaseViewModel_Proterm : INotifyPropertyChanged
 {
-    public IDataStore_Orden<Item_orden_compra> DataStore_Orden => DependencyService.Get<IDataStore_Orden<Item_orden_compra>>() ?? new MockDataStore_Orden();
+    public IDataStore_Proterm<Item_proterm> DataStore_Proterm => DependencyService.Get<IDataStore_Proterm<Item_proterm>>() ?? new MockDataStore_Proterm();
 
     private bool _isBusy = false;
 

@@ -1,15 +1,15 @@
-using iAlmacen.Models;
+﻿using iAlmacen.Models;
 
 namespace iAlmacen.Services;
 
-public class MockDataStore_Vigilancia : IDataStore_Vigilancia<Item_entrada_vigilancia>
+public class MockDataStore_Proterm : IDataStore_Proterm<Item_proterm>
 {
-    private List<Item_entrada_vigilancia> items;
+    private List<Item_proterm> items;
 
-    public MockDataStore_Vigilancia()
+    public MockDataStore_Proterm()
     {
-        items = new List<Item_entrada_vigilancia>();
-        var mockItems = new List<Item_entrada_vigilancia>
+        items = new List<Item_proterm>();
+        var mockItems = new List<Item_proterm>
         {
             //new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description="This is an item description." },
             //new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description="This is an item description." },
@@ -25,16 +25,16 @@ public class MockDataStore_Vigilancia : IDataStore_Vigilancia<Item_entrada_vigil
         }
     }
 
-    public async Task<bool> AddItemAsync(Item_entrada_vigilancia item)
+    public async Task<bool> AddItemAsync(Item_proterm item)
     {
         items.Add(item);
 
         return await Task.FromResult(true);
     }
 
-    public async Task<bool> UpdateItemAsync(Item_entrada_vigilancia item)
+    public async Task<bool> UpdateItemAsync(Item_proterm item)
     {
-        var _item = items.Where((Item_entrada_vigilancia arg) => arg.id_ == item.id_).FirstOrDefault();
+        var _item = items.Where((Item_proterm arg) => arg.id == item.id).FirstOrDefault();
         items.Remove(_item);
         items.Add(item);
 
@@ -43,18 +43,18 @@ public class MockDataStore_Vigilancia : IDataStore_Vigilancia<Item_entrada_vigil
 
     public async Task<bool> DeleteItemAsync(float id)
     {
-        var _item = items.Where((Item_entrada_vigilancia arg) => arg.id_ == id).FirstOrDefault();
+        var _item = items.Where((Item_proterm arg) => arg.id == id).FirstOrDefault();
         items.Remove(_item);
 
         return await Task.FromResult(true);
     }
 
-    public async Task<Item_entrada_vigilancia> GetItemAsync(float id)
+    public async Task<Item_proterm> GetItemAsync(float id)
     {
-        return await Task.FromResult(items.FirstOrDefault(s => s.id_ == id));
+        return await Task.FromResult(items.FirstOrDefault(s => s.id == id));
     }
 
-    public async Task<IEnumerable<Item_entrada_vigilancia>> GetItemsAsync(bool forceRefresh = false)
+    public async Task<IEnumerable<Item_proterm>> GetItemsAsync(bool forceRefresh = false)
     {
         return await Task.FromResult(items);
     }
