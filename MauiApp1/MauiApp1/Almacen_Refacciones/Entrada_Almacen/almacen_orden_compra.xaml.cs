@@ -1,14 +1,13 @@
-﻿namespace iAlmacen
+﻿namespace iAlmacen;
+
+public partial class almacen_orden_compra : ContentPage
 {
-    public partial class almacen_orden_compra : ContentPage
+    public almacen_orden_compra()
     {
-        public almacen_orden_compra()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            NavigationPage.SetBackButtonTitle(this, "Atras");
+        NavigationPage.SetBackButtonTitle(this, "Atras");
 
-            //MasterBehavior = MasterBehavior.Popover;
-        }
+        //MasterBehavior = MasterBehavior.Popover;
     }
 }

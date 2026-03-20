@@ -1,3 +1,4 @@
+using iAlmacen.Almacen_Refacciones.Entrada_Almacen;
 using iAlmacen.Almacen_Refacciones.Salida_Almacen;
 
 namespace iAlmacen.Views;
@@ -23,7 +24,7 @@ public partial class MainView : ContentPage
 
     private async void entradas_remision_Clicked(object sender, EventArgs e)     //Entradas Sin Factura
     {
-        //await Navigation.PushAsync(new almacen_entrada_referencia());
+        await Navigation.PushAsync(new almacen_entrada_referencia());
     }
 
     private async void inventario_reposicion_Clicked(object sender, EventArgs e)      //Inventario Reposicion
@@ -39,10 +40,5 @@ public partial class MainView : ContentPage
     private async void invArticulos_Clicked(object sender, EventArgs e)      //Inventario Refaccion
     {
         //await Navigation.PushAsync(new InvRefaccion());
-    }
-
-    private async void btn_salidas(object sender, EventArgs e)       //
-    {
-        //await Navigation.PushAsync(new Almacen_Salidas());
     }
 }
