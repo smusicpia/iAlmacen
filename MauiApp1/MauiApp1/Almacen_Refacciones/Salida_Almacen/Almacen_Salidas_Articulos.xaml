@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.Maui.Controls"
+             x:Class="iAlmacen.Almacen_Refacciones.Salida_Almacen.Almacen_Salidas_Articulos"
+             NavigationPage.BackButtonTitle="CANCELAR">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="50" />
+                <RowDefinition />
+                <RowDefinition Height="60" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btnScanArticulo" BackgroundColor="#872200" Text="SCANEAR ARTICULO" Grid.Column="0" FontSize="Large" Clicked="btnScanArticulo_Clicked" Margin="10,0,0,0" />
+                    <Button x:Name="btnScanUbicacion" BackgroundColor="#872200" Text="SCANEAR UBICACION" Grid.Column="1" FontSize="Large" Clicked="btnScanUbicacion_Clicked" />
+                    <Button x:Name="btnScanControl" BackgroundColor="#872200" IsVisible="false" Text="SCAN CONTROL AREA" Grid.Column="2" FontSize="Large" Margin="0,0,10,0" Clicked="btnScanControl_Clicked" />
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="2" Grid.ColumnSpan="2">
+                <Border>
+                    <Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <!--0-->
+                                <ColumnDefinition />
+                                <!--1-->
+                                <ColumnDefinition />
+                                <!--2-->
+                                <ColumnDefinition />
+                                <!--3-->
+                                <ColumnDefinition />
+                                <!--4-->
+                                <ColumnDefinition />
+                                <!--5-->
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Label Text="Clave" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="0" />
+                            <Label Text="Descripcion" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="0" Grid.Column="2" />
+                            <Label Text="Medida" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" />
+                            <Label Text="Marca" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" Grid.Column="2" />
+                            <Label Text="No. Parte" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" Grid.Column="4" />
+                            <Label Text="Familia" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="2" />
+                            <Label Text="Linea" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="3" />
+                            <Label Text="Grupo" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="4" />
+                            <Label Text="Centro de Costo Nivel 3" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="5" Grid.ColumnSpan="2" />
+                            <Label Text="Centro de Costo Nivel 4" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="6" Grid.ColumnSpan="2" />
+
+                            <Label x:Name="lblClave" Text="" FontSize="Large" Grid.Row="0" Grid.Column="1" />
+                            <Label x:Name="lblDescripcion" Text="" FontSize="Large" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" />
+                            <Label x:Name="lblMedida" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="1" />
+                            <Label x:Name="lblMarca" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="3" />
+                            <Label x:Name="lblParte" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="5" />
+                            <Label x:Name="lblFamilia" Text="" FontSize="Large" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" />
+                            <Label x:Name="lblLinea" Text="" FontSize="Large" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" />
+                            <Label x:Name="lblGrupo" Text="" FontSize="Large" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" />
+                            <Picker x:Name="cbNivel3" FontSize="Large" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="4" SelectedIndexChanged="cbNivel3_SelectedIndexChanged" />
+                            <Picker x:Name="cbNivel4" FontSize="Large" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="4" />
+                        </Grid>
+                    </Border>
+                </Border>
+                <Border HeightRequest="100" Margin="0">
+                    <Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Label Text="Seccion" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="0" />
+                            <Label Text="Pasillo" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" />
+                            <Label Text="Estanteria" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="2" />
+                            <Label Text="Nivel" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="0" Grid.Column="2" />
+                            <Label Text="Tarima" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" Grid.Column="2" />
+                            <Label Text="Contenedor" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="2" Grid.Column="2" />
+
+                            <Label x:Name="lblSeccion" Text="" FontSize="Large" Grid.Row="0" Grid.Column="1" />
+                            <Label x:Name="lblPasillo" Text="" FontSize="Large" Grid.Row="1" Grid.Column="1" />
+                            <Label x:Name="lblEstanteria" Text="" FontSize="Large" Grid.Row="2" Grid.Column="1" />
+                            <Label x:Name="lblNivel" Text="" FontSize="Large" Grid.Row="0" Grid.Column="3" />
+                            <Label x:Name="lblTarima" Text="" FontSize="Large" Grid.Row="1" Grid.Column="3" />
+                            <Label x:Name="lblContenedor" Text="" FontSize="Large" Grid.Row="2" Grid.Column="3" />
+                        </Grid>
+                    </Border>
+                </Border>
+                <Border HeightRequest="100" Margin="0">
+                    <Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <!--0-->
+                                <ColumnDefinition />
+                                <!--1-->
+                                <ColumnDefinition />
+                                <!--2-->
+                                <ColumnDefinition />
+                                <!--3-->
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Label Text="Existencia Global" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="0" />
+                            <Label Text="En Ubicacion" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="0" Grid.Column="2" />
+                            <Label Text="Cantidad Salida" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" />
+                            <Label Text="Unidad" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" Grid.Column="2" />
+
+                            <Label x:Name="lblExistenciaglobal" Text="" FontSize="Large" Grid.Column="1" />
+                            <Label x:Name="lblExistenciaUbicacion" Text="" FontSize="Large" Grid.Column="3" />
+                            <Entry x:Name="txtCantidad" Keyboard="Numeric" Placeholder="Cantidad Salida" FontSize="Large" Grid.Row="1" Grid.Column="1" />
+                            <Label x:Name="lblUnidad" Text="" FontSize="Large" Grid.Row="1" Grid.Column="3" />
+                        </Grid>
+                    </Border>
+                </Border>
+                <Border x:Name="frmControlArea" IsVisible="False" HeightRequest="150" Margin="0">
+                    <Border>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <!--0-->
+                                <ColumnDefinition />
+                                <!--1-->
+                                <ColumnDefinition />
+                                <!--2-->
+                                <ColumnDefinition />
+                                <!--3-->
+                                <ColumnDefinition />
+                                <!--4-->
+                                <ColumnDefinition />
+                                <!--5-->
+                                <ColumnDefinition />
+                                <!--6-->
+                                <ColumnDefinition />
+                                <!--7-->
+                            </Grid.ColumnDefinitions>
+                            <Label Text="Area Asignada" FontSize="Large" TextColor="DimGray" Grid.ColumnSpan="2" />
+                            <Label x:Name="lblAreaAsignada" Text="limite 25 caracteres" FontSize="Large" Grid.Column="2" Grid.ColumnSpan="3" />
+                            <Label Text="Cantidad Asignada" FontSize="Large" TextColor="DimGray" Grid.Column="5" Grid.ColumnSpan="2" />
+                            <Label x:Name="lblCantidadAsignada" Text="" FontSize="Large" Grid.Column="7" />
+                            <Label Text="Reasigna" FontSize="Large" TextColor="DimGray" Grid.Row="1" />
+                            <Switch x:Name="swReasignar" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" />
+                            <Label Text="Observacion" FontSize="Large" TextColor="DimGray" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" HorizontalTextAlignment="End" />
+                            <Entry x:Name="txtObservacionReasignar" Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="4" Grid.RowSpan="2" />
+                        </Grid>
+                    </Border>
+                </Border>
+            </StackLayout>
+            <StackLayout Grid.Row="3" Grid.ColumnSpan="2" Padding="0,30" Margin="-30" BackgroundColor="#F8813A">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btnmanual" BackgroundColor="#872200" Text="MANUAL" Grid.Column="0" FontSize="Large" Clicked="btnmanual_Clicked" IsVisible="true" />
+                    <Button x:Name="btnAgregar" BackgroundColor="#872200" Text="AGREGAR" Grid.Column="1" FontSize="Large" Clicked="btnAgregar_Clicked" />
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

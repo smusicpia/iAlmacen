@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             xmlns:local="clr-namespace:iAlmacen.ViewModels"
+             x:Class="iAlmacen.Almacen_Refacciones.Salida_Almacen.Almacen_Salidas"
+             Title="Captura Salida Almacen">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="81" />
+                <RowDefinition />
+                <RowDefinition Height="170" />
+                <RowDefinition Height="55" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" Grid.ColumnSpan="2">
+                <Grid RowSpacing="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0" />
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="510" />
+                        <ColumnDefinition Width="510" />
+                    </Grid.ColumnDefinitions>
+                    <Picker x:Name="cbSucursal" Grid.Column="1" Grid.Row="1" Title="SUCURSAL"  SelectedIndexChanged="cbSucursal_SelectedIndexChanged">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>MÉRIDA</x:String>
+                                <x:String>TEBEC</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Picker x:Name="cbArea" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="3" Title="AREA" SelectedIndexChanged="cbArea_SelectedIndexChanged" />
+                    <Picker x:Name="cbNivel1" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Title="C.C. NIVEL 1" SelectedIndexChanged="cbNivel1_SelectedIndexChanged" />
+                    <Picker x:Name="cbNivel2" Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="2" Title="C.C. NIVEL 2" SelectedIndexChanged="cbNivel2_SelectedIndexChanged" />
+                    <Picker x:Name="cbNivel3" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Title="C.C. NIVEL 3" SelectedIndexChanged="cbNivel3_SelectedIndexChanged" />
+                    <Picker x:Name="cbNivel4" Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="2" Title="C.C. NIVEL 4" />
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Row="0">
+                        <Border Padding="10,5,10,5">
+                            <StackLayout HeightRequest="80" BackgroundColor="White">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="10*" />
+                                        <RowDefinition Height="10*" />
+                                        <RowDefinition Height="10*" />
+                                        <RowDefinition Height="10*" />
+                                    </Grid.RowDefinitions>
+                                    <StackLayout Grid.Row="0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="10*" />
+                                                <ColumnDefinition Width="90*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Text="CLAVE" TextColor="Gray" />
+                                            <Label Grid.Column="1" Text="DESCRIPCION" TextColor="Gray" />
+                                        </Grid>
+                                    </StackLayout>
+                                    <StackLayout Grid.Row="1">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="25*" />
+                                                <ColumnDefinition Width="25*" />
+                                                <ColumnDefinition Width="25*" />
+                                                <ColumnDefinition Width="25*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Text="MARCA" TextColor="Gray" />
+                                            <Label Grid.Column="1" Text="MEDIDA" TextColor="Gray" />
+                                            <Label Grid.Column="2" Text="No. PARTE" TextColor="Gray" />
+                                            <Label Grid.Column="3" Text="CANTIDAD" TextColor="Gray" />
+                                        </Grid>
+                                    </StackLayout>
+                                    <StackLayout Grid.Row="2">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="15*" />
+                                                <ColumnDefinition Width="15*" />
+                                                <ColumnDefinition Width="30*" />
+                                                <ColumnDefinition Width="12*" />
+                                                <ColumnDefinition Width="12*" />
+                                                <ColumnDefinition Width="15*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Text="SECCION" TextColor="Gray" />
+                                            <Label Grid.Column="1" Text="PASILLO" HorizontalTextAlignment="Center" TextColor="Gray" />
+                                            <Label Grid.Column="2" Text="ESTANTERIA" TextColor="Gray" />
+                                            <Label Grid.Column="3" Text="NIVEL" HorizontalTextAlignment="Center" TextColor="Gray" />
+                                            <Label Grid.Column="4" Text="TARIMA" HorizontalTextAlignment="Center" TextColor="Gray" />
+                                            <Label Grid.Column="5" Text="CONTENEDOR" HorizontalTextAlignment="Center" TextColor="Gray" />
+                                        </Grid>
+                                    </StackLayout>
+                                    <StackLayout Grid.Row="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Text="EMPLEADO" TextColor="Gray" />
+                                        </Grid>
+                                    </StackLayout>
+                                </Grid>
+                            </StackLayout>
+                        </Border>
+                        <ScrollView>
+                            <StackLayout>
+                                <RefreshView Command="{Binding LoadItemsCommand_vigilancia}" IsRefreshing="{Binding IsBusy}" RefreshColor="#872200">
+                                    <CollectionView x:Name="miCollectionView" ItemsSource="{Binding regArticulosSalida}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <SwipeView>
+                                                    <SwipeView.RightItems>
+                                                        <SwipeItem Text="ELIMINAR" IsDestructive="True" BackgroundColor="#F83A52" Clicked="imEliminar_Clicked" />
+                                                    </SwipeView.RightItems>
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="12*" />
+                                                            <RowDefinition Height="12*" />
+                                                            <RowDefinition Height="12*" />
+                                                            <RowDefinition Height="12*" />
+                                                        </Grid.RowDefinitions>
+                                                        <StackLayout Grid.Row="0" Margin="0" Padding="0">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="10*" />
+                                                                    <ColumnDefinition Width="90*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Label Grid.Column="0" FontAttributes="Bold" FontSize="Small" TextColor="#3E3E3E" Margin="0,0,0,0" Text="{Binding codigo_articulo}" />
+                                                                <Label Grid.Column="1" FontAttributes="Bold" FontSize="Small" TextColor="#3E3E3E" Margin="0,0,0,0" Text="{Binding descripcion_general}" />
+                                                            </Grid>
+                                                        </StackLayout>
+                                                        <StackLayout Grid.Row="1" Margin="0" Padding="0">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="25*" />
+                                                                    <ColumnDefinition Width="25*" />
+                                                                    <ColumnDefinition Width="25*" />
+                                                                    <ColumnDefinition Width="25*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Label Grid.Column="0" FontSize="Small" TextColor="#3E3E3E" Margin="0,0,0,0" Text="{Binding desc_marca}" />
+                                                                <Label Grid.Column="1" FontSize="Small" TextColor="#3E3E3E" Margin="0,0,0,0" Text="{Binding desc_medida}" />
+                                                                <Label Grid.Column="2" FontSize="Small" TextColor="#3E3E3E" Margin="0,0,0,0" Text="{Binding desc_parte}" />
+                                                                <Label Grid.Column="3" FontSize="Small" TextColor="red" Margin="0,0,0,0" Text="{Binding cantidad}" />
+                                                            </Grid>
+                                                        </StackLayout>
+                                                        <StackLayout Grid.Row="2" Margin="0" Padding="0">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="15*" />
+                                                                    <ColumnDefinition Width="15*" />
+                                                                    <ColumnDefinition Width="30*" />
+                                                                    <ColumnDefinition Width="12*" />
+                                                                    <ColumnDefinition Width="12*" />
+                                                                    <ColumnDefinition Width="15*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Label Grid.Column="0" FontSize="Small" TextColor="Gray" Margin="0,0,0,0" Text="{Binding desc_seccion}" />
+                                                                <Label Grid.Column="1" FontSize="Small" TextColor="Gray" HorizontalTextAlignment="Center" Margin="0,0,0,0" Text="{Binding Pasillo}" />
+                                                                <Label Grid.Column="2" FontSize="Small" TextColor="Gray" Margin="0,0,0,0" Text="{Binding desc_estanteria}" />
+                                                                <Label Grid.Column="3" FontSize="Small" TextColor="Gray" HorizontalTextAlignment="Center" Margin="0,0,0,0" Text="{Binding Nivel}" />
+                                                                <Label Grid.Column="4" FontSize="Small" TextColor="Gray" HorizontalTextAlignment="Center" Margin="0,0,0,0" Text="{Binding Tarima}" />
+                                                                <Label Grid.Column="5" FontSize="Small" TextColor="Gray" HorizontalTextAlignment="Center" Margin="0,0,0,0" Text="{Binding Contenedor}" />
+                                                            </Grid>
+                                                        </StackLayout>
+                                                        <StackLayout Grid.Row="3" Margin="0" Padding="0">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="10*" />
+                                                                    <ColumnDefinition Width="90*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Label Grid.Column="0" FontSize="Small" Grid.ColumnSpan="5" FontAttributes="Bold" TextColor="#3E3E3E" Margin="0,0,0,0" Text="{Binding Empleado}" />
+                                                            </Grid>
+                                                        </StackLayout>
+                                                    </Grid>
+                                                </SwipeView>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </RefreshView>
+                            </StackLayout>
+                        </ScrollView>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout x:Name="salida" Grid.Row="2" Grid.ColumnSpan="2" IsVisible="{Binding NameOfSwitch.IsChecked}" Padding="0" Margin="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="100*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout WidthRequest="580">
+                        <Border>
+                            <Grid HeightRequest="125" VerticalOptions="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition />
+                                    <RowDefinition Height="30" />
+                                </Grid.RowDefinitions>
+                                <Label Text="FECHA SALIDA" TextColor="gray" HorizontalTextAlignment="End" Margin="10,0" VerticalTextAlignment="Center" />
+                                <DatePicker x:Name="dtFechaSalida" Grid.Column="1" Format="dd/MM/yyyy" />
+                                <Picker x:Name="cbResonsable" Grid.Row="2" Title="RESPONSABLE" Grid.ColumnSpan="2" SelectedIndexChanged="cbResonsable_SelectedIndexChanged" />
+                                <Picker x:Name="cbAutorizado" Grid.Row="4" Title="AUTORIZADO" Grid.ColumnSpan="2" />
+                            </Grid>
+                        </Border>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" x:Name="spvFirma" IsVisible="true" HeightRequest="250" WidthRequest="410">
+                        <Border Margin="0">
+                            <Grid HeightRequest="125" VerticalOptions="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="145" />
+                                </Grid.RowDefinitions>
+                                <toolkit:DrawingView x:Name="signatureSample" Grid.Row="0" BackgroundColor="Transparent" LineWidth="2" IsMultiLineModeEnabled="True" HeightRequest="190"  VerticalOptions="Fill" Margin="0,-10,0,0" />
+                            </Grid>
+                        </Border>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" x:Name="imgFirma" IsVisible="false" HeightRequest="250" WidthRequest="410" BindingContext="{Binding Orden}">
+                        <Border Margin="0">
+                            <Image x:Name="srcFirma" HeightRequest="125" VerticalOptions="Fill" />
+                        </Border>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout x:Name="salida2" Grid.Row="3" Grid.ColumnSpan="2" Padding="0,30" Margin="-30" BackgroundColor="#F8813A">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10*" />
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Row="0" Grid.Column="0" HeightRequest="90" Margin="0">
+                        <Button x:Name="btnRefacciones" BackgroundColor="#872200" Text="AGREGAR REFACCIONES" FontSize="Large" VerticalOptions="Center" Clicked="btnAgregarItems_Clicked" />
+                    </StackLayout>
+                    <StackLayout Grid.Row="0" Grid.Column="1" HeightRequest="90" Margin="0">
+                        <Button x:Name="btnGenerarSalida" BackgroundColor="#872200" Text="GENERAR SALIDA" Grid.Column="1" FontSize="Large" Clicked="btnGenerarSalida_Clicked" />
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

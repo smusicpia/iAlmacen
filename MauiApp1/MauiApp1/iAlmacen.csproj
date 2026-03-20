@@ -31,21 +31,35 @@
 
 	<ItemGroup>
 	  <Compile Remove="Almacen_Refacciones\Entrada_Almacen\almacen_entradas_compra.xaml.cs" />
+	  <Compile Remove="Almacen_Refacciones\Salida_Almacen\Almacen_Salidas_Captura.xaml.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiXaml Remove="Almacen_Refacciones\Entrada_Almacen\almacen_entradas_compra.xaml" />
+	  <MauiXaml Remove="Almacen_Refacciones\Salida_Almacen\Almacen_Salidas_Captura.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Acr.UserDialogs.Maui" Version="9.2.2" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.1" />
+		<PackageReference Include="Controls.UserDialogs.Maui" Version="1.12.0" />
 		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.4" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.50" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="ZXing.Net.Maui" Version="0.7.4" />
+		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.7.4" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Almacen_Refacciones\Salida_Almacen\Orden_Recoleccion.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\BarcodePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\LoginView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -55,10 +69,6 @@
 	  <MauiXaml Update="Views\PTView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Almacen_Refacciones\Salida_Almacen\" />
 	</ItemGroup>
 
 </Project>

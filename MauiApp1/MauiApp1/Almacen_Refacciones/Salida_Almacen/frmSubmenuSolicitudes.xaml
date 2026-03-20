@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iAlmacen.Almacen_Refacciones.Salida_Almacen.frmSubmenuSolicitudes"
+             Title="Solicitudes de Recoleccion">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="33*" />
+                <RowDefinition Height="33*" />
+                <RowDefinition Height="34*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ImageButton Source="ImagenFull/NuevaS.jpeg" Aspect="AspectFill" Clicked="NuevaSolicitudR_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Text="Nueva" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+
+            <ImageButton Grid.Row="1" Source="ImagenFull/ListoEntregarS.webp" Aspect="AspectFill" Clicked="SoicitudesxEntregar_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Grid.Row="1" Text="Lista por Entregar" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+
+            <ImageButton Grid.Row="2" Source="ImagenFull/HistorialS.webp" Aspect="AspectFill" Clicked="HistorialR_Clicked" />
+            <Label Margin="0,0,10,0" HorizontalTextAlignment="End" Grid.Row="2" Text="Historial" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="End" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

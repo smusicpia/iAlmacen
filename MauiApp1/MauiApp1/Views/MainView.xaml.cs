@@ -1,3 +1,5 @@
+using iAlmacen.Almacen_Refacciones.Salida_Almacen;
+
 namespace iAlmacen.Views;
 
 public partial class MainView : ContentPage
@@ -16,7 +18,7 @@ public partial class MainView : ContentPage
 
     private async void SalidaA_Clicked(Object sender, EventArgs e)     //Salidas Almacen
     {
-        //await Navigation.PushAsync(new frmMenuSolicitudes());
+        await Navigation.PushAsync(new frmMenuSolicitudes());
     }
 
     private async void entradas_remision_Clicked(object sender, EventArgs e)     //Entradas Sin Factura

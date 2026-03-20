@@ -47,7 +47,7 @@ public class Global
 
     public static ObservableCollection<Item_orden_compra> Items_orden_ { get; set; }
 
-    //public static ObservableCollection<Item_Virtual_Recoleccion> Items_recoleccion_ { get; set; }
+    public static ObservableCollection<Item_Virtual_Recoleccion> Items_recoleccion_ { get; set; }
     public static int folio_entrada_ = 0;
 
     public static Boolean validar = false;
