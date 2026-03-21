@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="iAlmacen.Almacen_Refacciones.Herramientas_v2.frmMenuHerramientas"
+    Title="Herramientas">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <ImageButton Source="ImagenFull/herramientas.jpeg" Aspect="AspectFill" Opacity="0.9" Clicked="ImageButton_Clicked" />
+            <Border VerticalOptions="End" Opacity="0.5" />
+            <Border VerticalOptions="Start" Opacity="0.5" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="UBICACIONES EN ALMACEN, EN RESGUARDO" TextColor="White" FontSize="30" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="HERRAMIENTAS" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />
+
+            <ImageButton x:Name="btnInventario" Grid.Row="1" Source="ImagenFull/inventario.jpeg" Aspect="AspectFill" Opacity="0.9" Clicked="btnInventario_Clicked" />
+            <Border Grid.Row="1" VerticalOptions="End" Opacity="0.5" />
+            <Border Grid.Row="1" VerticalOptions="Start" Opacity="0.5" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="CAPTURA" Grid.Row="1" TextColor="White" FontSize="30" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="INVENTARIO" Grid.Row="1" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />
+
+            <!--<ImageButton Grid.Row="2" Source="inventario.jpeg" Aspect="AspectFill" Opacity="0.9" />
+            <Frame Grid.Row="2" VerticalOptions="End" Opacity="0.5" HasShadow="False" />
+            <Frame Grid.Row="2" VerticalOptions="Start" Opacity="0.5" HasShadow="False" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="RESGUARDOS Y DEVOLUCIONES" Grid.Row="2" TextColor="#606060" FontSize="25" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="CAPTURA" Grid.Row="2" TextColor="#606060" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />-->
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

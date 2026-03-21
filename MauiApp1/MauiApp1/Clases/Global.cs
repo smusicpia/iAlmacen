@@ -46,7 +46,7 @@ public class Global
     public static string ParametrosControlArea = "";
 
     public static ObservableCollection<Item_orden_compra> Items_orden_ { get; set; }
-
+    public static ObservableCollection<Item_RegArticulo> Items_RegArticulo { get; set; }
     public static ObservableCollection<Item_Virtual_Recoleccion> Items_recoleccion_ { get; set; }
     public static int folio_entrada_ = 0;
 
@@ -58,7 +58,7 @@ public class Global
     #region Herramientas
 
     //Tablas SQlite
-    public static string PathHerramienta = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "db_herramientas.db");
+    public static string PathHerramienta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "db_herramientas.db");
 
     public static string HClaveEmpleado = "";
     public static string HNombreEmpleado = "";
@@ -72,6 +72,7 @@ public class Global
     #region Inventarios
     public static string FolioInventario = "";
     public static RegArticulo ArticuloEnInventario;
+    public static Item_RegArticulo HerramientaEnInventario;
 
     public static clsHerramientaEmpleados EmpleadoHerramienta;
     #endregion Inventarios

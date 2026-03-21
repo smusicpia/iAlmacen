@@ -1,4 +1,6 @@
 using iAlmacen.Almacen_Refacciones.Entrada_Almacen;
+using iAlmacen.Almacen_Refacciones.Herramientas_v2;
+using iAlmacen.Almacen_Refacciones.Inventario_Reposicion;
 using iAlmacen.Almacen_Refacciones.Salida_Almacen;
 
 namespace iAlmacen.Views;
@@ -29,12 +31,12 @@ public partial class MainView : ContentPage
 
     private async void inventario_reposicion_Clicked(object sender, EventArgs e)      //Inventario Reposicion
     {
-        //await Navigation.PushAsync(new inventario_reposicion());
+        await Navigation.PushAsync(new inventario_reposicion());
     }
 
     private async void invHerramientas_Clicked(object sender, EventArgs e)      //Herramientas
     {
-        //await Navigation.PushAsync(new frmMenuHerramientas());
+        await Navigation.PushAsync(new frmMenuHerramientas());
     }
 
     private async void invArticulos_Clicked(object sender, EventArgs e)      //Inventario Refaccion

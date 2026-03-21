@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="iAlmacen.Almacen_Refacciones.Herramientas_v2.frmMenuCapturasH">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <ImageButton x:Name="btnCaptura" Source="ImagenFull/CapturaM.jpg" Aspect="AspectFill" Opacity="0.9" Clicked="btnCaptura_Clicked" />
+            <Border VerticalOptions="End" Opacity="0.5" />
+            <Border VerticalOptions="Start" Opacity="0.5" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="CONSULTAS" TextColor="White" FontSize="30" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="UBICACIONES Y EXISTENCIAS" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />
+
+            <ImageButton x:Name="btnAplicacion" Grid.Row="1" Source="ImagenFull/ValidarM.jpg" Aspect="AspectFill" Opacity="0.9" Clicked="btnAplicacion_Clicked" />
+            <Border Grid.Row="1" VerticalOptions="End" Opacity="0.5" />
+            <Border Grid.Row="1" VerticalOptions="Start" Opacity="0.5" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="CAPTURAS" Grid.Row="1" TextColor="White" FontSize="30" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="RESGUARDOS DE EMPLEADOS" Grid.Row="1" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />
+
+            <ImageButton x:Name="btnAplica" Grid.Row="2" Source="ImagenFull/CapturaM.jpg" Aspect="AspectFill" Opacity="0.9" Clicked="btnAplica_Clicked" />
+            <Border Grid.Row="2" VerticalOptions="End" Opacity="0.5" />
+            <Border Grid.Row="2" VerticalOptions="Start" Opacity="0.5" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="APLICACION" Grid.Row="2" TextColor="White" FontSize="30" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="APLICAR RESGUARDOS" Grid.Row="2" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

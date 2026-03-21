@@ -54,6 +54,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Almacen_Refacciones\Inventario_Reposicion\Item_inventario_reposicion.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Almacen_Refacciones\Salida_Almacen\Orden_Recoleccion.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -69,6 +72,10 @@
 	  <MauiXaml Update="Views\PTView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Almacen_Refacciones\Herramientas_v2\" />
 	</ItemGroup>
 
 </Project>
