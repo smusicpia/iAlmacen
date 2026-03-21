@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iAlmacen.Almacen_Refacciones.Inventario_Reposicion.Item_inventario_reposicion"
+             Title="Captura Reposicion">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Grabar" Clicked="Handle_Clicked" />
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="20*" />
+                <RowDefinition Height="73*" />
+                <RowDefinition Height="6*" />
+            </Grid.RowDefinitions>
+            <StackLayout Margin="10,0,10,0" Grid.Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="clave_actual" Grid.Column="0" Text="Clave Actual: " FontSize="Small" />
+                    <Label x:Name="clave_anterior" Grid.Column="1" Text="Clave Anterior: " FontSize="Small" />
+                </Grid>
+                <Label x:Name="descripcion" Text="Descripcion: " LineBreakMode="WordWrap" FontSize="Small" />
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="medida" Text="Medida: " FontSize="Small" Grid.Column="0" />
+                    <Label x:Name="unidad" Text="Unidad: " FontSize="Small" Grid.Column="1" />
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="marca" Grid.Column="0" Text="Marca: " FontSize="Small" />
+                    <Label x:Name="parte" Grid.Column="1" Text="Parte: " FontSize="Small" />
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30*" />
+                        <ColumnDefinition Width="70*" />
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="cantidad" Grid.Column="0" Text="Cantidad: " FontSize="Small" />
+                    <Label Grid.Column="1" Text="Cantidad Inventario: " FontSize="Small" />
+                    <Entry Keyboard="Numeric" x:Name="cantidad_inventario" Grid.Column="1" Margin="160,-5,0,0" WidthRequest="50" HeightRequest="50" Placeholder="Cantidad" FontSize="Small" />
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="2">
+                <Image x:Name="image" Aspect="AspectFit" HeightRequest="900" MinimumHeightRequest="400" WidthRequest="900" MinimumWidthRequest="450" />
+            </StackLayout>
+            <StackLayout Grid.Row="3" BackgroundColor="#FAA61A" HeightRequest="125" Padding="35">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" x:Name="takePhoto" BackgroundColor="#872200" FontAttributes="Bold" Text="Tomar" FontSize="Small" Clicked="takePhoto_Clicked" />
+                    <Button Grid.Column="1" x:Name="pickPhoto" BackgroundColor="#872200" FontAttributes="Bold" Text="Seleccionar" FontSize="Small" Clicked="pickPhoto_Clicked" />
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -35,8 +35,14 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Esta aplicación necesita acceso al microfono.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Esta aplicación necesita acceso a la cámara para tomar fotos.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Esta aplicación necesita acceso a la galeria de fotos para seleccionar imagenes y videos de la biblioteca.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Esta aplicación necesita acceso a la galeria de fotos para guardar imagenes y videos en la biblioteca.</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>Esta aplicación necesita acceso al micrófono para grabar videos.</string>
 		<key>XSAppIconAssets</key>

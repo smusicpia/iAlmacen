@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iAlmacen.Almacen_Refacciones.Inventario_Reposicion.inventario_reposicion"
+             Title="Lista Reposiciones">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="7*" />
+                <RowDefinition Height="93*" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" BackgroundColor="#FAA61A" Padding="20,20,20,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80*" />
+                        <ColumnDefinition Width="20*" />
+                    </Grid.ColumnDefinitions>
+                    <Entry Grid.Column="0" x:Name="txt_filtro" Placeholder="Buscar Por Filtro" FontSize="Medium" HorizontalOptions="Center" WidthRequest="350" TextColor="#006b5e"  PlaceholderColor="#006b5e" />
+                    <Button Grid.Column="1" x:Name="btn_buscar_filtro" BackgroundColor="#872200" Text="Buscar" TextColor="White" BorderColor="White" Clicked="Handle_Clicked" />
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="1">
+                <ActivityIndicator x:Name="indicador" HorizontalOptions="Center" IsVisible="true" Color="Black" BackgroundColor="Red" />
+                <ScrollView HeightRequest="1190">
+                    <StackLayout>
+                        <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackLayout Padding="5" BackgroundColor="{Binding Color_}">
+                                        <Label Text="{Binding texto_1}" LineBreakMode="WordWrap" Style="{DynamicResource ListItemTextStyle}" FontSize="Small" />
+                                        <Label Text="{Binding texto_2}" LineBreakMode="NoWrap" Style="{DynamicResource ListItemDetailTextStyle}" FontSize="Small" />
+                                    </StackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </ScrollView>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
