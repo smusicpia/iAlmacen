@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+    x:Class="iAlmacen.Almacen_Refacciones.Herramientas_v2.frmResguardosEmpleadosCerrados"
+    Title="Resguardos Empleados Cerrados">
+    <ContentPage.BindingContext>
+        <vm:ItemsViewModel_ResgEmpleado />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="98*" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20*" />
+                        <RowDefinition Height="90*" />
+                    </Grid.RowDefinitions>
+                    <Border HeightRequest="60" Padding="0,10">
+                        <StackLayout Padding="0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="10*" />
+                                    <ColumnDefinition Width="60*" />
+                                    <ColumnDefinition Width="10*" />
+                                    <ColumnDefinition Width="20*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Text="Clave" TextColor="#006b5e" />
+                                <Label Grid.Column="1" Text="Empleado" TextColor="#006b5e" />
+                                <Label Grid.Column="2" Text="No. Articulos" TextColor="#006b5e" />
+                                <Label Grid.Column="3" Text="Inventariado" TextColor="#006b5e" />
+                            </Grid>
+                        </StackLayout>
+                    </Border>
+                    <StackLayout Grid.Row="1" Margin="0,0,0,0" Padding="0">
+                        <ScrollView>
+                            <StackLayout>
+                                <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single">
+                                    <CollectionView.EmptyView>
+                                        <ContentView>
+                                            <StackLayout>
+                                                <Label Text="Sin Registros Actualmente" HorizontalOptions="Center" VerticalOptions="Center" TextColor="DarkSlateGray" FontSize="Medium" />
+                                            </StackLayout>
+                                        </ContentView>
+                                    </CollectionView.EmptyView>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <SwipeView>
+                                                <SwipeView.RightItems>
+                                                    <SwipeItem Text="Aplicar" IsDestructive="True" CommandParameter="{Binding clave}" BackgroundColor="#F83A52" Clicked="btnAplicar_Clicked" />
+                                                    <SwipeItem Text="Abrir" IsDestructive="True" CommandParameter="{Binding clave}" BackgroundColor="#F83A52" Clicked="btnAbrir_Clicked" />
+                                                </SwipeView.RightItems>
+                                                <StackLayout HeightRequest="45" Margin="0" Padding="0">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="10*" />
+                                                            <ColumnDefinition Width="60*" />
+                                                            <ColumnDefinition Width="10*" />
+                                                            <ColumnDefinition Width="20*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Label Grid.Column="0" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="15,15,0,0" Text="{Binding clave}" />
+                                                        <Label Grid.Column="1" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding empleado}" />
+                                                        <Label Grid.Column="2" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding articulos}" />
+                                                        <Label Grid.Column="3" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding fecha}" />
+                                                    </Grid>
+                                                </StackLayout>
+                                            </SwipeView>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </StackLayout>
+                        </ScrollView>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

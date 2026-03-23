@@ -74,7 +74,9 @@ public class Global
     public static RegArticulo ArticuloEnInventario;
     public static Item_RegArticulo HerramientaEnInventario;
 
-    public static clsHerramientaEmpleados EmpleadoHerramienta;
+    public static clsEmpleadoHerramienta EmpleadoHerramienta;
+
+    public static Item_ResgEmpleado ResgEmpleado;
     #endregion Inventarios
 
     #region Salidas

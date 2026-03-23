@@ -15,12 +15,12 @@
 
         private async void btnAplicacion_Clicked(Object sender, EventArgs e)    //RESGUARDOS DE EMPLEADOS (CAPTURAS)
         {
-            //await Navigation.PushAsync(new frmResguardosEmpleados());
+            await Navigation.PushAsync(new frmResguardosEmpleados());
         }
 
         private async void btnAplica_Clicked(Object sender, EventArgs e)    //APLICAR INVENTARIO (APLICACION)
         {
-            //await Navigation.PushAsync(new frmResguardosEmpleadosCerrados());
+            await Navigation.PushAsync(new frmResguardosEmpleadosCerrados());
         }
     }
 }

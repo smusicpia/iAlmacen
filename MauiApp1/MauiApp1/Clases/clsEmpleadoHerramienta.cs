@@ -2,10 +2,10 @@
 
 namespace iAlmacen.Clases;
 
-public class clsHerramientaEmpleados
+public class clsEmpleadoHerramienta
 {
     [PrimaryKey, AutoIncrement]
-    public int ID { get; set; }
+    public int id { get; set; }
 
     public string area { get; set; }
     public string clave { get; set; }
@@ -16,6 +16,6 @@ public class clsHerramientaEmpleados
     public override string ToString()
     {
         return string.Format("[clsHerramientaEmpleados: ID={0}, area={1}, clave={2}, empleado={3}, fecha={4}, articulos={5}]",
-                             ID, area, clave, empleado, fecha, articulos);
+                             id, area, clave, empleado, fecha, articulos);
     }
 }
