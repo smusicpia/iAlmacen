@@ -417,7 +417,7 @@ public partial class Orden_Recoleccion : ContentPage
             if (response.StatusCode == HttpStatusCode.NotFound) return;
             string resp = reader.ReadToEnd();
             if (resp == "[]") return;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+            DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
             foreach (DataRow r in dt.Rows)
             {
                 if (int.Parse(r[0].ToString().Trim()) == 0)

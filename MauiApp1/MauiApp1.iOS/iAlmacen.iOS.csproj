@@ -16,6 +16,21 @@
 		       <MauiXaml Update="MyPage.xaml" Inflator="Default" /> (reverts to defaults: Runtime for Debug, XamlC for Release)
 		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+		<ProvisioningType>manual</ProvisioningType>
+		<CodesignKey>iPhone Developer</CodesignKey>
+		<IpaMetadata>Info.plist</IpaMetadata>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <BuildIpa>True</BuildIpa>
+	  <IpaPackageName>com.mapsa.ialmacen2</IpaPackageName>
+	  <IpaIncludeArtwork>True</IpaIncludeArtwork>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <BuildIpa>True</BuildIpa>
+	  <IpaPackageName>com.mapsa.ialmacen2</IpaPackageName>
+	  <IpaIncludeArtwork>True</IpaIncludeArtwork>
 	</PropertyGroup>
 
 	<ItemGroup>

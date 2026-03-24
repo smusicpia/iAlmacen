@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="iAlmacen.Almacen_Refacciones.InventarioH.frmMenuInventarioH">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <ImageButton x:Name="btnNueva" Source="ImagenFull/PlantillaM.jpg" Aspect="AspectFill" Opacity="0.9" Clicked="btnNuevaPlantilla_Clicked" />
+            <Border VerticalOptions="End" Opacity="0.5" />
+            <Border VerticalOptions="Start" Opacity="0.5" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="NUEVA" TextColor="White" FontSize="30" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="CREAR PLANTILLA NUEVA" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />
+
+            <ImageButton x:Name="btnCaptura" Grid.Row="1" Source="ImagenFull/CapturaM.jpg" Aspect="AspectFill" Opacity="0.9" Clicked="btnCaptura_Clicked" />
+            <Border Grid.Row="1" VerticalOptions="End" Opacity="0.5" />
+            <Border Grid.Row="1" VerticalOptions="Start" Opacity="0.5" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="CAPTURA" Grid.Row="1" TextColor="White" FontSize="30" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="CAPTURAR INVENTARIO" Grid.Row="1" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />
+
+            <ImageButton x:Name="btnAplicacion" Grid.Row="2" Source="ImagenFull/ValidarM.jpg" Aspect="AspectFill" Opacity="0.9" Clicked="btnAplicacion_Clicked" />
+            <Border Grid.Row="2" VerticalOptions="End" Opacity="0.5" />
+            <Border Grid.Row="2" VerticalOptions="Start" Opacity="0.5" />
+            <Label Margin="0,0,10,5" HorizontalTextAlignment="End" Text="APLICACION" Grid.Row="2" TextColor="White" FontSize="30" FontAttributes="Bold" VerticalOptions="End" />
+            <Label Margin="10,0,10,0" HorizontalTextAlignment="Start" Text="APLICAR INVENTARIO" Grid.Row="2" TextColor="White" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

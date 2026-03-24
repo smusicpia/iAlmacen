@@ -1,4 +1,6 @@
-﻿namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
+﻿using iAlmacen.Almacen_Refacciones.InventarioH;
+
+namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 {
     public partial class frmMenuHerramientas : ContentPage
     {
@@ -15,7 +17,7 @@
 
         private async void btnInventario_Clicked(Object sender, EventArgs e)      //INVENTARIO
         {
-            //await Navigation.PushAsync(new frmMenuInventarioH());
+            await Navigation.PushAsync(new frmMenuInventarioH());
         }
     }
 }

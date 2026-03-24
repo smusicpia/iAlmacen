@@ -24,11 +24,6 @@ public class ItemsViewModel_Vigilancia : BaseViewModel_Vigilancia
 
     private async Task ExecuteLoadItemsCommand_Vigilancia()
     {
-        //if (IsBusy)
-        //    return;
-
-        //IsBusy = true;
-
         try
         {
             Items.Clear();
@@ -38,7 +33,7 @@ public class ItemsViewModel_Vigilancia : BaseViewModel_Vigilancia
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+                DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
                 foreach (DataRow r in dt.Rows)
                 {
                     Item_entrada_vigilancia _item = new Item_entrada_vigilancia();
