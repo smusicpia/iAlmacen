@@ -15,7 +15,7 @@
 
         private async void btnCaptura_Clicked(Object sender, EventArgs e)     //CAPTURAR INVENTARIO
         {
-            //await Navigation.PushAsync(new frmInventariosDisponiblesH());
+            await Navigation.PushAsync(new frmInventariosDisponiblesH());
         }
 
         private async void btnAplicacion_Clicked(Object sender, EventArgs e)      //APLICAR INVENTARIO

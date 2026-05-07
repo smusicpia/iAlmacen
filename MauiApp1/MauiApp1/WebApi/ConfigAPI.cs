@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Net;
+using System.Text;
+using System.Text.Json;
 
 namespace iAlmacen.WebApi
 {
@@ -15,7 +17,7 @@ namespace iAlmacen.WebApi
         //**************************************************
 
         public static string Servidor = "http://192.168.0.204:8055/";
-        public static string TipoProyecto = "P";     // "P" = Produccion, "D" = Desarrollo
+        public static string TipoProyecto = "D";     // "P" = Produccion, "D" = Desarrollo
         public static bool Prueba = false;
 
         //public static string Servidor = "http://192.168.0.204:8056/";
@@ -25,6 +27,9 @@ namespace iAlmacen.WebApi
         public static string Metodo = "api/Usuario";
         public static string ContentType = "application/json";
         //private readonly IAlertDialogService alertDialogService = DependencyService.Get<IAlertDialogService>();
+
+        private static readonly HttpClient _client;
+        private static readonly JsonSerializerOptions _serializerOptions;
 
         public static class HttpMethods
         {
@@ -191,22 +196,23 @@ namespace iAlmacen.WebApi
             HttpStatusCode wRespStatusCode;
             DataTable dt = new DataTable();
 
-            request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}") as HttpWebRequest;
-            string json = JsonConvert.SerializeObject(Obj);
-            request.Method = ConfigAPI.HttpMethods.Post;
-            //TODO: Authorization y Authentication tokenAPI
-            request.Headers.Add("Authorization", $"Bearer {Global.tokenAPI}");
-            request.Headers.Add("RefreshToken", $"{Global.refreshTokenAPI}");
-            request.ContentType = "application/json";
-            request.Accept = "application/json";
-            using (var streamWrite = new StreamWriter(request.GetRequestStream()))
-            {
-                streamWrite.Write(json);
-                streamWrite.Flush();
-                streamWrite.Close();
-            }
             try
             {
+                request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}") as HttpWebRequest;
+
+                string json = JsonConvert.SerializeObject(Obj);
+                request.Method = ConfigAPI.HttpMethods.Post;
+                //TODO: Authorization y Authentication tokenAPI
+                request.Headers.Add("Authorization", $"Bearer {Global.tokenAPI}");
+                request.Headers.Add("RefreshToken", $"{Global.refreshTokenAPI}");
+                request.ContentType = "application/json";
+                request.Accept = "application/json";
+                using (var streamWrite = new StreamWriter(request.GetRequestStream()))
+                {
+                    streamWrite.Write(json);
+                    streamWrite.Flush();
+                    streamWrite.Close();
+                }
                 string responseBody;
                 using (response = (HttpWebResponse)request.GetResponse())
                 {
@@ -295,7 +301,7 @@ namespace iAlmacen.WebApi
             return dt;
         }
 
-        public static DataTable PostAPI_GuardarInventario(string Controllador, string MetodoAPI, ObservableCollection<clsInventarioDetalle> Obj)
+        public static DataTable PostAPI_GuardarInventario(string Controllador, string MetodoAPI, ObservableCollection<Item_InventarioDetalle> Obj)
         {
             ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(ConfigAPI.AceptarTodosLosCertificados);
             HttpWebRequest request = null;

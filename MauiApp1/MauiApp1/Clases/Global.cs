@@ -71,7 +71,7 @@ public class Global
 
     #region Inventarios
     public static string FolioInventario = "";
-    public static RegArticulo ArticuloEnInventario;
+    public static Item_RegArticulo ArticuloEnInventario;
     public static Item_RegArticulo HerramientaEnInventario;
 
     public static clsEmpleadoHerramienta EmpleadoHerramienta;

@@ -21,6 +21,11 @@ public partial class LoginView : ContentPage
 
     private async void btnIniciarSesion_Clicked(object sender, EventArgs e)
     {
+        if (string.IsNullOrEmpty(txt_user.Text) || string.IsNullOrEmpty(txt_pass.Text))
+        {
+            await DisplayAlertAsync("Advertencia", "Falta ingresar usuario o contraseña", "OK");
+            return;
+        }
         HttpStatusCode httpStatusCode = Funciones.Login(txt_user.Text.ToLower(), txt_pass.Text.ToLower());
         if (httpStatusCode != HttpStatusCode.OK)
         {

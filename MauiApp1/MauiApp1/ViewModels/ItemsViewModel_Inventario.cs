@@ -13,6 +13,7 @@ namespace iAlmacen.ViewModels;
 public class ItemsViewModel_Inventario : BaseViewModel_Inventario
 {
     public ObservableCollection<Item_RegArticulo> Items { get; set; }
+    public ObservableCollection<Item_Inventario> ItemsInventario { get; set; }
     public ICommand LoadItemsCommand_inventario { get; set; }
     public bool BEncontrado { get => _bEncontrado; set => _bEncontrado = value; }
     public bool MEncontrado { get => _mEncontrado; set => _mEncontrado = value; }
@@ -32,6 +33,13 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
         Title = "Lista";
         Items = new ObservableCollection<Item_RegArticulo>();
         LoadItemsCommand_inventario = new Command(async () => await ExecuteLoadItemsCommand_Orden());
+    }
+
+    public ItemsViewModel_Inventario(string Parametros)
+    {
+        Title = "Lista";
+        ItemsInventario = new ObservableCollection<Item_Inventario>();
+        LoadItemsCommand_inventario = new Command(async () => await ExecuteLoadItemsCommand_Cargar(Parametros));
     }
 
     private async Task ExecuteLoadItemsCommand_Orden()
@@ -103,6 +111,41 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
                         Nivel = int.Parse(r[17].ToString().Trim()) == 1 ? r[24].ToString().Trim() : "",
                         Tarima = int.Parse(r[17].ToString().Trim()) == 1 ? r[25].ToString().Trim() : "",
                         Contenedor = int.Parse(r[17].ToString().Trim()) == 1 ? r[26].ToString().Trim() : ""
+                    });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task ExecuteLoadItemsCommand_Cargar(string Parametros)
+    {
+        try
+        {
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_InventarioAlmacen");
+            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            {
+                if (response.StatusCode == HttpStatusCode.NotFound) return;
+                string resp = reader.ReadToEnd();
+                if (resp == "[]") return;
+                DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
+                ItemsInventario.Clear();
+                foreach (DataRow r in dt.Rows)
+                {
+                    ItemsInventario.Add(new Item_Inventario
+                    {
+                        Folio = r[0].ToString(),
+                        Fecha = r[1].ToString().Substring(0, 10),
+                        NoArticulos = double.Parse(r[2].ToString()),
+                        Capturados = double.Parse(r[3].ToString()),
+                        Restantes = double.Parse(r[4].ToString())
                     });
                 }
             }

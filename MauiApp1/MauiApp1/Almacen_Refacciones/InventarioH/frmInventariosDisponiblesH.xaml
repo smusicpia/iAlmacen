@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+    x:Class="iAlmacen.Almacen_Refacciones.InventarioH.frmInventariosDisponiblesH"
+    Title="Inventarios Disponibles Herramientas">
+    <ContentPage.BindingContext>
+        <vm:ItemsViewModel_Inventario />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*" />
+                <RowDefinition Height="95*" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" BackgroundColor="#FAA61A">
+                <Grid>
+                    <Grid Margin="0,15" Padding="5,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*" />
+                            <ColumnDefinition Width="20*" />
+                            <ColumnDefinition Width="20*" />
+                            <ColumnDefinition Width="20*" />
+                            <ColumnDefinition Width="20*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" HorizontalOptions="Center" Text="Folio Inventario" FontSize="15" TextColor="#006b5e" />
+                        <Label Grid.Column="1" HorizontalOptions="Center" Text="Fecha" FontSize="15" TextColor="#006b5e" />
+                        <Label Grid.Column="2" HorizontalOptions="Center" Text="Numero Articulos" FontSize="15" TextColor="#006b5e" />
+                        <Label Grid.Column="3" HorizontalOptions="Center" Text="Articulos Capturados" FontSize="15" TextColor="#006b5e" />
+                        <Label Grid.Column="4" HorizontalOptions="Center" Text="Articulos Restantes" FontSize="15" TextColor="#006b5e" />
+                    </Grid>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="1" Margin="0,-5,0,0" Padding="0">
+                <ScrollView>
+                    <StackLayout >
+                        <CollectionView ItemsSource="{Binding ItemsInventario}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                            <CollectionView.EmptyView>
+                                <ContentView>
+                                    <StackLayout>
+                                        <Label Text="Sin Registros Actualmente" HorizontalOptions="Center" VerticalOptions="Center" TextColor="DarkSlateGray" FontSize="Medium" />
+                                    </StackLayout>
+                                </ContentView>
+                            </CollectionView.EmptyView>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <SwipeView>
+                                        <SwipeView.RightItems>
+                                            <SwipeItem Text="Cerrar Inventario" IsDestructive="True" CommandParameter="{Binding ID}" BackgroundColor="#F83A52" Clicked="btnVerificar_Clicked" />
+                                        </SwipeView.RightItems>
+                                        <StackLayout>
+                                            <Grid Margin="0" Padding="0">
+                                                <StackLayout Margin="0" Padding="0">
+                                                    <Grid Margin="0" Padding="0,15">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="90*" />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="2*" />
+                                                            <ColumnDefinition Width="20*" />
+                                                            <ColumnDefinition Width="20*" />
+                                                            <ColumnDefinition Width="19*" />
+                                                            <ColumnDefinition Width="19*" />
+                                                            <ColumnDefinition Width="18*" />
+                                                            <ColumnDefinition Width="2*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Label Grid.Row="0" Grid.Column="1" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Folio}" />
+                                                        <Label Grid.Row="0" Grid.Column="2" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Fecha}" />
+                                                        <Label Grid.Row="0" Grid.Column="3" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding NoArticulos}" />
+                                                        <Label Grid.Row="0" Grid.Column="4" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Capturados}" />
+                                                        <Label Grid.Row="0" Grid.Column="5" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Restantes}" />
+                                                    </Grid>
+                                                </StackLayout>
+                                            </Grid>
+                                        </StackLayout>
+                                    </SwipeView>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </ScrollView>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

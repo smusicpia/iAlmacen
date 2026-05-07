@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+    x:Class="iAlmacen.Almacen_Refacciones.InventarioH.frmArticulosInventarioH">
+    <ContentPage.BindingContext>
+        <vm:ItemsViewModel_RegArticulo />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="6*" />
+                <RowDefinition Height="94*" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" BackgroundColor="#FAA61A">
+                <Grid Margin="5,0,0,0" Padding="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25*" />
+                        <RowDefinition Height="25*" />
+                        <RowDefinition Height="25*" />
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Row="0">
+                        <Grid Margin="0" Padding="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10*" />
+                                <ColumnDefinition Width="15*" />
+                                <ColumnDefinition Width="75*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Text="Clave" TextColor="Gray" />
+                            <Label Grid.Column="1" Text="" TextColor="Gray" />
+                            <Label Grid.Column="2" Text="Descripcion" TextColor="Gray" />
+                        </Grid>
+                    </StackLayout>
+                    <StackLayout Grid.Row="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="16.6*" />
+                                <ColumnDefinition Width="16.6*" />
+                                <ColumnDefinition Width="16.6*" />
+                                <ColumnDefinition Width="16.6*" />
+                                <ColumnDefinition Width="16.6*" />
+                                <ColumnDefinition Width="17*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Text="Marca" TextColor="Gray" />
+                            <Label Grid.Column="1" Text="Medida" TextColor="Gray" />
+                            <Label Grid.Column="2" Text="Parte" TextColor="Gray" />
+                            <Label Grid.Column="4" Text="Ubicaciones" TextColor="Gray" />
+                            <Label Grid.Column="5" Text="Fisico" TextColor="Gray" />
+                        </Grid>
+                    </StackLayout>
+                    <StackLayout Grid.Row="2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="15*" />
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="5*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Text="Seccion" TextColor="Gray" />
+                            <Label Grid.Column="1" Text="Pasillo" TextColor="Gray" />
+                            <Label Grid.Column="2" Text="Estanteria" TextColor="Gray" />
+                            <Label Grid.Column="3" Text="Nivel" TextColor="Gray" />
+                            <Label Grid.Column="4" Text="Tarima" TextColor="Gray" />
+                            <Label Grid.Column="5" Text="Contenedor" TextColor="Gray" />
+                        </Grid>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="1" Margin="0,5,0,0" Padding="0">
+                <Grid HeightRequest="1020">
+                    <ScrollView>
+                        <StackLayout>
+                            <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                                <CollectionView.EmptyView>
+                                    <ContentView>
+                                        <StackLayout>
+                                            <Label Text="Sin Registros Actualmente" HorizontalOptions="Center" VerticalOptions="Center" TextColor="DarkSlateGray" FontSize="Medium" />
+                                        </StackLayout>
+                                    </ContentView>
+                                </CollectionView.EmptyView>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <SwipeView>
+                                            <StackLayout HeightRequest="60" Margin="0" Padding="5">
+                                                <Grid Margin="0" Padding="0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="20*" />
+                                                        <RowDefinition Height="20*" />
+                                                        <RowDefinition Height="20*" />
+                                                    </Grid.RowDefinitions>
+                                                    <StackLayout Grid.Row="0" Margin="0" Padding="0">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="10*" />
+                                                                <ColumnDefinition Width="15*" />
+                                                                <ColumnDefinition Width="65*" />
+                                                                <ColumnDefinition Width="10*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Label Grid.Column="0" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Text="{Binding CodigoActual}" />
+                                                            <Label Grid.Column="1" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Text="" />
+                                                            <Label Grid.Column="2" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Text="{Binding Descripcion}" />
+                                                            <Image Grid.Column="3" />
+                                                        </Grid>
+                                                    </StackLayout>
+                                                    <StackLayout Grid.Row="1" Margin="0" Padding="0">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="16.6*" />
+                                                                <ColumnDefinition Width="16.6*" />
+                                                                <ColumnDefinition Width="16.6*" />
+                                                                <ColumnDefinition Width="16.6*" />
+                                                                <ColumnDefinition Width="16.6*" />
+                                                                <ColumnDefinition Width="17*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Label Grid.Column="0" FontSize="Small" TextColor="#3E3E3E" Text="{Binding DescMarca}" />
+                                                            <Label Grid.Column="1" FontSize="Small" TextColor="#3E3E3E" Text="{Binding DescMedida}" />
+                                                            <Label Grid.Column="2" FontSize="Small" TextColor="#3E3E3E" Text="{Binding DescParte}" />
+                                                            <Label Grid.Column="4" FontSize="Small" TextColor="#3E3E3E" Text="{Binding ExisUbi}" />
+                                                            <Label Grid.Column="5" FontSize="Small" TextColor="#3E3E3E" Text="{Binding Fisico}" />
+                                                            <!--<Entry Margin="0,0,0,10" Keyboard="Numeric" Grid.Column="5" FontSize="Medium" TextColor="#3E3E3E" Text="0" Placeholder="0" />-->
+                                                        </Grid>
+                                                    </StackLayout>
+                                                    <StackLayout Grid.Row="2" Margin="0" Padding="0">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="5*" />
+                                                                <ColumnDefinition Width="5*" />
+                                                                <ColumnDefinition Width="15*" />
+                                                                <ColumnDefinition Width="5*" />
+                                                                <ColumnDefinition Width="5*" />
+                                                                <ColumnDefinition Width="5*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Label Grid.Column="0" FontSize="Small" TextColor="#3E3E3E" Text="{Binding DescSeccion}" />
+                                                            <Label Grid.Column="1" FontSize="Small" TextColor="#3E3E3E" Text="{Binding Pasillo}" />
+                                                            <Label Grid.Column="2" FontSize="Small" TextColor="#3E3E3E" Text="{Binding DescEstanteria}" />
+                                                            <Label Grid.Column="3" FontSize="Small" TextColor="#3E3E3E" Text="{Binding Nivel}" />
+                                                            <Label Grid.Column="4" FontSize="Small" TextColor="#3E3E3E" Text="{Binding Tarima}" />
+                                                            <Label Grid.Column="5" FontSize="Small" TextColor="#3E3E3E" Text="{Binding Contenedor}" />
+                                                        </Grid>
+                                                    </StackLayout>
+                                                </Grid>
+                                            </StackLayout>
+                                        </SwipeView>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </StackLayout>
+                    </ScrollView>
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -8,9 +8,7 @@ using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Net;
-using ZXing;
 using ZXing.Net.Maui;
-using ZXing.Net.Maui.Controls;
 
 namespace iAlmacen.Almacen_Refacciones.InventarioH
 {
@@ -44,7 +42,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
         {
             base.OnAppearing();
 
-            viewModel_Inventario.LoadItemsCommand_inventario.Execute(null);
+            //viewModel_Inventario.LoadItemsCommand_inventario.Execute(null);
         }
 
         public frmCapturaPlantillaH()
@@ -419,75 +417,84 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             double cnivel_autorizacion_ = 0;
             string cautorizador_ = "";
 
-            string Parametros = $"{clave_aut_}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "spget_login_autorizacion");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            try
             {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
+                string Parametros = $"{clave_aut_}";
+                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "spget_login_autorizacion");
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
-                    cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
-                    cautorizador_ = dt.Rows[0][0].ToString(); ;
-                }
-            }
-
-            if (cnivel_autorizacion_ < cnivel_limite)
-            {
-                await DisplayAlertAsync("Advertencia", "Nivel de Autorizacion Insuficiente", "OK");
-                return;
-            }
-
-            int sFolioInventario = 0;
-            string[] sAlmacenista;
-            sAlmacenista = cbAlmacenista.SelectedItem.ToString().Split('-');
-            foreach (Item_RegArticulo Art_ in Items)
-            {
-                InventarioAlmacens.Add(new InventarioAlmacen
-                {
-                    id = Art_.id,
-                    FolioInventario = "0",
-                    CodigoArticulo = Art_.CodigoActual,
-                    FechaInventario = DateTime.Now.ToShortDateString(),
-                    HoraInventario = DateTime.Now.ToShortTimeString(),
-                    UnidadControl = Art_.UnidadControl,
-                    ExistenciaSistema = Art_.existencia,
-                    InventarioAlmacen_ = 0.00,
-                    InventarioContabilidad = 0.00,
-                    EntradasContabilidad = 0.00,
-                    SalidasContabilidad = 0.00,
-                    Aplicado = false,
-                    FechaAplicacion = "",
-                    HoraAplicacion = "",
-                    Cancelado = false,
-                    Capturado = false,
-                    Costo = Art_.Costo,
-                    CostoCapturado = 0.00,
-                    Importe = Art_.Costo * Art_.existencia,
-                    UsuarioResponsable = sAlmacenista[1].ToString().Trim(),
-                    ClaveResponsable = sAlmacenista[0].ToString().Trim(),
-                    Cerrado = false,
-                    Duplicado = false,
-                    Muestreo = false,
-                    uso_herramienta = true
-                });
-            }
-
-            DataTable dtResponse = ConfigAPI.PostAPI_NvaPlantillaH("api/InventarioAlmacenH", "CrearPlantilla", InventarioAlmacens);
-            foreach (DataRow r in dtResponse.Rows)
-            {
-                if (r[1].ToString().Trim() == "200 OK")
-                {
-                    if (int.Parse(r[2].ToString().Trim()) > 0)
+                    if (response.StatusCode == HttpStatusCode.NotFound) return;
+                    string resp = reader.ReadToEnd();
+                    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+                    if (dt != null || dt.Rows.Count > 0)
                     {
-                        sFolioInventario = int.Parse(r[2].ToString().Trim());
+                        cautorizador_ = dt.Rows[0][0].ToString();
+                        cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
                     }
                 }
-            }
 
-            await DisplayAlertAsync("Informacion", "Plantilla Generada Correctamente con Folio: " + sFolioInventario.ToString(), "OK");
-            Items.Clear();
+                if (cnivel_autorizacion_ < cnivel_limite)
+                {
+                    await DisplayAlertAsync("Advertencia", "Nivel de Autorizacion Insuficiente", "OK");
+                    return;
+                }
+
+                int sFolioInventario = 0;
+                string[] sAlmacenista;
+                sAlmacenista = cbAlmacenista.SelectedItem.ToString().Split('-');
+                foreach (Item_RegArticulo Art_ in viewModel_Inventario.Items)
+                {
+                    InventarioAlmacens.Add(new InventarioAlmacen
+                    {
+                        id = Art_.id,
+                        FolioInventario = "0",
+                        CodigoArticulo = Art_.CodigoActual,
+                        FechaInventario = DateTime.Now.ToShortDateString(),
+                        HoraInventario = DateTime.Now.ToShortTimeString(),
+                        UnidadControl = Art_.UnidadControl,
+                        ExistenciaSistema = Art_.existencia,
+                        InventarioAlmacen_ = 0.00,
+                        InventarioContabilidad = 0.00,
+                        EntradasContabilidad = 0.00,
+                        SalidasContabilidad = 0.00,
+                        Aplicado = false,
+                        FechaAplicacion = "",
+                        HoraAplicacion = "",
+                        Cancelado = false,
+                        Capturado = false,
+                        Costo = Art_.Costo,
+                        CostoCapturado = 0.00,
+                        Importe = Art_.Costo * Art_.existencia,
+                        UsuarioResponsable = sAlmacenista[1].ToString().Trim(),
+                        ClaveResponsable = sAlmacenista[0].ToString().Trim(),
+                        Cerrado = false,
+                        Duplicado = false,
+                        Muestreo = false,
+                        uso_herramienta = true
+                    });
+                }
+
+                //DataTable dtResponse = ConfigAPI.PostAPI_NvaPlantillaH("api/InventarioAlmacenH", "CrearPlantilla", InventarioAlmacens);
+                APIService point = new APIService();
+                DataTable dtResponse = point.GetPostAPI_NvaPlantillaHAsync("api/InventarioAlmacenH", "CrearPlantilla", InventarioAlmacens).Result;
+                //foreach (DataRow r in dtResponse.Rows)
+                //{
+                //    if (r[1].ToString().Trim() == "200 OK")
+                //    {
+                //        if (int.Parse(r[2].ToString().Trim()) > 0)
+                //        {
+                //            sFolioInventario = int.Parse(r[2].ToString().Trim());
+                //        }
+                //    }
+                //}
+
+                await DisplayAlertAsync("Informacion", "Plantilla Generada Correctamente con Folio: " + sFolioInventario.ToString(), "OK");
+                Items.Clear();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

@@ -1,8 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:iAlmacen.ViewModels"
     x:Class="iAlmacen.Almacen_Refacciones.Herramientas_v2.frmCapturaInventarioH"
     Title="Captura de Inventario Herramientas">
+    <ContentPage.BindingContext>
+        <vm:ItemsViewModel_InventarioDetalle />
+    </ContentPage.BindingContext>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -191,8 +195,8 @@
                 <Border>
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="8*" />
-                            <RowDefinition Height="92*" />
+                            <RowDefinition Height="5*" />
+                            <RowDefinition Height="95*" />
                         </Grid.RowDefinitions>
                         <StackLayout Grid.Row="0">
                             <Grid>
@@ -225,7 +229,62 @@
                             </Grid>
                         </StackLayout>
                         <StackLayout Grid.Row="1">
-                            <ListView x:Name="ItemsListView" VerticalOptions="FillAndExpand" HasUnevenRows="true" IsPullToRefreshEnabled="False" CachingStrategy="RecycleElement">
+                            <Grid>
+                                <ScrollView>
+                                    <StackLayout>
+                                        <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single">
+                                            <CollectionView.EmptyView>
+                                                <ContentView>
+                                                    <StackLayout>
+                                                        <Label Text="Sin Registros Actualmente" HorizontalOptions="Center" VerticalOptions="Center" TextColor="DarkSlateGray" FontSize="Medium" />
+                                                    </StackLayout>
+                                                </ContentView>
+                                            </CollectionView.EmptyView>
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <SwipeView>
+                                                        <SwipeView.RightItems>
+                                                            <SwipeItem Text="Eliminar" IsDestructive="True" CommandParameter="{Binding id}" BackgroundColor="#F83A52" Clicked="btnEliminarLista_Clicked" />
+                                                        </SwipeView.RightItems>
+                                                        <StackLayout>
+                                                            <Grid>
+                                                                <StackLayout HeightRequest="45">
+                                                                    <Grid>
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="1*" />
+                                                                            <RowDefinition Height="50*" />
+                                                                            <RowDefinition Height="50*" />
+                                                                        </Grid.RowDefinitions>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="30*" />
+                                                                            <ColumnDefinition Width="10*" />
+                                                                            <ColumnDefinition Width="25*" />
+                                                                            <ColumnDefinition Width="15*" />
+                                                                            <ColumnDefinition Width="10*" />
+                                                                            <ColumnDefinition Width="15*" />
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <Label Grid.Row="1" Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding DescripcionSeccion}" />
+                                                                        <Label Grid.Row="1" Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Pasillo}" />
+                                                                        <Label Grid.Row="1" Grid.Column="2" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding DescripcionEstanteria}" />
+                                                                        <Label Grid.Row="1" Grid.Column="3" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Nivel}" />
+                                                                        <Label Grid.Row="1" Grid.Column="4" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Tarima}" />
+                                                                        <Label Grid.Row="1" Grid.Column="5" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Caja}" />
+                                                                        <Label Grid.Row="2" Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding nserie}" />
+                                                                        <Label Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Existencia}" />
+                                                                        <Label Grid.Row="2" Grid.Column="2" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding UnidadControl}" />
+                                                                        <Label Grid.Row="2" Grid.Column="3" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Clasificacion}" />
+                                                                    </Grid>
+                                                                </StackLayout>
+                                                            </Grid>
+                                                        </StackLayout>
+                                                    </SwipeView>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+                                    </StackLayout>
+                                </ScrollView>
+                            </Grid>
+                            <!--<ListView x:Name="ItemsListView" VerticalOptions="FillAndExpand" HasUnevenRows="true" IsPullToRefreshEnabled="False" CachingStrategy="RecycleElement">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
@@ -266,7 +325,7 @@
                                         </ViewCell>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
-                            </ListView>
+                            </ListView>-->
                         </StackLayout>
                     </Grid>
                 </Border>

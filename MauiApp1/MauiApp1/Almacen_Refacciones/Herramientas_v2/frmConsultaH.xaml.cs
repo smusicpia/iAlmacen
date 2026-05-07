@@ -7,7 +7,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 {
     public partial class frmConsultaH : ContentPage
     {
-        //private int cnivel_limite = 1;
         private string _result;
 
         public ObservableCollection<Item_RegArticulo> Items { get; set; }

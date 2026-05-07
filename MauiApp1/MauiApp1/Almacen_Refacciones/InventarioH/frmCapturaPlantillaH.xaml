@@ -11,8 +11,8 @@
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="8*" />
-                <RowDefinition Height="92*" />
+                <RowDefinition Height="9*" />
+                <RowDefinition Height="90*" />
                 <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
             <StackLayout BackgroundColor="#FAA61A" Grid.Row="0" Margin="0">

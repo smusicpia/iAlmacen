@@ -1,9 +1,9 @@
 ﻿using iAlmacen.Clases;
+using iAlmacen.Models;
+using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
-using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Net;
 
 namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 {
@@ -11,7 +11,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
     {
         private ObservableCollection<clsSeccion> RegSecciones = new ObservableCollection<clsSeccion>();
         private ObservableCollection<clsEstanteria> RegEstanterias = new ObservableCollection<clsEstanteria>();
-        private ObservableCollection<clsInventarioDetalle> RegInventariosDetalle = new ObservableCollection<clsInventarioDetalle>();
+        //private ObservableCollection<clsInventarioDetalle> RegInventariosDetalle = new ObservableCollection<clsInventarioDetalle>();
         private ObservableCollection<CatalogoArticuloNumeroSeries> GenNumerosSeries = new ObservableCollection<CatalogoArticuloNumeroSeries>();
         private List<string> listaSeries = new List<string>();
         private string SeccionEncontrado = "";
@@ -24,21 +24,65 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
         private bool inventariado = false;
         private bool consulta = false;
 
+        public ObservableCollection<Item_InventarioDetalle> Items { get; set; }
+        public Command LoadItemsCommand_InventarioDetalle { get; set; }
+        
+        private ItemsViewModel_InventarioDetalle viewModel_InventarioDetalle;
+
         public frmCapturaInventarioH()
         {
             InitializeComponent();
             NavigationPage.SetBackButtonTitle(this, "Atras");
+            Items = new ObservableCollection<Item_InventarioDetalle>();
+            LoadItemsCommand_InventarioDetalle = new Command(async () => await cargar());
+            string Parametros = string.Empty;
+            if (consulta)
+                Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
+            else
+                Parametros = $"{Global.ArticuloEnInventario.id},null";
+            BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);
             LeerArticuloEnInventario();
         }
 
-        public frmCapturaInventarioH(bool Capturado)
+        public frmCapturaInventarioH(bool Capturado, string tInventario = "H")
         {
             InitializeComponent();
             NavigationPage.SetBackButtonTitle(this, "Atras");
             consulta = Capturado;
             inventariado = Capturado;
-            LeerArticuloEnInventario(true);
-            this.Title = "Consulta Inventario de Herramienta: " + Global.FolioInventario;
+
+            Items = new ObservableCollection<Item_InventarioDetalle>();
+            LoadItemsCommand_InventarioDetalle = new Command(async () => await cargar());
+            string Parametros = string.Empty;
+            if (consulta)
+                Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
+            else
+                Parametros = $"{Global.ArticuloEnInventario.id},null";
+            BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);
+
+            switch (tInventario)
+            {
+                case "H":
+                    LeerArticuloEnInventario(true);
+                    this.Title = "Consulta Inventario de Herramienta: " + Global.FolioInventario;
+                    break;
+                case "R":
+                    LeerArticuloEnInventario(true);
+                    this.Title = "Consulta Inventario de Refacciones: " + Global.FolioInventario;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private async Task cargar()
+        { }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            viewModel_InventarioDetalle.LoadItemsCommand_inventariodetalle.Execute($"{Global.FolioInventario}");
         }
 
         private void CargarSeccion()
@@ -193,65 +237,65 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             }
         }
 
-        private void BuscarCapturas()
-        {
-            string Parametros = string.Empty;
-            if (consulta)
-                Parametros = $"0,{Global.HerramientaEnInventario.CodigoActual}";
-            else
-                Parametros = $"{Global.HerramientaEnInventario.id},null";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_DetalleInventarioAlmacenxArticulo");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                if (resp != "[]")
-                {
-                    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                    foreach (DataRow r in dt.Rows)
-                    {
-                        RegInventariosDetalle.Add(new clsInventarioDetalle
-                        {
-                            ID = int.Parse(r[0].ToString()),
-                            folioInventario = r[1].ToString(),
-                            idReferencia = r[2].ToString(),
-                            Seccion = r[3].ToString(),
-                            DescripcionSeccion = r[18].ToString(),
-                            Pasillo = int.Parse(r[4].ToString()),
-                            Estanteria = r[5].ToString(),
-                            DescripcionEstanteria = r[19].ToString(),
-                            Nivel = int.Parse(r[6].ToString()),
-                            Tarima = int.Parse(r[7].ToString()),
-                            Caja = int.Parse(r[8].ToString()),
-                            Familia = r[9].ToString(),
-                            Linea = r[10].ToString(),
-                            Grupo = r[11].ToString(),
-                            CodigoArticulo = r[12].ToString(),
-                            Existencia = double.Parse(r[13].ToString()),
-                            UnidadControl = r[14].ToString(),
-                            Sucursal = r[15].ToString(),
-                            nserie = r[16].ToString(),
-                            Clasificacion = r[17].ToString()
-                        });
-                        inventariado = true;
-                    }
-                }
-            }
-            ItemsListView.ItemsSource = RegInventariosDetalle;
-        }
+        //private void BuscarCapturas()
+        //{
+        //    string Parametros = string.Empty;
+        //    if (consulta)
+        //        Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
+        //    else
+        //        Parametros = $"{Global.ArticuloEnInventario.id},null";
+        //    HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_DetalleInventarioAlmacenxArticulo");
+        //    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        //    {
+        //        if (response.StatusCode == HttpStatusCode.NotFound) return;
+        //        string resp = reader.ReadToEnd();
+        //        if (resp != "[]")
+        //        {
+        //            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+        //            foreach (DataRow r in dt.Rows)
+        //            {
+        //                RegInventariosDetalle.Add(new clsInventarioDetalle
+        //                {
+        //                    ID = int.Parse(r[0].ToString()),
+        //                    folioInventario = r[1].ToString(),
+        //                    idReferencia = r[2].ToString(),
+        //                    Seccion = r[3].ToString(),
+        //                    DescripcionSeccion = r[18].ToString(),
+        //                    Pasillo = int.Parse(r[4].ToString()),
+        //                    Estanteria = r[5].ToString(),
+        //                    DescripcionEstanteria = r[19].ToString(),
+        //                    Nivel = int.Parse(r[6].ToString()),
+        //                    Tarima = int.Parse(r[7].ToString()),
+        //                    Caja = int.Parse(r[8].ToString()),
+        //                    Familia = r[9].ToString(),
+        //                    Linea = r[10].ToString(),
+        //                    Grupo = r[11].ToString(),
+        //                    CodigoArticulo = r[12].ToString(),
+        //                    Existencia = double.Parse(r[13].ToString()),
+        //                    UnidadControl = r[14].ToString(),
+        //                    Sucursal = r[15].ToString(),
+        //                    nserie = r[16].ToString(),
+        //                    Clasificacion = r[17].ToString()
+        //                });
+        //                inventariado = true;
+        //            }
+        //        }
+        //    }
+        //    //ItemsListView.ItemsSource = RegInventariosDetalle;
+        //}
 
         private void BuscarNumeroSerie()
         {
             listaSeries.Clear();
             cbSeries.ItemsSource = null;
             List<string> lst = new List<string>();
-            lst = Funciones.LlenarSeries(Global.HerramientaEnInventario.CodigoActual);
+            lst = Funciones.LlenarSeries(Global.ArticuloEnInventario.CodigoActual);
             foreach (string item in lst)
             {
                 bool existe = false;
-                if (RegInventariosDetalle.Count > 0)
+                if (Items.Count > 0)
                 {
-                    foreach (clsInventarioDetalle tmp in RegInventariosDetalle)
+                    foreach (Item_InventarioDetalle tmp in Items)
                     {
                         if (item == tmp.nserie) existe = true;
                     }
@@ -265,39 +309,39 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 
         private void LeerArticuloEnInventario(bool Articulo = false)
         {
-            lblFamilia.Text = Global.HerramientaEnInventario.desc_familia;
-            lblLinea.Text = Global.HerramientaEnInventario.desc_linea;
-            lblGrupo.Text = Global.HerramientaEnInventario.desc_grupo;
-            lblCodigo.Text = Global.HerramientaEnInventario.CodigoActual;
-            lblDescripcion.Text = Global.HerramientaEnInventario.Descripcion;
-            lblMedida.Text = Global.HerramientaEnInventario.DescMedida;
-            lblMarca.Text = Global.HerramientaEnInventario.DescMarca;
-            lblParte.Text = Global.HerramientaEnInventario.DescParte;
+            lblFamilia.Text = Global.ArticuloEnInventario.desc_familia;
+            lblLinea.Text = Global.ArticuloEnInventario.desc_linea;
+            lblGrupo.Text = Global.ArticuloEnInventario.desc_grupo;
+            lblCodigo.Text = Global.ArticuloEnInventario.CodigoActual;
+            lblDescripcion.Text = Global.ArticuloEnInventario.Descripcion;
+            lblMedida.Text = Global.ArticuloEnInventario.DescMedida;
+            lblMarca.Text = Global.ArticuloEnInventario.DescMarca;
+            lblParte.Text = Global.ArticuloEnInventario.DescParte;
             CargarSeccion();
-            BuscarCapturas();
+            //BuscarCapturas();
             BuscarNumeroSerie();
-            if (Global.HerramientaEnInventario.ExisUbi == 1)
+            if (Global.ArticuloEnInventario.ExisUbi == 1)
             {
-                if (Global.HerramientaEnInventario.Seccion != "")
+                if (Global.ArticuloEnInventario.Seccion != "")
                 {
-                    cbSeccion.SelectedIndex = int.Parse(Global.HerramientaEnInventario.Seccion) - 1;
-                    cbPasillo.SelectedIndex = int.Parse(Global.HerramientaEnInventario.Pasillo) - 1;
+                    cbSeccion.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Seccion) - 1;
+                    cbPasillo.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Pasillo) - 1;
 
                     int valor = 0;
                     foreach (clsEstanteria item in cbEstanteria.ItemsSource)
                     {
-                        if (item.Clave == Global.HerramientaEnInventario.Estanteria)
+                        if (item.Clave == Global.ArticuloEnInventario.Estanteria)
                         {
                             cbEstanteria.SelectedIndex = valor;
                             break;
                         }
                         valor = valor + 1;
                     }
-                    cbNivel.SelectedIndex = int.Parse(Global.HerramientaEnInventario.Nivel) - 1;
+                    cbNivel.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Nivel) - 1;
                     if (cbTarima.IsVisible)
-                        cbTarima.SelectedIndex = int.Parse(Global.HerramientaEnInventario.Tarima) - 1;
+                        cbTarima.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Tarima) - 1;
                     if (cbCaja.IsVisible)
-                        cbCaja.SelectedIndex = int.Parse(Global.HerramientaEnInventario.Contenedor) - 1;
+                        cbCaja.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Contenedor) - 1;
                 }
             }
             if (inventariado)
@@ -551,7 +595,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                 foreach (DataRow r in NumerosSerieGenerados.Rows)
                 {
                     bool existe = false;
-                    foreach (clsInventarioDetalle tmp in RegInventariosDetalle)
+                    foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
                     {
                         if (r[1].ToString() == tmp.nserie)
                         {
@@ -561,24 +605,24 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 
                     if (!existe)
                     {
-                        RegInventariosDetalle.Add(new clsInventarioDetalle
+                        viewModel_InventarioDetalle.AgregarCommand.Execute(new Item_InventarioDetalle
                         {
                             folioInventario = r[11].ToString(),
-                            idReferencia = Global.HerramientaEnInventario.id.ToString(),
+                            idReferencia = Global.ArticuloEnInventario.id.ToString(),
                             CodigoArticulo = r[0].ToString(),
                             Sucursal = r[4].ToString(),
                             Seccion = r[5].ToString(),
                             Pasillo = int.Parse(r[6].ToString()),
                             Estanteria = r[7].ToString(),
                             Nivel = int.Parse(r[8].ToString()),
-                            Familia = Global.HerramientaEnInventario.ClaveFamilia,
-                            Linea = Global.HerramientaEnInventario.ClaveLinea,
-                            Grupo = Global.HerramientaEnInventario.ClaveGrupo,
+                            Familia = Global.ArticuloEnInventario.ClaveFamilia,
+                            Linea = Global.ArticuloEnInventario.ClaveLinea,
+                            Grupo = Global.ArticuloEnInventario.ClaveGrupo,
                             Tarima = int.Parse(r[9].ToString()),
                             Caja = int.Parse(r[10].ToString()),
-                            UnidadControl = Global.HerramientaEnInventario.UnidadControl,
+                            UnidadControl = Global.ArticuloEnInventario.UnidadControl,
                             Existencia = 1,
-                            DescFamilia = Global.HerramientaEnInventario.desc_familia,
+                            DescFamilia = Global.ArticuloEnInventario.desc_familia,
                             nserie = r[1].ToString(),
                             Clasificacion = sClasificacion,
                             Usuario = Global.clave_usuario
@@ -590,7 +634,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             }
             else
             {
-                foreach (clsInventarioDetalle tmp in RegInventariosDetalle)
+                foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
                 {
                     if (sSerie == tmp.nserie)
                     {
@@ -600,11 +644,11 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                     }
                 }
 
-                RegInventariosDetalle.Add(new clsInventarioDetalle
+                viewModel_InventarioDetalle.AgregarCommand.Execute(new Item_InventarioDetalle
                 {
                     folioInventario = Global.FolioInventario,
-                    idReferencia = Global.HerramientaEnInventario.id.ToString(),
-                    CodigoArticulo = Global.HerramientaEnInventario.CodigoActual,
+                    idReferencia = Global.ArticuloEnInventario.id.ToString(),
+                    CodigoArticulo = Global.ArticuloEnInventario.CodigoActual,
                     Sucursal = "M",
                     Seccion = sSeccion,
                     DescripcionSeccion = sDescSeccion,
@@ -612,14 +656,14 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                     Estanteria = sEstanteria,
                     DescripcionEstanteria = sDescEstanteria,
                     Nivel = int.Parse(sNivel),
-                    Familia = Global.HerramientaEnInventario.ClaveFamilia,
-                    Linea = Global.HerramientaEnInventario.ClaveLinea,
-                    Grupo = Global.HerramientaEnInventario.ClaveGrupo,
+                    Familia = Global.ArticuloEnInventario.ClaveFamilia,
+                    Linea = Global.ArticuloEnInventario.ClaveLinea,
+                    Grupo = Global.ArticuloEnInventario.ClaveGrupo,
                     Tarima = iTarima,
                     Caja = iCaja,
-                    UnidadControl = Global.HerramientaEnInventario.UnidadControl,
+                    UnidadControl = Global.ArticuloEnInventario.UnidadControl,
                     Existencia = double.Parse(txtCantidad.Text),
-                    DescFamilia = Global.HerramientaEnInventario.desc_familia,
+                    DescFamilia = Global.ArticuloEnInventario.desc_familia,
                     nserie = sSerie,
                     Clasificacion = sClasificacion,
                     Usuario = Global.clave_usuario
@@ -631,23 +675,23 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             cbSeries.SelectedIndex = 0;
             cbClasificacion.SelectedIndex = 0;
 
-            ItemsListView.ItemsSource = RegInventariosDetalle;
+            //ItemsListView.ItemsSource = Items;
         }
 
         private async void btnEliminarLista_Clicked(Object sender, EventArgs e)
         {
-            if (inventariado)
+            Item_InventarioDetalle Item_;
+            Item_ = (sender as MenuItem).BindingContext as Item_InventarioDetalle;
+            if (Item_.id !> 0)
             {
                 await DisplayAlertAsync("Alerta", "Ya no es posible Modificar el Inventario", "OK");
                 return;
             }
             cbSeries.ItemsSource = null;
-            clsInventarioDetalle Item_;
-            Item_ = (sender as MenuItem).BindingContext as clsInventarioDetalle;
             listaSeries.Add(Item_.nserie);
             listaSeries.Sort();
             cbSeries.ItemsSource = listaSeries;
-            RegInventariosDetalle.Remove(Item_);
+            viewModel_InventarioDetalle.Items.Remove(Item_);
         }
 
         private async void btnGuardar_Clicked(Object sender, EventArgs e)
@@ -657,7 +701,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                 await DisplayAlertAsync("Alerta", "Ya no es posible Modificar el Inventario", "OK");
                 return;
             }
-            if (RegInventariosDetalle.Count == 0)
+            if (viewModel_InventarioDetalle.Items.Count == 0)
             {
                 await DisplayAlertAsync("Error", "No es posible guardar, no se ha capturado ningun inventario.", "OK");
                 return;
@@ -668,7 +712,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             if (answer == false)
             { return; }
 
-            DataTable dtResponse = ConfigAPI.PostAPI_GuardarInventario("api/InventarioAlmacenH", "GuardarInventario", RegInventariosDetalle);
+            DataTable dtResponse = ConfigAPI.PostAPI_GuardarInventario("api/InventarioAlmacenH", "GuardarInventario", viewModel_InventarioDetalle.Items);
             foreach (DataRow r in dtResponse.Rows)
             {
                 if (r[1].ToString().Trim() == "200 OK")
