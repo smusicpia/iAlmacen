@@ -428,7 +428,8 @@ namespace iAlmacen
                 });
             }
 
-            DataTable dtResponse = ConfigAPI.PostAPI_DocumentoAlmacenDetalle("api/Operacion", "wsp_set_detalle_entrada", DocumentoAlmacenDetalles);
+            //APIService point = new APIService();
+            DataTable dtResponse = APIService.PostAPI_DocumentoAlmacenDetalle("api/Operacion", "wsp_set_detalle_entrada", DocumentoAlmacenDetalles).Result;
             foreach (DataRow r in dtResponse.Rows)
             {
                 if (r[1].ToString().Trim() == "200 OK")
@@ -494,7 +495,7 @@ namespace iAlmacen
                 });
             }
 
-            dtResponse = ConfigAPI.PostAPI_DocumentoAlmacen("api/Operacion", "wsp_set_encabezado_entrada", DocumentoAlmacen);
+            dtResponse = APIService.PostAPI_DocumentoAlmacen("api/Operacion", "wsp_set_encabezado_entrada", DocumentoAlmacen).Result;
             foreach (DataRow r in dtResponse.Rows)
             {
                 if (r[1].ToString().Trim() == "200 OK")
