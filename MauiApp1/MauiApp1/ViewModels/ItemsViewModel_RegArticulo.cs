@@ -49,6 +49,7 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
                 string resp = reader.ReadToEnd();
                 if (resp == "[]") return;
                 DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
+                int i = 1;
                 foreach (DataRow r in dt.Rows)
                 {
                     if (Items.Count > 0)
@@ -67,6 +68,7 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
                     {
                         Items.Add(new Item_RegArticulo
                         {
+                            index = i,
                             id = int.Parse(r[0].ToString()),
                             CodigoActual = r[1].ToString(),
                             CodigoAnterior = r[2].ToString(),
@@ -97,6 +99,7 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
                             Contenedor = int.Parse(r[18].ToString().Trim()) == 1 ? r[26].ToString().Trim() : "",
                             ExisUbi = int.Parse(r[18].ToString().Trim()) == 1 ? double.Parse(r[18].ToString().Trim()) : 0
                         });
+                        i++;
                     }
                 }
             }

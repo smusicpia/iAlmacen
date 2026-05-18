@@ -2,6 +2,7 @@
 
 public class Item_RegArticulo
 {
+    public int index { get; set; }
     public int id { get; set; }
     public string CodigoActual { get; set; }
     public string CodigoAnterior { get; set; }

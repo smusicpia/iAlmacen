@@ -49,17 +49,20 @@ public class ItemsViewModel_ResgEmpleado : BaseViewModel_Herramienta
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 if (resp == "[]") return;
+                int i = 1;
                 DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
                 foreach (DataRow r in dt.Rows)
                 {
                     Items.Add(new Item_ResgEmpleado
                     {
+                        id = i,
                         area = r[0].ToString(),
                         clave = r[1].ToString(),
                         empleado = r[2].ToString(),
                         fecha = ValidarFecha(r[3].ToString()),
                         articulos = int.Parse(r[4].ToString())
                     });
+                    i++;
                 }
             }
         }

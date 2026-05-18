@@ -57,6 +57,7 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
                 string resp = reader.ReadToEnd();
                 if (resp == "[]") return;
                 DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
+                int i = 1;
                 foreach (DataRow r in dt.Rows)
                 {
                     if (r[16].ToString() == "1")
@@ -83,6 +84,7 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
 
                     Items.Add(new Item_RegArticulo
                     {
+                        index = i,
                         id = int.Parse(r[0].ToString()),
                         CodigoActual = r[1].ToString(),
                         CodigoAnterior = r[2].ToString(),
@@ -112,6 +114,7 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
                         Tarima = int.Parse(r[17].ToString().Trim()) == 1 ? r[25].ToString().Trim() : "",
                         Contenedor = int.Parse(r[17].ToString().Trim()) == 1 ? r[26].ToString().Trim() : ""
                     });
+                    i++;
                 }
             }
         }
@@ -137,16 +140,19 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
                 if (resp == "[]") return;
                 DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
                 ItemsInventario.Clear();
+                int i = 1;
                 foreach (DataRow r in dt.Rows)
                 {
                     ItemsInventario.Add(new Item_Inventario
                     {
+                        id = i,
                         Folio = r[0].ToString(),
                         Fecha = r[1].ToString().Substring(0, 10),
                         NoArticulos = double.Parse(r[2].ToString()),
                         Capturados = double.Parse(r[3].ToString()),
                         Restantes = double.Parse(r[4].ToString())
                     });
+                    i++;
                 }
             }
         }
