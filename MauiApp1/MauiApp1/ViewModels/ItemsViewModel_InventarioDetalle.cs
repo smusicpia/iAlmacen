@@ -56,7 +56,7 @@ public class ItemsViewModel_InventarioDetalle : BaseViewModel_InventarioDetalle
                     {
                         Items.Add(new Item_InventarioDetalle
                         {
-                            id = int.Parse(r[0].ToString()),
+                            ID = int.Parse(r[0].ToString()),
                             folioInventario = r[1].ToString(),
                             idReferencia = r[2].ToString(),
                             Seccion = r[3].ToString(),

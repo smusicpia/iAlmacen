@@ -2,11 +2,17 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+    xmlns:converters="clr-namespace:iAlmacen.Converters"
     x:Class="iAlmacen.Almacen_Refacciones.Herramientas_v2.frmResguardosEmpleadosCerrados"
     Title="Resguardos Empleados Cerrados">
     <ContentPage.BindingContext>
         <vm:ItemsViewModel_ResgEmpleado />
     </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:AlternateColorConverter x:Key="AltColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -48,26 +54,28 @@
                                     </CollectionView.EmptyView>
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate>
-                                            <SwipeView>
-                                                <SwipeView.RightItems>
-                                                    <SwipeItem Text="Aplicar" IsDestructive="True" CommandParameter="{Binding clave}" BackgroundColor="#F83A52" Clicked="btnAplicar_Clicked" />
-                                                    <SwipeItem Text="Abrir" IsDestructive="True" CommandParameter="{Binding clave}" BackgroundColor="#F83A52" Clicked="btnAbrir_Clicked" />
-                                                </SwipeView.RightItems>
-                                                <StackLayout HeightRequest="45" Margin="0" Padding="0">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="10*" />
-                                                            <ColumnDefinition Width="60*" />
-                                                            <ColumnDefinition Width="10*" />
-                                                            <ColumnDefinition Width="20*" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <Label Grid.Column="0" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="15,15,0,0" Text="{Binding clave}" />
-                                                        <Label Grid.Column="1" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding empleado}" />
-                                                        <Label Grid.Column="2" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding articulos}" />
-                                                        <Label Grid.Column="3" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding fecha}" />
-                                                    </Grid>
-                                                </StackLayout>
-                                            </SwipeView>
+                                            <Grid BackgroundColor="{Binding ., Converter={StaticResource AltColorConverter}, ConverterParameter={x:Null}}" Padding="5">
+                                                <SwipeView>
+                                                    <SwipeView.RightItems>
+                                                        <SwipeItem Text="Aplicar" IsDestructive="True" CommandParameter="{Binding clave}" BackgroundColor="#F83A52" Clicked="btnAplicar_Clicked" />
+                                                        <SwipeItem Text="Abrir" IsDestructive="True" CommandParameter="{Binding clave}" BackgroundColor="#F83A52" Clicked="btnAbrir_Clicked" />
+                                                    </SwipeView.RightItems>
+                                                    <StackLayout HeightRequest="45" Margin="0" Padding="0">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="10*" />
+                                                                <ColumnDefinition Width="60*" />
+                                                                <ColumnDefinition Width="10*" />
+                                                                <ColumnDefinition Width="20*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Label Grid.Column="0" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="15,15,0,0" Text="{Binding clave}" />
+                                                            <Label Grid.Column="1" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding empleado}" />
+                                                            <Label Grid.Column="2" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding articulos}" />
+                                                            <Label Grid.Column="3" FontAttributes="Bold" TextColor="#3E3E3E" FontSize="Small" Margin="0,15,0,0" Text="{Binding fecha}" />
+                                                        </Grid>
+                                                    </StackLayout>
+                                                </SwipeView>
+                                            </Grid>
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>
                                 </CollectionView>

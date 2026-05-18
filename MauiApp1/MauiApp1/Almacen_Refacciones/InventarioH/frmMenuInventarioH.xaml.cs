@@ -20,7 +20,7 @@
 
         private async void btnAplicacion_Clicked(Object sender, EventArgs e)      //APLICAR INVENTARIO
         {
-            //await Navigation.PushAsync(new frmInventariosCerradosH());
+            await Navigation.PushAsync(new frmInventariosCerradosH());
         }
     }
 }

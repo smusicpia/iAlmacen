@@ -2,7 +2,7 @@
 
 public class Item_InventarioDetalle
 {
-    public int id { get; set; }
+    public int ID { get; set; }
     public string folioInventario { get; set; }
     public string idReferencia { get; set; }
     public string Seccion { get; set; }

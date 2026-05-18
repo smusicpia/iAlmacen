@@ -2,17 +2,23 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+    xmlns:converters="clr-namespace:iAlmacen.Converters"
     x:Class="iAlmacen.Almacen_Refacciones.Herramientas_v2.frmCapturaInventarioH"
     Title="Captura de Inventario Herramientas">
     <ContentPage.BindingContext>
         <vm:ItemsViewModel_InventarioDetalle />
     </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:AlternateColorConverter x:Key="AltColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="15*" />
-                <RowDefinition Height="15*" />
-                <RowDefinition Height="15*" />
+                <RowDefinition Height="16*" />
+                <RowDefinition Height="13*" />
+                <RowDefinition Height="13*" />
                 <RowDefinition Height="49*" />
                 <RowDefinition Height="6*" />
             </Grid.RowDefinitions>
@@ -90,47 +96,36 @@
                             <RowDefinition Height="30*" />
                             <RowDefinition Height="30*" />
                         </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Text="Ubicación" FontSize="Title" />
-                        <StackLayout Grid.Row="1">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*" />
-                                    <ColumnDefinition Width="14*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="14*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="17*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="7*" />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="1" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Seccion" />
-                                <Picker ItemDisplayBinding="{Binding Descripcion}" SelectedItem="{Binding Clave}" x:Name="cbSeccion" Grid.Column="2" SelectedIndexChanged="cbSeccion_SelectedIndexChanged" />
-                                <Label Grid.Column="3" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Pasillo" />
-                                <Picker x:Name="cbPasillo" Grid.Column="4" SelectedIndexChanged="cbPasillo_SelectedIndexChanged" />
-                                <Label Grid.Column="5" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Estanteria" />
-                                <Picker ItemDisplayBinding="{Binding Descripcion}" SelectedItem="{Binding Clave}" x:Name="cbEstanteria" Grid.Column="6" Grid.ColumnSpan="2" SelectedIndexChanged="cbEstanteria_SelectedIndexChanged" />
-                            </Grid>
-                        </StackLayout>
-                        <StackLayout Grid.Row="2">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*" />
-                                    <ColumnDefinition Width="14*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="14*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="17*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="7*" />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="1" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Nivel" />
-                                <Picker x:Name="cbNivel" Grid.Column="2" />
-                                <Label x:Name="lblTarima" Grid.Column="3" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Tarima" />
-                                <Picker x:Name="cbTarima" Grid.Column="4" />
-                                <Label x:Name="lblCaja" Grid.Column="5" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Contenedor" />
-                                <Picker  x:Name="cbCaja" Grid.Column="6" />
-                            </Grid>
-                        </StackLayout>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="16*" />
+                            <ColumnDefinition Width="15*" />
+                            <ColumnDefinition Width="14*" />
+                            <ColumnDefinition Width="15*" />
+                            <ColumnDefinition Width="17*" />
+                            <ColumnDefinition Width="15*" />
+                            <ColumnDefinition Width="7*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Label Grid.Row="0" Grid.ColumnSpan="4" Text="Ubicación" FontSize="Title" />
+                        
+                        <Label Grid.Row="1" Grid.Column="1" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Seccion" />
+                        <Picker Grid.Row="1" ItemDisplayBinding="{Binding Descripcion}" SelectedItem="{Binding Clave}" x:Name="cbSeccion" Grid.Column="2" SelectedIndexChanged="cbSeccion_SelectedIndexChanged" />
+                        
+                        <Label Grid.Row="1" Grid.Column="3" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Pasillo" />
+                        <Picker Grid.Row="1" x:Name="cbPasillo" Grid.Column="4" SelectedIndexChanged="cbPasillo_SelectedIndexChanged" />
+
+                        <Label Grid.Row="1" Grid.Column="5" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Estanteria" />
+                        <Picker Grid.Row="1" ItemDisplayBinding="{Binding Descripcion}" SelectedItem="{Binding Clave}" x:Name="cbEstanteria" Grid.Column="6" Grid.ColumnSpan="2" SelectedIndexChanged="cbEstanteria_SelectedIndexChanged" />
+
+                        <Label Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Nivel" />
+                        <Picker Grid.Row="2" x:Name="cbNivel" Grid.Column="2" />
+                        
+                        <Label x:Name="lblTarima" Grid.Row="2" Grid.Column="3" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Tarima" />
+                        <Picker Grid.Row="2" x:Name="cbTarima" Grid.Column="4" />
+                        
+                        <Label x:Name="lblCaja" Grid.Row="2" Grid.Column="5" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Contenedor" />
+                        <Picker Grid.Row="2" x:Name="cbCaja" Grid.Column="6" />
                     </Grid>
                 </Border>
             </StackLayout>
@@ -142,52 +137,37 @@
                             <RowDefinition Height="30*" />
                             <RowDefinition Height="30*" />
                         </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Text="Inventario" FontSize="Title" />
-                        <StackLayout Grid.Row="1">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="7*" />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="N. Serie" />
-                                <Picker x:Name="cbSeries" Grid.Column="2" SelectedIndexChanged="cbSeries_SelectedIndexChanged" />
-                                <Label Grid.Column="3" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Cantidad" />
-                                <Entry x:Name="txtCantidad" Grid.Column="4" Text="1" />
-                                <Label Grid.Column="5" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="PZA" />
-                                <!--<Button x:Name="btnAgregar" Grid.Column="6" Text="Agregar" FontSize="Large" Clicked="btnAgregar_Clicked" />-->
-                            </Grid>
-                        </StackLayout>
-                        <StackLayout Grid.Row="2">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="17*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="15*" />
-                                    <ColumnDefinition Width="7*" />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Clasificación" />
-                                <Picker x:Name="cbClasificacion" Grid.Column="2" SelectedIndexChanged="cbClasificacion_SelectedIndexChanged">
-                                    <Picker.ItemsSource>
-                                        <x:Array Type="{x:Type x:String}">
-                                            <x:String></x:String>
-                                            <x:String>NUEVO</x:String>
-                                            <x:String>USADO</x:String>
-                                        </x:Array>
-                                    </Picker.ItemsSource>
-                                </Picker>
-                                <Button x:Name="btnAgregar" Grid.Column="6" BackgroundColor="#872200" Text="Agregar" TextColor="White" FontSize="Large" Clicked="btnAgregar_Clicked" />
-                            </Grid>
-                        </StackLayout>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="16*" />
+                            <ColumnDefinition Width="15*" />
+                            <ColumnDefinition Width="14*" />
+                            <ColumnDefinition Width="15*" />
+                            <ColumnDefinition Width="17*" />
+                            <ColumnDefinition Width="15*" />
+                            <ColumnDefinition Width="7*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.ColumnSpan="4" Text="Inventario" FontSize="Title" />
+                        
+                        <Label Grid.Row="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="N. Serie" />
+                        <Picker Grid.Row="1" Grid.Column="2" x:Name="cbSeries" SelectedIndexChanged="cbSeries_SelectedIndexChanged" />
+                        
+                        <Label Grid.Row="1" Grid.Column="3" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Cantidad" />
+                        <Entry Grid.Row="1"  Grid.Column="4" x:Name="txtCantidad" Text="1" />
+                        
+                        <Label Grid.Row="1" Grid.Column="5" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="PZA" />
+                        <Button Grid.Row="1" Grid.RowSpan="2" Grid.Column="6" HeightRequest="25" x:Name="btnAgregar" BackgroundColor="#872200" Text="Agregar" TextColor="White" FontSize="Large" Clicked="btnAgregar_Clicked" />
+
+                        <Label Grid.Row="2" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Clasificación" />
+                        <Picker Grid.Row="2" Grid.Column="2" x:Name="cbClasificacion" SelectedIndexChanged="cbClasificacion_SelectedIndexChanged">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String></x:String>
+                                    <x:String>NUEVO</x:String>
+                                    <x:String>USADO</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
                     </Grid>
                 </Border>
             </StackLayout>
@@ -242,42 +222,44 @@
                                             </CollectionView.EmptyView>
                                             <CollectionView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <SwipeView>
-                                                        <SwipeView.RightItems>
-                                                            <SwipeItem Text="Eliminar" IsDestructive="True" CommandParameter="{Binding id}" BackgroundColor="#F83A52" Clicked="btnEliminarLista_Clicked" />
-                                                        </SwipeView.RightItems>
-                                                        <StackLayout>
-                                                            <Grid>
-                                                                <StackLayout HeightRequest="45">
-                                                                    <Grid>
-                                                                        <Grid.RowDefinitions>
-                                                                            <RowDefinition Height="1*" />
-                                                                            <RowDefinition Height="50*" />
-                                                                            <RowDefinition Height="50*" />
-                                                                        </Grid.RowDefinitions>
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <ColumnDefinition Width="30*" />
-                                                                            <ColumnDefinition Width="10*" />
-                                                                            <ColumnDefinition Width="25*" />
-                                                                            <ColumnDefinition Width="15*" />
-                                                                            <ColumnDefinition Width="10*" />
-                                                                            <ColumnDefinition Width="15*" />
-                                                                        </Grid.ColumnDefinitions>
-                                                                        <Label Grid.Row="1" Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding DescripcionSeccion}" />
-                                                                        <Label Grid.Row="1" Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Pasillo}" />
-                                                                        <Label Grid.Row="1" Grid.Column="2" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding DescripcionEstanteria}" />
-                                                                        <Label Grid.Row="1" Grid.Column="3" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Nivel}" />
-                                                                        <Label Grid.Row="1" Grid.Column="4" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Tarima}" />
-                                                                        <Label Grid.Row="1" Grid.Column="5" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Caja}" />
-                                                                        <Label Grid.Row="2" Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding nserie}" />
-                                                                        <Label Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Existencia}" />
-                                                                        <Label Grid.Row="2" Grid.Column="2" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding UnidadControl}" />
-                                                                        <Label Grid.Row="2" Grid.Column="3" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Clasificacion}" />
-                                                                    </Grid>
-                                                                </StackLayout>
-                                                            </Grid>
-                                                        </StackLayout>
-                                                    </SwipeView>
+                                                    <Grid BackgroundColor="{Binding ., Converter={StaticResource AltColorConverter}, ConverterParameter={x:Null}}" Padding="5">
+                                                        <SwipeView>
+                                                            <SwipeView.RightItems>
+                                                                <SwipeItem Text="Eliminar" IsDestructive="True" CommandParameter="{Binding id}" BackgroundColor="#F83A52" Clicked="btnEliminarLista_Clicked" />
+                                                            </SwipeView.RightItems>
+                                                            <StackLayout>
+                                                                <Grid>
+                                                                    <StackLayout HeightRequest="45">
+                                                                        <Grid>
+                                                                            <Grid.RowDefinitions>
+                                                                                <RowDefinition Height="1*" />
+                                                                                <RowDefinition Height="50*" />
+                                                                                <RowDefinition Height="50*" />
+                                                                            </Grid.RowDefinitions>
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="30*" />
+                                                                                <ColumnDefinition Width="10*" />
+                                                                                <ColumnDefinition Width="25*" />
+                                                                                <ColumnDefinition Width="15*" />
+                                                                                <ColumnDefinition Width="10*" />
+                                                                                <ColumnDefinition Width="15*" />
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <Label Grid.Row="1" Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding DescripcionSeccion}" />
+                                                                            <Label Grid.Row="1" Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Pasillo}" />
+                                                                            <Label Grid.Row="1" Grid.Column="2" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding DescripcionEstanteria}" />
+                                                                            <Label Grid.Row="1" Grid.Column="3" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Nivel}" />
+                                                                            <Label Grid.Row="1" Grid.Column="4" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Tarima}" />
+                                                                            <Label Grid.Row="1" Grid.Column="5" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Caja}" />
+                                                                            <Label Grid.Row="2" Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding nserie}" />
+                                                                            <Label Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Existencia}" />
+                                                                            <Label Grid.Row="2" Grid.Column="2" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding UnidadControl}" />
+                                                                            <Label Grid.Row="2" Grid.Column="3" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Clasificacion}" />
+                                                                        </Grid>
+                                                                    </StackLayout>
+                                                                </Grid>
+                                                            </StackLayout>
+                                                        </SwipeView>
+                                                    </Grid>
                                                 </DataTemplate>
                                             </CollectionView.ItemTemplate>
                                         </CollectionView>

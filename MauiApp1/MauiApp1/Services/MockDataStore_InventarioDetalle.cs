@@ -34,7 +34,7 @@ public class MockDataStore_InventarioDetalle : IDataStore_InventarioDetalle<Item
 
     public async Task<bool> DeleteItemAsync(int id)
     {
-        var _item = items.Where((Item_InventarioDetalle arg) => arg.id == id).FirstOrDefault();
+        var _item = items.Where((Item_InventarioDetalle arg) => arg.ID == id).FirstOrDefault();
         items.Remove(_item);
 
         return await Task.FromResult(true);
@@ -42,7 +42,7 @@ public class MockDataStore_InventarioDetalle : IDataStore_InventarioDetalle<Item
 
     public async Task<Item_InventarioDetalle> GetItemAsync(int id)
     {
-        return await Task.FromResult(items.FirstOrDefault(s => s.id == id));
+        return await Task.FromResult(items.FirstOrDefault(s => s.ID == id));
     }
 
     public async Task<IEnumerable<Item_InventarioDetalle>> GetItemsAsync(bool forceRefresh = false)
@@ -52,7 +52,7 @@ public class MockDataStore_InventarioDetalle : IDataStore_InventarioDetalle<Item
 
     public async Task<bool> UpdateItemAsync(Item_InventarioDetalle item)
     {
-        var _item = items.Where((Item_InventarioDetalle arg) => arg.id == item.id).FirstOrDefault();
+        var _item = items.Where((Item_InventarioDetalle arg) => arg.ID == item.ID).FirstOrDefault();
         items.Remove(_item);
         items.Add(item);
 

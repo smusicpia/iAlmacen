@@ -4,6 +4,7 @@ using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Net;
 
 namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 {
@@ -23,6 +24,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
         private bool capturando = false;
         private bool inventariado = false;
         private bool consulta = false;
+        private string _tInventario = "H";
 
         public ObservableCollection<Item_InventarioDetalle> Items { get; set; }
         public Command LoadItemsCommand_InventarioDetalle { get; set; }
@@ -59,8 +61,19 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             else
                 Parametros = $"{Global.ArticuloEnInventario.id},null";
             BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);
+            _tInventario = tInventario;
+        }
 
-            switch (tInventario)
+        private async Task cargar()
+        { }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            viewModel_InventarioDetalle.LoadItemsCommand_inventariodetalle.Execute($"{Global.FolioInventario}");
+
+            switch (_tInventario)
             {
                 case "H":
                     LeerArticuloEnInventario(true);
@@ -73,16 +86,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                 default:
                     break;
             }
-        }
-
-        private async Task cargar()
-        { }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-
-            viewModel_InventarioDetalle.LoadItemsCommand_inventariodetalle.Execute($"{Global.FolioInventario}");
         }
 
         private void CargarSeccion()
@@ -293,11 +296,15 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             foreach (string item in lst)
             {
                 bool existe = false;
-                if (Items.Count > 0)
+                if (viewModel_InventarioDetalle.Items.Count > 0)
                 {
-                    foreach (Item_InventarioDetalle tmp in Items)
+                    foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
                     {
-                        if (item == tmp.nserie) existe = true;
+                        if (item == tmp.nserie)
+                        {
+                            existe = true;
+                            break;
+                        }
                     }
                 }
                 if (!existe)
@@ -682,7 +689,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
         {
             Item_InventarioDetalle Item_;
             Item_ = (sender as MenuItem).BindingContext as Item_InventarioDetalle;
-            if (Item_.id !> 0)
+            if (Item_.ID !> 0)
             {
                 await DisplayAlertAsync("Alerta", "Ya no es posible Modificar el Inventario", "OK");
                 return;
@@ -711,12 +718,17 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             var answer = await DisplayAlertAsync("Informaciòn", "Se guardará el inventario capturado y ya no podrá ser Modificado. ¿Desea Continuar?", "Si", "No");
             if (answer == false)
             { return; }
-
-            DataTable dtResponse = ConfigAPI.PostAPI_GuardarInventario("api/InventarioAlmacenH", "GuardarInventario", viewModel_InventarioDetalle.Items);
-            foreach (DataRow r in dtResponse.Rows)
+            foreach (Item_InventarioDetalle item in viewModel_InventarioDetalle.Items)
             {
-                if (r[1].ToString().Trim() == "200 OK")
-                    resp_Ok = true;
+                item.Fecha = DateTime.Now.ToString("yyyy-MM-dd");
+                item.Hora = DateTime.Now.ToString("HH:mm:ss");
+                item.Usuario = Global.clave_usuario;
+            }
+
+            HttpResponseMessage Response = APIService.PostAPI_GuardarInventario("api/InventarioAlmacen", viewModel_InventarioDetalle.Items).Result;
+            if (Response.IsSuccessStatusCode)
+            {
+                resp_Ok = true;
             }
 
             if (resp_Ok)

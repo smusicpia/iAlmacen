@@ -475,8 +475,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
                 }
 
                 //DataTable dtResponse = ConfigAPI.PostAPI_NvaPlantillaH("api/InventarioAlmacenH", "CrearPlantilla", InventarioAlmacens);
-                APIService point = new APIService();
-                DataTable dtResponse = point.GetPostAPI_NvaPlantillaHAsync("api/InventarioAlmacenH", "CrearPlantilla", InventarioAlmacens).Result;
+                //APIService point = new APIService();
+                DataTable dtResponse = APIService.GetPostAPI_NvaPlantillaHAsync("api/InventarioAlmacenH", "CrearPlantilla", InventarioAlmacens).Result;
                 //foreach (DataRow r in dtResponse.Rows)
                 //{
                 //    if (r[1].ToString().Trim() == "200 OK")
