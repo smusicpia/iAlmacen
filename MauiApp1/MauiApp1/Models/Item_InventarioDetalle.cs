@@ -26,4 +26,5 @@ public class Item_InventarioDetalle
     public string Sucursal { get; set; }
     public string nserie { get; set; }
     public string Clasificacion { get; set; }
+    public bool EsActivo { get; set; } = false; // Nuevo campo para indicar si el artículo es Refaccion (false) o Herramienta (true)
 }

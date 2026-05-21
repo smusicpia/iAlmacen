@@ -44,7 +44,7 @@ public class ItemsViewModel_InventarioDetalle : BaseViewModel_InventarioDetalle
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_DetalleInventarioAlmacenxArticulo");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_DetalleInventarioAlmacenxArticulo");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -75,7 +75,8 @@ public class ItemsViewModel_InventarioDetalle : BaseViewModel_InventarioDetalle
                             UnidadControl = r[14].ToString(),
                             Sucursal = r[15].ToString(),
                             nserie = r[16].ToString(),
-                            Clasificacion = r[17].ToString()
+                            Clasificacion = r[17].ToString(),
+                            EsActivo = bool.Parse(r[20].ToString())
                         });
                         inventariado = true;
                     }

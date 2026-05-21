@@ -27,6 +27,8 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
     private int _aleatorioCantidad;
 
     public string Parametros = ",,";
+    public bool refaccion = false;
+
 
     public ItemsViewModel_Inventario()
     {
@@ -132,7 +134,16 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
     {
         try
         {
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_InventarioAlmacen");
+            HttpWebResponse response;
+            if (refaccion)
+            {
+                response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_InventarioAlmacen");
+            }
+            else
+            {
+                response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_InventarioAlmacen");
+            }
+            
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;

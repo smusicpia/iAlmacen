@@ -46,15 +46,17 @@ public class APIService
     //    return handler;
     //}
 
-    public static async Task<DataTable> GetPostAPI_NvaPlantillaHAsync(string Controllador, string MetodoAPI, ObservableCollection<InventarioAlmacen> Obj)
+    public static async Task<HttpResponseMessage> GetPostAPI_NvaPlantillaHAsync(string Controllador, string MetodoAPI, ObservableCollection<InventarioAlmacen> Obj)
     {
         try
         {
             var jsonContent = new StringContent(JsonSerializer.Serialize(Obj, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"{Controllador}/{MetodoAPI}", jsonContent);
-            response.EnsureSuccessStatusCode();
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<DataTable>(json, _jsonOptions) ?? new DataTable();
+            //var response = await _httpClient.PostAsync($"{Controllador}/{MetodoAPI}", jsonContent);
+            //response.EnsureSuccessStatusCode();
+            //var json = await response.Content.ReadAsStringAsync();
+            //return JsonSerializer.Deserialize<DataTable>(json, _jsonOptions) ?? new DataTable();
+            var response = await _httpClient.PostAsync(ConfigAPI.Servidor + $"/{Controllador}/CrearPlantilla/?tProyecto={ConfigAPI.TipoProyecto}", jsonContent).ConfigureAwait(false);
+            return response;
         }
         catch (Exception ex)
         {

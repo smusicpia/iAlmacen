@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+             xmlns:converters="clr-namespace:iAlmacen.Converters"
+             x:Class="iAlmacen.Almacen_Refacciones.InventarioR.CapturaInventario_v2"
+             Title="Captura de Inventario">
+    <ContentPage.BindingContext>
+        <vm:ItemsViewModel_InventarioDetalle />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:AlternateColorConverter x:Key="AltColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="60" />
+            </Grid.RowDefinitions>
+            <StackLayout>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="50*" />
+                        <RowDefinition Height="6*" />
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Row="0 ">
+                        <Border>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40*" />
+                                    <RowDefinition Height="17*" />
+                                    <RowDefinition Height="17*" />
+                                    <RowDefinition Height="17*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="10*" />
+                                    <ColumnDefinition Width="17*" />
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="17*" />
+                                    <ColumnDefinition Width="8*" />
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="7*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Row="0" Grid.ColumnSpan="5" Text="Datos del Articulo" FontSize="Title" />
+
+                                <Label Grid.Row="1" Grid.Column="1" FontSize="Large" Text="Familia" TextColor="Gray" />
+                                <Label Grid.Row="1" x:Name="lblFamilia" FontSize="Large" Grid.Column="2" Text="xxx" />
+                                <Label Grid.Row="1" Grid.Column="3" FontSize="Large" Text="Linea" TextColor="Gray" />
+                                <Label Grid.Row="1" x:Name="lblLinea" FontSize="Large" Grid.Column="4" Text="xxx" />
+                                <Label Grid.Row="1" Grid.Column="5" FontSize="Large" Text="Grupo" TextColor="Gray" />
+                                <Label Grid.Row="1" x:Name="lblGrupo" FontSize="Large" Grid.Column="6" Text="xxx" />
+
+                                <Label Grid.Row="2" Grid.Column="1" FontSize="Large" Text="Clave" TextColor="Gray" />
+                                <Label Grid.Row="2" x:Name="lblCodigo" Grid.Column="2" FontSize="Large" Text="xxx" />
+                                <Label Grid.Row="2" Grid.Column="3" FontSize="Large" Text="Descripcion" TextColor="Gray" />
+                                <Label Grid.Row="2" x:Name="lblDescripcion" Grid.Column="4" Grid.ColumnSpan="3" FontSize="Large" Text="xxx" />
+
+                                <Label Grid.Row="3" Grid.Column="1" FontSize="Large" Text="Medida" TextColor="Gray" />
+                                <Label Grid.Row="3" x:Name="lblMedida" FontSize="Large" Grid.Column="2" Text="xxx" />
+                                <Label Grid.Row="3" Grid.Column="3" FontSize="Large" Text="Marca" TextColor="Gray" />
+                                <Label Grid.Row="3" x:Name="lblMarca" FontSize="Large" Grid.Column="4" Text="xxx" />
+                                <Label Grid.Row="3" Grid.Column="5" FontSize="Large" Text="Parte" TextColor="Gray" />
+                                <Label Grid.Row="3" x:Name="lblParte" FontSize="Large" Grid.Column="6" Text="xxx" />
+
+                                <StackLayout Grid.Row="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="23*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="23*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="23*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </StackLayout>
+                                <StackLayout Grid.Row="2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="17*" />
+                                            <ColumnDefinition Width="20*" />
+                                            <ColumnDefinition Width="62*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </StackLayout>
+                                <StackLayout Grid.Row="3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="23*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="23*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="23*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </StackLayout>
+                            </Grid>
+                        </Border>
+                    </StackLayout>
+                    <StackLayout Grid.Row="1">
+                        <Border>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40*" />
+                                    <RowDefinition Height="30*" />
+                                    <RowDefinition Height="30*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="16*" />
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="14*" />
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="17*" />
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="7*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.ColumnSpan="4" Text="Ubicación" FontSize="Title" />
+
+                                <Label Grid.Row="1" Grid.Column="1" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Seccion" />
+                                <Picker Grid.Row="1" ItemDisplayBinding="{Binding Descripcion}" SelectedItem="{Binding Clave}" x:Name="cbSeccion" Grid.Column="2" SelectedIndexChanged="cbSeccion_SelectedIndexChanged" />
+
+                                <Label Grid.Row="1" Grid.Column="3" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Pasillo" />
+                                <Picker Grid.Row="1" x:Name="cbPasillo" Grid.Column="4" SelectedIndexChanged="cbPasillo_SelectedIndexChanged" />
+
+                                <Label Grid.Row="1" Grid.Column="5" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Estanteria" />
+                                <Picker Grid.Row="1" ItemDisplayBinding="{Binding Descripcion}" SelectedItem="{Binding Clave}" x:Name="cbEstanteria" Grid.Column="6" Grid.ColumnSpan="2" SelectedIndexChanged="cbEstanteria_SelectedIndexChanged" />
+
+                                <Label Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Nivel" />
+                                <Picker Grid.Row="2" x:Name="cbNivel" Grid.Column="2" />
+
+                                <Label x:Name="lblTarima" Grid.Row="2" Grid.Column="3" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Tarima" />
+                                <Picker Grid.Row="2" x:Name="cbTarima" Grid.Column="4" />
+
+                                <Label x:Name="lblCaja" Grid.Row="2" Grid.Column="5" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Contenedor" />
+                                <Picker Grid.Row="2" x:Name="cbCaja" Grid.Column="6" />
+                            </Grid>
+                        </Border>
+                    </StackLayout>
+                    <StackLayout Grid.Row="2">
+                        <Border>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40*" />
+                                    <RowDefinition Height="30*" />
+                                    <RowDefinition Height="30*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="16*" />
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="14*" />
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="17*" />
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="7*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Row="0" Grid.ColumnSpan="4" Text="Inventario" FontSize="Title" />
+
+                                <Label Grid.Row="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Cantidad" />
+                                <Entry Grid.Row="1" Grid.Column="2" x:Name="txtCantidad" Keyboard="Numeric" Text="0" />
+
+                                <Label Grid.Row="1" Grid.Column="3" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Gray" FontSize="Large" Text="Unidad" />
+                                <Label Grid.Row="1" Grid.Column="4" x:Name="lblUnidadControl" Grid.ColumnSpan="2" VerticalOptions="Center" Text="xxx" FontSize="Large" />
+
+                                <Button Grid.Row="1" Grid.Column="6" Grid.RowSpan="2" HeightRequest="25" x:Name="btnAgregar" BackgroundColor="#872200" Text="Agregar" TextColor="White" FontSize="Large" Clicked="btnAgregar_Clicked" />
+                            </Grid>
+                        </Border>
+                    </StackLayout>
+                    <StackLayout Grid.Row="3">
+                        <Border>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30*" />
+                                    <RowDefinition Height="30*" />
+                                    <RowDefinition Height="30*" />
+                                </Grid.RowDefinitions>
+                                <Label Text="Inventario Capturado" FontSize="Title" />
+                                <StackLayout Grid.Row="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="50*" />
+                                            <RowDefinition Height="50*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="25*" />
+                                            <ColumnDefinition Width="15*" />
+                                            <ColumnDefinition Width="10*" />
+                                            <ColumnDefinition Width="15*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="Seccion" TextColor="Gray" />
+                                        <Label Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="Pasillo" TextColor="Gray" />
+                                        <Label Grid.Column="2" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="Estanteria" TextColor="Gray" />
+                                        <Label Grid.Column="3" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="Nivel" TextColor="Gray" />
+                                        <Label Grid.Column="4" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="Tarima" TextColor="Gray" />
+                                        <Label Grid.Column="5" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="Contenedor" TextColor="Gray" />
+                                        <Label Grid.Column="0" Grid.Row="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="Unidad" TextColor="Gray" />
+                                        <Label Grid.Column="1" Grid.Row="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" Text="Existencia" TextColor="Gray" />
+                                    </Grid>
+                                </StackLayout>
+                            </Grid>
+                        </Border>
+                    </StackLayout>
+                    <StackLayout Grid.Row="4" Margin="0">
+                        <Grid>
+                            <ScrollView>
+                                <StackLayout>
+                                    <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single">
+                                        <CollectionView.EmptyView>
+                                            <ContentView>
+                                                <StackLayout>
+                                                    <Label Text="Sin Registros Actualmente" HorizontalOptions="Center" VerticalOptions="Center" TextColor="DarkSlateGray" FontSize="Medium" />
+                                                </StackLayout>
+                                            </ContentView>
+                                        </CollectionView.EmptyView>
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid BackgroundColor="{Binding ., Converter={StaticResource AltColorConverter}, ConverterParameter={x:Null}}" Padding="5">
+                                                    <SwipeView>
+                                                        <SwipeView.RightItems>
+                                                            <SwipeItem Text="Eliminar" IsDestructive="True" CommandParameter="{Binding id}" BackgroundColor="#F83A52" Clicked="btnEliminarLista_Clicked" />
+                                                        </SwipeView.RightItems>
+                                                        <StackLayout>
+                                                            <Grid>
+                                                                <StackLayout HeightRequest="45">
+                                                                    <Grid>
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="1*" />
+                                                                            <RowDefinition Height="50*" />
+                                                                            <RowDefinition Height="50*" />
+                                                                        </Grid.RowDefinitions>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="30*" />
+                                                                            <ColumnDefinition Width="10*" />
+                                                                            <ColumnDefinition Width="25*" />
+                                                                            <ColumnDefinition Width="15*" />
+                                                                            <ColumnDefinition Width="10*" />
+                                                                            <ColumnDefinition Width="15*" />
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <Label Grid.Row="1" Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding DescripcionSeccion}" />
+                                                                        <Label Grid.Row="1" Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Pasillo}" />
+                                                                        <Label Grid.Row="1" Grid.Column="2" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding DescripcionEstanteria}" />
+                                                                        <Label Grid.Row="1" Grid.Column="3" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Nivel}" />
+                                                                        <Label Grid.Row="1" Grid.Column="4" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Tarima}" />
+                                                                        <Label Grid.Row="1" Grid.Column="5" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Caja}" />
+                                                                        <Label Grid.Row="2" Grid.Column="0" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding UnidadControl}" />
+                                                                        <Label Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Existencia}" />
+                                                                    </Grid>
+                                                                </StackLayout>
+                                                            </Grid>
+                                                        </StackLayout>
+                                                    </SwipeView>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </StackLayout>
+                            </ScrollView>
+                        </Grid>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="1" BackgroundColor="#FAA61A" HeightRequest="100" Padding="25">
+                <Grid>
+                    <Button x:Name="btnGuardar" BackgroundColor="#872200" Clicked="btnGuardar_Clicked" Text="Guardar" FontSize="Large" />
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

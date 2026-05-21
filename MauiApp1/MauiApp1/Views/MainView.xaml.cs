@@ -1,6 +1,7 @@
 using iAlmacen.Almacen_Refacciones.Entrada_Almacen;
 using iAlmacen.Almacen_Refacciones.Herramientas_v2;
 using iAlmacen.Almacen_Refacciones.Inventario_Reposicion;
+using iAlmacen.Almacen_Refacciones.InventarioR;
 using iAlmacen.Almacen_Refacciones.Salida_Almacen;
 
 namespace iAlmacen.Views;
@@ -41,6 +42,6 @@ public partial class MainView : ContentPage
 
     private async void invArticulos_Clicked(object sender, EventArgs e)      //Inventario Refaccion
     {
-        //await Navigation.PushAsync(new InvRefaccion());
+        await Navigation.PushAsync(new InvRefaccion());
     }
 }
