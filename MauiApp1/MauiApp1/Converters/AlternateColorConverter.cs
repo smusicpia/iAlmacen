@@ -26,6 +26,10 @@ namespace iAlmacen.Converters
             {
                 return itemA.index % 2 == 0 ? EvenColor : OddColor;
             }
+            else if (value is Item_entrada_vigilancia itemV)
+            {
+                return itemV.index % 2 == 0 ? EvenColor : OddColor;
+            }
 
             return Colors.Transparent;
         }

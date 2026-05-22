@@ -12,4 +12,5 @@ public class Item_entrada_vigilancia
     public string proveedor_ { get; set; }
     public string codigo_proovedor_ { get; set; }
     public string folio_orden_ { get; set; }
+    public int index { get; set; }
 }

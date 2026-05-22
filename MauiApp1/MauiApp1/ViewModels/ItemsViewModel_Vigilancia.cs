@@ -34,6 +34,7 @@ public class ItemsViewModel_Vigilancia : BaseViewModel_Vigilancia
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
+                int i = 0;
                 foreach (DataRow r in dt.Rows)
                 {
                     Item_entrada_vigilancia _item = new Item_entrada_vigilancia();
@@ -47,7 +48,7 @@ public class ItemsViewModel_Vigilancia : BaseViewModel_Vigilancia
                     _item.proveedor_ = r[2].ToString().Trim();
                     _item.codigo_proovedor_ = r[1].ToString();
                     _item.folio_orden_ = r[0].ToString().Trim();
-
+                    _item.index = i++;
                     Items.Add(_item);
                 }
             }
