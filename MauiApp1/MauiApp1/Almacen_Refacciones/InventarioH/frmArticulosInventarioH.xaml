@@ -32,9 +32,9 @@
                                 <ColumnDefinition Width="15*" />
                                 <ColumnDefinition Width="75*" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Text="Clave" TextColor="Gray" />
-                            <Label Grid.Column="1" Text="" TextColor="Gray" />
-                            <Label Grid.Column="2" Text="Descripcion" TextColor="Gray" />
+                            <Label Grid.Column="0" Text="Clave" TextColor="#006b5e" />
+                            <Label Grid.Column="1" Text="" TextColor="#006b5e" />
+                            <Label Grid.Column="2" Text="Descripcion" TextColor="#006b5e" />
                         </Grid>
                     </StackLayout>
                     <StackLayout Grid.Row="1">
@@ -47,11 +47,11 @@
                                 <ColumnDefinition Width="16.6*" />
                                 <ColumnDefinition Width="17*" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Text="Marca" TextColor="Gray" />
-                            <Label Grid.Column="1" Text="Medida" TextColor="Gray" />
-                            <Label Grid.Column="2" Text="Parte" TextColor="Gray" />
-                            <Label Grid.Column="4" Text="Ubicaciones" TextColor="Gray" />
-                            <Label Grid.Column="5" Text="Fisico" TextColor="Gray" />
+                            <Label Grid.Column="0" Text="Marca" TextColor="#006b5e" />
+                            <Label Grid.Column="1" Text="Medida" TextColor="#006b5e" />
+                            <Label Grid.Column="2" Text="Parte" TextColor="#006b5e" />
+                            <Label Grid.Column="4" Text="Ubicaciones" TextColor="#006b5e" />
+                            <Label Grid.Column="5" Text="Fisico" TextColor="#006b5e" />
                         </Grid>
                     </StackLayout>
                     <StackLayout Grid.Row="2">
@@ -64,17 +64,17 @@
                                 <ColumnDefinition Width="5*" />
                                 <ColumnDefinition Width="5*" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Text="Seccion" TextColor="Gray" />
-                            <Label Grid.Column="1" Text="Pasillo" TextColor="Gray" />
-                            <Label Grid.Column="2" Text="Estanteria" TextColor="Gray" />
-                            <Label Grid.Column="3" Text="Nivel" TextColor="Gray" />
-                            <Label Grid.Column="4" Text="Tarima" TextColor="Gray" />
-                            <Label Grid.Column="5" Text="Contenedor" TextColor="Gray" />
+                            <Label Grid.Column="0" Text="Seccion" TextColor="#006b5e" />
+                            <Label Grid.Column="1" Text="Pasillo" TextColor="#006b5e" />
+                            <Label Grid.Column="2" Text="Estanteria" TextColor="#006b5e" />
+                            <Label Grid.Column="3" Text="Nivel" TextColor="#006b5e" />
+                            <Label Grid.Column="4" Text="Tarima" TextColor="#006b5e" />
+                            <Label Grid.Column="5" Text="Contenedor" TextColor="#006b5e" />
                         </Grid>
                     </StackLayout>
                 </Grid>
             </StackLayout>
-            <StackLayout Grid.Row="1" Margin="0,5,0,0" Padding="0">
+            <StackLayout Grid.Row="1" Margin="0,0,0,0" Padding="0">
                 <Grid HeightRequest="1020">
                     <ScrollView>
                         <StackLayout>
@@ -90,7 +90,7 @@
                                     <DataTemplate>
                                         <Grid BackgroundColor="{Binding ., Converter={StaticResource AltColorConverter}, ConverterParameter={x:Null}}" Padding="5">
                                             <SwipeView>
-                                                <StackLayout HeightRequest="60" Margin="0" Padding="5">
+                                                <StackLayout Margin="0" Padding="0">
                                                     <Grid Margin="0" Padding="0">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="20*" />

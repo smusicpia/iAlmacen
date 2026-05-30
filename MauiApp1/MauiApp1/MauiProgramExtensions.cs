@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Maui;
+﻿//using BarcodeScanning;
+using CommunityToolkit.Maui;
+using Controls.UserDialogs.Maui;
 using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui.Controls;
 
@@ -10,7 +12,9 @@ namespace iAlmacen
         {
             builder
                 .UseMauiApp<App>()
+                //.UseBarcodeScanning() // Initialize the scanner
                 .UseMauiCommunityToolkit()
+                .UseUserDialogs()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

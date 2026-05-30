@@ -3,10 +3,8 @@ using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
 using Newtonsoft.Json;
-using System;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.IO;
 using System.Net;
 
 namespace iAlmacen.Almacen_Refacciones.InventarioH
@@ -165,7 +163,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             }
 
             Parametros = $"{Global.FolioInventario}";
-            response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "ws_fnSetAplicarInventario");
+            response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "ws_fnSetAplicarInventario");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;

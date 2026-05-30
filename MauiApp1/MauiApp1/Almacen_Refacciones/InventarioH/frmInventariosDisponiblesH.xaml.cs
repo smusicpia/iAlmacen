@@ -13,7 +13,6 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
     {
         //private ObservableCollection<clsInventario> RegInventarios = new ObservableCollection<clsInventario>();
         public ObservableCollection<Item_Inventario> Items { get; set; }
-
         public Command LoadItemsCommand_Inventario { get; set; }
         private ItemsViewModel_Inventario viewModel_Inventario;
 

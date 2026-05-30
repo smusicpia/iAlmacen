@@ -13,7 +13,7 @@
             <Color x:Key="Accent">#96d1ff</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <Grid RowDefinitions=".3*, .7*">
+    <Grid RowDefinitions=".3*, .7*" HeightRequest="1250">
         <Image Source="mapsa.jpg" Opacity="0.8" Aspect="AspectFill" />
         <Grid BackgroundColor="#Fee4b9" Opacity=".2" />
         <Grid ColumnDefinitions="*,*">

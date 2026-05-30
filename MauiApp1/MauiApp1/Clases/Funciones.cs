@@ -32,6 +32,8 @@ public class Funciones
             Global.IV = myAes.IV;
         }
 
+        Global.pass = pass;
+
         string Parametros = $"{Convert.ToBase64String(SecurityManager.Encrypt(user, Global.Key, Global.IV))}," +
                             $"{Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV))}";
 
@@ -70,6 +72,8 @@ public class Funciones
                     Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
                     Preferences.Default.Set("tokenAPI", Global.tokenAPI);
                     Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
+                    Preferences.Default.Set("clave_usuario", Global.clave_usuario);
+                    Preferences.Default.Set("Password", Global.pass);
                     if (Global.tokenAPI != "")
                         break;
                 }
@@ -77,6 +81,18 @@ public class Funciones
         }
 
         return response.StatusCode;
+    }
+
+    public static bool ChkConnected()
+    {
+        foreach (var item in Connectivity.Current.ConnectionProfiles)
+        {
+            if (item == ConnectionProfile.WiFi || item == ConnectionProfile.Cellular)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static List<string> LlenarArea()
@@ -421,7 +437,7 @@ public class Funciones
         lSeries = new List<string>();
         lSeries.Add("");
         string Parametros = $"{CodigoArticulo}";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_NumerosSeriexArticulo");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_NumerosSeriexArticulo");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lSeries;

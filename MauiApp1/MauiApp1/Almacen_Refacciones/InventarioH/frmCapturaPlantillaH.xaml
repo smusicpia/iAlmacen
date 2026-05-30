@@ -54,7 +54,7 @@
                                     <RowDefinition Height="10*" />
                                     <RowDefinition Height="90*" />
                                 </Grid.RowDefinitions>
-                                <Label VerticalOptions="Center" HorizontalOptions="Center" TextColor="DarkSlateGrey" Text="Familia" />
+                                <Label HorizontalOptions="Center" TextColor="DarkSlateGrey" Text="Familia" />
                                 <Label HorizontalOptions="Center" Grid.Column="1" TextColor="DarkSlateGrey" Text="Linea" />
                                 <Label HorizontalOptions="Center" Grid.Column="2" TextColor="DarkSlateGrey" Text="Grupo" />
                                 <Picker x:Name="cbFamilia" Grid.Column="0" Grid.Row="1" SelectedIndexChanged="cbFamilia_SelectedIndexChanged" />
@@ -201,8 +201,7 @@
                                                     <SwipeView.RightItems>
                                                         <SwipeItem Text="Eliminar" IsDestructive="True" CommandParameter="{Binding CodigoActual}" BackgroundColor="#F83A52" Clicked="btnEliminarLista_Clicked" />
                                                     </SwipeView.RightItems>
-
-                                                    <StackLayout HeightRequest="70" Padding="5" Margin="0">
+                                                    <StackLayout Padding="5,0,0,0" Margin="0">
                                                         <Grid>
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="30*" />

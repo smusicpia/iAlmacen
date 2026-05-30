@@ -2,10 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="iAlmacen.Views.MainView"
-             Title="MainView"
+             Title="Almacen de Refacciones y Herramientas"
              NavigationPage.HasNavigationBar="False">
     <ContentPage.Content>
-        <Grid>
+        <Grid HeightRequest="960">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />

@@ -14,21 +14,19 @@
                 <RowDefinition Height="90*" />
             </Grid.RowDefinitions>
             <StackLayout Grid.Row="0" BackgroundColor="#FAA61A">
-                <Grid>
-                    <Grid Margin="0,15" Padding="5,5,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20*" />
-                            <ColumnDefinition Width="20*" />
-                            <ColumnDefinition Width="20*" />
-                            <ColumnDefinition Width="20*" />
-                            <ColumnDefinition Width="20*" />
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" HorizontalOptions="Center" Text="Folio Inventario" FontSize="15" TextColor="#006b5e" />
-                        <Label Grid.Column="1" HorizontalOptions="Center" Text="Fecha" FontSize="15" TextColor="#006b5e" />
-                        <Label Grid.Column="2" HorizontalOptions="Center" Text="Numero Articulos" FontSize="15" TextColor="#006b5e" />
-                        <Label Grid.Column="3" HorizontalOptions="Center" Text="Articulos Capturados" FontSize="15" TextColor="#006b5e" />
-                        <Label Grid.Column="4" HorizontalOptions="Center" Text="Articulos Restantes" FontSize="15" TextColor="#006b5e" />
-                    </Grid>
+                <Grid Margin="0,15" Padding="5,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" HorizontalOptions="Center" Text="Folio Inventario" FontSize="15" TextColor="#006b5e" />
+                    <Label Grid.Column="1" HorizontalOptions="Center" Text="Fecha" FontSize="15" TextColor="#006b5e" />
+                    <Label Grid.Column="2" HorizontalOptions="Center" Text="Numero Articulos" FontSize="15" TextColor="#006b5e" />
+                    <Label Grid.Column="3" HorizontalOptions="Center" Text="Articulos Capturados" FontSize="15" TextColor="#006b5e" />
+                    <Label Grid.Column="4" HorizontalOptions="Center" Text="Articulos Restantes" FontSize="15" TextColor="#006b5e" />
                 </Grid>
             </StackLayout>
             <StackLayout Grid.Row="1" Margin="0,-2,0,0" Padding="0">

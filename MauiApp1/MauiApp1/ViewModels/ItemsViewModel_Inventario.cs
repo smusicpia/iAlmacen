@@ -141,7 +141,7 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
             }
             else
             {
-                response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_InventarioAlmacen");
+                response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_InventarioAlmacen");
             }
             
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))

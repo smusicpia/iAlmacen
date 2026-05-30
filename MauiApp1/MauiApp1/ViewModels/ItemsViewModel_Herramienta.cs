@@ -31,7 +31,7 @@ public class ItemsViewModel_Herramienta : BaseViewModel_Herramienta
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_datos_ArticulosH");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_datos_ArticulosH");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;

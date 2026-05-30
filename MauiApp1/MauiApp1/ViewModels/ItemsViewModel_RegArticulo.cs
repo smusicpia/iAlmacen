@@ -42,7 +42,7 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_DetalleInventarioAlmacen");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_DetalleInventarioAlmacen");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
