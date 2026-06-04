@@ -33,6 +33,7 @@ public partial class BarcodePage : ContentPage
         var first = e.Results?.FirstOrDefault();
         if (first is not null)
         {
+            barcodeReaderView.IsDetecting = false; // Detener la detección para evitar múltiples lecturas
             Dispatcher.Dispatch(async () =>
             {
                 // Update BarcodeGeneratorView
@@ -75,7 +76,7 @@ public partial class BarcodePage : ContentPage
         //// Invocar el evento con el stream de la imagen generada
         //ImageStreamGenerated?.Invoke(imageBytes);
         TextResultGenerated?.Invoke(textConverterBarcode);
-
+        
         await Navigation.PopAsync();
     }
 
