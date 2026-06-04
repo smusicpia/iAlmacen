@@ -112,7 +112,7 @@ public partial class Item_inventario_reposicion : ContentPage
 
     no_imagen:
         Parametros = $"I,{Global.item_select.codigo_articulo},{float.Parse(cantidad_inventario.Text)},";
-        response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "spget_template_reposiciones");
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_template_reposiciones");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode != HttpStatusCode.OK)

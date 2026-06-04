@@ -70,7 +70,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             using (UserDialogs.Instance.Loading("Descargando...", null, true, MaskType.Black, null))
             {
                 string Parametros = $"0,,,,,false,0";
-                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_InvCatalogo_Articulo");
+                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InvCatalogo_Articulo");
                 using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
                     if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -197,7 +197,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             double cnivel_autorizacion_ = 0;
 
             string Parametros = $"{clave_aut_}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "spget_login_autorizacion");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -298,7 +298,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 
             double cnivel_autorizacion_ = 0;
             string Parametros = $"{clave_aut_}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "spget_login_autorizacion");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -330,7 +330,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
                 foreach (RegArticulo Item_ in foo)
                 {
                     Parametros = $"{Item_.CodigoActual},{Item_.Fisico},{Item_.existencia},{Item_.FechaCapturado},{Item_.Fecha_},{Item_.Usuario_},I";
-                    response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_InventarioRefaccion");
+                    response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InventarioRefaccion");
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
                         if (response.StatusCode == HttpStatusCode.OK)
@@ -340,7 +340,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
                     }
                 }
                 Parametros = $"'',0,0,'','',{Global.clave_usuario},A";
-                response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_InventarioRefaccion");
+                response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InventarioRefaccion");
                 using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
                     if (response.StatusCode == HttpStatusCode.OK)

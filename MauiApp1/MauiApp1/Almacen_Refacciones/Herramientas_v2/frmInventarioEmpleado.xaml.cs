@@ -51,7 +51,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             string sResponce = "";
             string Parametros = "fechainventario=getdate(),inventario=1,condicion='Extraviado',aplicado=0,cerrado=0";
             string Condicion = $"id='{Item_.id}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -76,7 +76,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             string sResponce = "";
             string Parametros = "fechainventario=getdate(),inventario=1,condicion='Devolucion',aplicado=0,cerrado=0";
             string Condicion = $"id='{Item_.id}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -101,7 +101,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             string sResponce = "";
             string Parametros = "fechainventario=getdate(),inventario=1,condicion='Resguardo',aplicado=0,cerrado=0 ";
             string Condicion = $"id='{Item_.id}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)

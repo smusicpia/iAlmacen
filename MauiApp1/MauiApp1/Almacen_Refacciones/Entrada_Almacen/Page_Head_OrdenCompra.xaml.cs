@@ -216,7 +216,7 @@ namespace iAlmacen
                     return;
                 DateTime selectedDate = (DateTime)dt_fecha_documento.Date;
                 string Parametros = $"{txt_documento.Text.PadLeft(10, '0')},{selectedDate.ToString("dd/MM/yyyy")},A,{Global.cidsql_},";
-                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_cancelar_vigilancia");
+                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_cancelar_vigilancia");
                 using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
                     if (response.StatusCode == HttpStatusCode.NotFound)
@@ -278,7 +278,7 @@ namespace iAlmacen
             Boolean cerror_ = false;
 
             string Parametros = $"{lbl_orden.Text},U";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_orden_compra");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_compra");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -429,7 +429,7 @@ namespace iAlmacen
             }
 
             //APIService point = new APIService();
-            DataTable dtResponse = APIService.PostAPI_DocumentoAlmacenDetalle("api/Operacion", "wsp_set_detalle_entrada", DocumentoAlmacenDetalles).Result;
+            DataTable dtResponse = APIService.PostAPI_DocumentoAlmacenDetalle("api/Operacion/POST", "wsp_set_detalle_entrada", DocumentoAlmacenDetalles).Result;
             foreach (DataRow r in dtResponse.Rows)
             {
                 if (r[1].ToString().Trim() == "200 OK")
@@ -495,7 +495,7 @@ namespace iAlmacen
                 });
             }
 
-            dtResponse = APIService.PostAPI_DocumentoAlmacen("api/Operacion", "wsp_set_encabezado_entrada", DocumentoAlmacen).Result;
+            dtResponse = APIService.PostAPI_DocumentoAlmacen("api/Operacion/POST", "wsp_set_encabezado_entrada", DocumentoAlmacen).Result;
             foreach (DataRow r in dtResponse.Rows)
             {
                 if (r[1].ToString().Trim() == "200 OK")
@@ -514,7 +514,7 @@ namespace iAlmacen
             string sResponce = "";
             Parametros = "Control_Area=1";
             string Condicion = $"codigo_articulo in ({Global.ParametrosControlArea}) and orden_compra='{lbl_orden.Text}' and folio_documento='{txt_documento.Text.ToString().PadLeft(10, '0')}' and codigo_proveedor='{lbl_clave_proveedor.Text}'";
-            response = ConfigAPI.GetAPI("PATCH", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_documentos_almacen", Condicion);
+            response = ConfigAPI.GetAPI("PATCH", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_documentos_almacen", Condicion);
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)

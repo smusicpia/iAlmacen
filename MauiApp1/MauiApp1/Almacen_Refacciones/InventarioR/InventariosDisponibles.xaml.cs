@@ -66,7 +66,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             string sResponce = "";
             string Parametros = "Cerrado = 1, Capturado = 1";
             string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)

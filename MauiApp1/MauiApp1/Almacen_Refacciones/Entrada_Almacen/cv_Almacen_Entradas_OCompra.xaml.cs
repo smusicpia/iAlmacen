@@ -41,7 +41,7 @@ namespace iAlmacen
             bool existe = true;
 
             string Parametros = $"{folio_orden},V";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_orden_compra");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_compra");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) existe = false;
@@ -102,7 +102,7 @@ namespace iAlmacen
         private void buscar_folio_entrada()
         {
             string Parametros = $"0,F";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_orden_compra");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_compra");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 using (StreamReader reader = new StreamReader(response.GetResponseStream()))
@@ -147,7 +147,7 @@ namespace iAlmacen
             {
                 string concepto_ = result;
                 string Parametros = $"{item_rechazar_?.folio_orden_},{Global.nombre_usuario},C,{int.Parse(item_rechazar_.id_.ToString())},{concepto_}";
-                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_cancelar_vigilancia");
+                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_cancelar_vigilancia");
                 using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
                     if (response.StatusCode == HttpStatusCode.NotFound)

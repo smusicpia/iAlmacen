@@ -44,7 +44,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             string sResponce = "";
             string Parametros = "Cerrado = 0";
             string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -72,7 +72,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             string sResponce = "";
             string Parametros = "Cancelado = 1";
             string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)

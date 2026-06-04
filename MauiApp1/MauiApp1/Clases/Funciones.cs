@@ -101,7 +101,7 @@ public class Funciones
         lAreas.Add("");
         string Parametros = "rtrim(clave_area) clave_area, rtrim(descripcion) descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
@@ -123,7 +123,7 @@ public class Funciones
         string From = "salidas_resguardo_herramientas as salida inner join catalogo_areas as area on area.clave_area=salida.codigo_area";
         string Condicion = "not (select count(tmp.status_herramienta) from detalle_salidas_resguardo_herramientas as tmp where tmp.folio_resguardo=salida.folio_resguardo and tmp.status_herramienta='AR') = 0 " +
                            "order by codigo_area";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
@@ -143,7 +143,7 @@ public class Funciones
         lCentroCostoN1.Add("");
         string Parametros = "codigo_nivel1, descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and status_centro_n1 = 1 order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "centro_costos_lvl1", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl1", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN1;
@@ -163,7 +163,7 @@ public class Funciones
         lCentroCostoN2.Add("");
         string Parametros = "codigo_nivel2,descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and status_centro_n2 = 1 order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "centro_costos_lvl2", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl2", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN2;
@@ -183,7 +183,7 @@ public class Funciones
         lCentroCostoN3.Add("");
         string Parametros = "codigo_nivel3, descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and status_centro_n3 = 1 order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "centro_costos_lvl3", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl3", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN3;
@@ -204,7 +204,7 @@ public class Funciones
         lCentroCostoN4.Add("");
         string Parametros = "codigo_nivel4, descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and codigo_nivel3='{Global.strCCnivel3}' and status_centro_n4 = 1 order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "centro_costos_lvl4", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl4", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN4;
@@ -225,7 +225,7 @@ public class Funciones
         Responsable.Add("");
         string Parametros = "rtrim(clave_solicitante)clave_solicitante, rtrim(nombre_solicitante)nombre_solicitante";
         string Condicion = $"psucursal='{Global.strSucursal}' order by nombre_solicitante";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "solicitantes", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "solicitantes", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Responsable;
@@ -246,7 +246,7 @@ public class Funciones
         Autorizado.Add("");
         string Parametros = "rtrim(codigo_autorizado)codigo_autorizado, rtrim(nombre_autorizado)nombre_autorizado";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' order by nombre_autorizado";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "catalogo_autorizados", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_autorizados", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Autorizado;
@@ -267,7 +267,7 @@ public class Funciones
         Almacenistas.Add("");
         string Parametros = "ClaveIpad,usuario,nombre";
         string Condicion = "ClaveIpad is not null";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "usuarios", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "usuarios", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Almacenistas;
@@ -302,7 +302,7 @@ public class Funciones
             From = "catalogo_familia cf";
             Condicion = "Almacen = 1 and status_familia = 1";
         }
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return CatFamilias;
@@ -323,7 +323,7 @@ public class Funciones
         CatLineas.Add("");
         string Parametros = "codigo_linea, descripcion";
         string Condicion = $"codigo_familia = '{familia}' and status_linea = 1";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "catalogo_linea", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_linea", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return CatLineas;
@@ -344,7 +344,7 @@ public class Funciones
         CatGrupo.Add("");
         string Parametros = "codigo_grupo, descripcion";
         string Condicion = $"codigo_familia = '{familia}' and codigo_linea = '{linea}' and status_grupo = 1";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "catalogo_grupo", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_grupo", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return CatGrupo;
@@ -369,7 +369,7 @@ public class Funciones
         {
             if (Encontrado != "") Condicion = $"Clave in ({Encontrado}) and Sucursal='{Sucursal}'";
         }
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "CatalogoSecciones", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoSecciones", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Secciones;
@@ -401,7 +401,7 @@ public class Funciones
         string Condicion = $"Seccion='{Seccion}' and Sucursal='{Sucursal}'";
         if (!string.IsNullOrEmpty(Pasillo))
             Condicion += $" and Pasillo = '{Pasillo}'";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "CatalogoEstanterias", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacionacen/SQL", Parametros, "wsp_execute_qwerty", "CatalogoEstanterias", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Estanterias;

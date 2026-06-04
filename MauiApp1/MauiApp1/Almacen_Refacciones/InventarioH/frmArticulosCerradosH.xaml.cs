@@ -137,7 +137,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             string cautorizador_ = "";
 
             string Parametros = $"{clave_aut_}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "spget_login_autorizacion");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;

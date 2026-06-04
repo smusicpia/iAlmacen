@@ -22,7 +22,7 @@ public class Mail
     {
         string Parametros = "*";
         string Condicion = $"1=1";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "Configuracion_Servidor_Correos", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "Configuracion_Servidor_Correos", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -76,7 +76,7 @@ public class Mail
         DataTable dtDetalleOrdenCompra = new DataTable();
         string strSelect = "cantidad, unidad_medida, numero_parte, marca, cve_articulo, concepto";
         string strWhere = $"FolioOrdenRecoleccion = {ordenRecoleccion} and FolioOrdenCompra = '{OrdenCompra}' and FolioRequisicion = '{Requisicion}' and FolioCotizacion = '{Cotizacion}' and (Seccion IS NOT NULL or Pasillo IS NOT NULL or Estanteria IS NOT NULL)";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", strSelect, "wsp_execute_qwerty", "Detalle_OrdenRecoleccion", strWhere, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strSelect, "wsp_execute_qwerty", "Detalle_OrdenRecoleccion", strWhere, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return dtDetalleOrdenCompra;
@@ -96,7 +96,7 @@ public class Mail
         DataTable Dt_CorreoUsuarioTo = new DataTable();
         string strSelect = "ltrim(rtrim(correo_Notificaciones)) As correo";
         string strWhere = $"nombre = '{PrestadorServicio}'";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", strSelect, "wsp_execute_qwerty", "usuarios_exchange", strWhere, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strSelect, "wsp_execute_qwerty", "usuarios_exchange", strWhere, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;

@@ -229,7 +229,7 @@ namespace iAlmacen
             string cautorizador_ = "";
 
             string Parametros = $"{clave_aut_}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "spget_login_autorizacion");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -394,7 +394,7 @@ namespace iAlmacen
 
             string Parametros = "Seccion,Pasillo,Estanteria,Nivel,Tarima,Contenedor,Existencia";
             string Condicion = $"CodigoArticulo='{item_select_.codigo_articulo_.Trim()}' and Estanteria='{Valores[1]}' and Nivel='{Valores[2]}' and Tarima='{Valores[3]}' and Contenedor='{Valores[4]}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;

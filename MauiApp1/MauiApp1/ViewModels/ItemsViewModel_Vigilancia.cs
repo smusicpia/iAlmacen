@@ -28,13 +28,13 @@ public class ItemsViewModel_Vigilancia : BaseViewModel_Vigilancia
         {
             Items.Clear();
             string Parametros = $"{Global.cfiltro_},{0}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "sp_entradas_vigilancia");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "sp_entradas_vigilancia");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
-                int i = 0;
+                int i = 1;
                 foreach (DataRow r in dt.Rows)
                 {
                     Item_entrada_vigilancia _item = new Item_entrada_vigilancia();

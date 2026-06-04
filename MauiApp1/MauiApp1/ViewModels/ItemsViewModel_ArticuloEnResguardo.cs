@@ -44,7 +44,7 @@ public class ItemsViewModel_ArticuloEnResguardo : BaseViewModel_Herramienta
         {
             Items.Clear();
             string Parametros = $"{Global.ResgEmpleado.clave}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_DetalleResguardoEmpleado");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DetalleResguardoEmpleado");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;

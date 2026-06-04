@@ -37,17 +37,19 @@ public class ItemsViewModel_Orden : BaseViewModel_Orden
             }
 
             string Parametros = $"{Global.folio_orden_},{Filter_}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_orden_compra");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_compra");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+                int i = 1;
                 if (dt.Rows.Count > 0)
                 {
                     foreach (DataRow r in dt.Rows)
                     {
                         Item_orden_compra _item = new Item_orden_compra();
+                        _item.index = i++;
                         _item.id_orden_ = float.Parse(r[0].ToString());
                         _item.tipo_orden_ = r[1].ToString();
                         _item.folio_orden_ = r[2].ToString();

@@ -52,7 +52,7 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_InvCatalogo_Articulos");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InvCatalogo_Articulos");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -137,7 +137,7 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
             HttpWebResponse response;
             if (refaccion)
             {
-                response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_InventarioAlmacen");
+                response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InventarioAlmacen");
             }
             else
             {
