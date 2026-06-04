@@ -116,4 +116,23 @@ public class APIService
             throw new ApplicationException($"Error al obtener datos de {$"{Controllador}/GuardarInventario"}: {ex.Message}", ex);
         }
     }
+
+    public static async Task<HttpResponseMessage> PostAPI_Firma(string Controllador, FirmaEntity Obj)
+    {
+        try
+        {
+            var jsonContent = new StringContent(JsonSerializer.Serialize(Obj, _jsonOptions), Encoding.UTF8, "application/json");
+            //var request = new HttpRequestMessage(HttpMethod.Post, ConfigAPI.Servidor + $"/{Controllador}/GuardarInventario/?tProyecto={ConfigAPI.TipoProyecto}");
+            //request.Content = jsonContent;
+            //HttpResponseMessage response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.PostAsync(ConfigAPI.Servidor + $"/{Controllador}", jsonContent).ConfigureAwait(false);
+            return response;
+        }
+        catch (Exception ex)
+        {
+            // Manejo de errores (puedes loguear o lanzar una excepción personalizada)
+            throw new ApplicationException($"Error al obtener datos de {$"{Controllador}"}: {ex.Message}", ex);
+        }
+    }
+
 }

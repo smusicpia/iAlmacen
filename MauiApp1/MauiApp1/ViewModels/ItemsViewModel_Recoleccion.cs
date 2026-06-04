@@ -11,7 +11,7 @@ namespace iAlmacen.ViewModels;
 public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
 {
     public ObservableCollection<Item_Virtual_Recoleccion> Items { get; set; }
-    public Command LoadItemsCommand_recoleccion { get; set; }
+    public Command LoadItemsCommand_OrdenRecoleccion { get; set; }
     public String Estatus { get; set; }
     public string FolioPedido { get; set; }
     public Boolean Historial { get; set; }
@@ -21,9 +21,9 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
         Title = "Lista";
         Items = new ObservableCollection<Item_Virtual_Recoleccion>();
         if (!historial)
-            LoadItemsCommand_recoleccion = new Command(async () => await ExecuteLoadItemsCommand_recoleccion());
+            LoadItemsCommand_OrdenRecoleccion = new Command(async () => await ExecuteLoadItemsCommand_recoleccion());
         else
-            LoadItemsCommand_recoleccion = new Command(async () => await ExecuteLoadItemsCommand_recoleccionH());
+            LoadItemsCommand_OrdenRecoleccion = new Command(async () => await ExecuteLoadItemsCommand_recoleccionH());
 
         Estatus = status;
         FolioPedido = pedido;
@@ -41,12 +41,13 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
             Items.Clear();
             string Parametros = "id, FolioOrden, FolioPedido, Convert(varchar(30), FechaPedido, 103) AS FechaPedido, Convert(varchar(30), HoraPedido, 108) AS HoraPedido, UsuarioPedido, StatusPedido, FolioRequisicion, FolioCotizacion, FechaConfirmado, HoraConfirmado";
             string Condicion = $"ISNULL(FolioPedido, '') = '{FolioPedido}' and StatusPedido IN ({Estatus})";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "OrdenRecoleccion", Condicion, "SELECT");
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "OrdenRecoleccion", Condicion, "SELECT");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+                int i = 1;
                 foreach (DataRow r in dt.Rows)
                 {
                     Item_Virtual_Recoleccion _item = new Item_Virtual_Recoleccion();
@@ -61,6 +62,7 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
                     _item.folio_cotizacion_ = r[8].ToString().Trim();
                     _item.fecha_confirmacion_ = r[9].ToString().Trim();
                     _item.hora_confirmacion_ = r[10].ToString().Trim();
+                    _item.index = i++;
                     Items.Add(_item);
                 }
             }
@@ -77,21 +79,22 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
 
     private async Task ExecuteLoadItemsCommand_recoleccionH()
     {
-        if (IsBusy)
-            return;
+        //if (IsBusy)
+        //    return;
 
-        IsBusy = true;
+        //IsBusy = true;
         try
         {
             Items.Clear();
             string Parametros = "id, FolioOrden, FolioPedido, Convert(varchar(30), FechaPedido, 103) AS FechaPedido, Convert(varchar(30), HoraPedido, 108) AS HoraPedido, UsuarioPedido, StatusPedido, FolioRequisicion, FolioCotizacion, FechaConfirmado, HoraConfirmado";
-            string Condicion = $"StatusPedido Not In ('SP', 'SX', 'SI') and cast(FechaPedido as date) >= DATEADD(day, -30, GETDATE())";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "OrdenRecoleccion", Condicion, "SELECT");
+            string Condicion = $"StatusPedido Not In ('SP', 'SX', 'SI') and cast(FechaPedido as date) >= DATEADD(day, -600, GETDATE())";
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "OrdenRecoleccion", Condicion, "SELECT");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+                int i = 1;
                 foreach (DataRow r in dt.Rows)
                 {
                     Item_Virtual_Recoleccion _item = new Item_Virtual_Recoleccion();
@@ -106,6 +109,7 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
                     _item.folio_cotizacion_ = r[8].ToString().Trim();
                     _item.fecha_confirmacion_ = r[9].ToString().Trim();
                     _item.hora_confirmacion_ = r[10].ToString().Trim();
+                    _item.index = i++;
                     Items.Add(_item);
                 }
             }

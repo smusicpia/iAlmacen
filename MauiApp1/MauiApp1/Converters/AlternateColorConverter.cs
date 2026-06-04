@@ -30,6 +30,14 @@ namespace iAlmacen.Converters
             {
                 return itemV.index % 2 == 0 ? EvenColor : OddColor;
             }
+            else if (value is Item_Virtual_Recoleccion itemVR)
+            {
+                return itemVR.index % 2 == 0 ? EvenColor : OddColor;
+            }
+            else if (value is Item_ArticuloSalida artsal)
+            {
+                return artsal.index % 2 == 0 ? EvenColor : OddColor;
+            }
 
             return Colors.Transparent;
         }

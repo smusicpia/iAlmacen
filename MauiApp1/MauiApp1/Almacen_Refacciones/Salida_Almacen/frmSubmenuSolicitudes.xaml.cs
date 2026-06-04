@@ -5,7 +5,8 @@ public partial class frmSubmenuSolicitudes : ContentPage
     public frmSubmenuSolicitudes()
     {
         InitializeComponent();
-    }
+		NavigationPage.SetBackButtonTitle(this, "Atras");
+	}
 
     private async void NuevaSolicitudR_Clicked(Object sender, EventArgs e)
     {

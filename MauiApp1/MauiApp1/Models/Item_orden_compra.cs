@@ -12,7 +12,7 @@ public class Item_orden_compra
     //public string proveedor_ { get; set; }
     //public string codigo_proovedor_ { get; set; }
     //public string folio_orden_ { get; set; }
-
+    public float index { get; set; }
     public float id_orden_ { get; set; }
     public string tipo_orden_ { get; set; }
     public string folio_orden_ { get; set; }

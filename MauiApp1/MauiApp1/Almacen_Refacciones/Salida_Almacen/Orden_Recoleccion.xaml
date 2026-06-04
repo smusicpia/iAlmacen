@@ -1,11 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:iAlmacen.Converters"
              x:Class="iAlmacen.Almacen_Refacciones.Salida_Almacen.Orden_Recoleccion"
              xmlns:local="clr-namespace:iAlmacen.ViewModels">
     <ContentPage.BindingContext>
         <local:Orden_RecoleccionViewModel />
     </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:AlternateColorConverter x:Key="AltColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -52,7 +58,7 @@
                         <RowDefinition Height="7*" />
                         <RowDefinition Height="93*" />
                     </Grid.RowDefinitions>
-                    <StackLayout Grid.Row="0" HeightRequest="20" Margin="0">
+                    <StackLayout Grid.Row="0" HeightRequest="65" Margin="0">
                         <Border Padding="10,0,10,5">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -108,7 +114,7 @@
                     <StackLayout Grid.Row="1">
                         <ScrollView>
                             <StackLayout>
-                                <RefreshView Command="{Binding LoadItemsCommand_vigilancia}" IsRefreshing="{Binding IsBusy}" RefreshColor="#872200">
+                                <RefreshView Command="{Binding LoadItemsCommand_ArticuloSalida}" IsRefreshing="{Binding IsBusy}" RefreshColor="#872200">
                                     <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
                                         <CollectionView.ItemTemplate>
                                             <DataTemplate>
@@ -116,8 +122,8 @@
                                                     <SwipeView.RightItems>
                                                         <SwipeItem Text="ELIMINAR" IsDestructive="True" CommandParameter="{Binding folio_orden_}" BackgroundColor="#F83A52" Clicked="imEliminar_Clicked" />
                                                     </SwipeView.RightItems>
-                                                    <StackLayout HeightRequest="60" Margin="0" Padding="10,0,10,5">
-                                                        <Grid>
+                                                    <StackLayout HeightRequest="60" Margin="0" Padding="10,0,10,0">
+                                                        <Grid Padding="0,0" BackgroundColor="{Binding ., Converter={StaticResource AltColorConverter}, ConverterParameter={x:Null}}">
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="9*" />
                                                                 <RowDefinition Height="9*" />

@@ -1,6 +1,7 @@
 ﻿using iAlmacen.Clases;
 using iAlmacen.Models;
 using iAlmacen.Services;
+using iAlmacen.ViewModels;
 using iAlmacen.Views;
 using iAlmacen.WebApi;
 using Newtonsoft.Json;
@@ -13,8 +14,12 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen;
 
 public partial class Orden_Recoleccion : ContentPage
 {
-    public Command LoadItemsCommand_Orden { get; set; }
-    public ObservableCollection<clsArticuloSalida> ArticulosEliminados { get; set; }
+    public ObservableCollection<Item_ArticuloSalida> Items { get; set; }
+    public Command LoadItemsCommand_Articulo { get; set; }
+    private ItemsViewModel_ArticuloSalida viewModel_ArticuloSalida;
+
+    //public Command LoadItemsCommand_Orden { get; set; }
+    public ObservableCollection<Item_ArticuloSalida> ArticulosEliminados { get; set; }
     public List<string> lCentroCostoN1 { get; set; }
     public List<string> lCentroCostoN2 { get; set; }
     public List<string> lCentroCostoN3 { get; set; }
@@ -22,10 +27,13 @@ public partial class Orden_Recoleccion : ContentPage
     private bool capturando = true;
     public static Boolean bUbicacionCapturada = false;
     public static string ExistenciaUbicacion = "0";
+    
+    //private clsArticuloSalida item = new clsArticuloSalida();
+    private Item_ArticuloSalida item;
 
-    private clsArticuloSalida item = new clsArticuloSalida();
+    private bool _isNavigated = false;
 
-    private int nUbicaciones = 0;
+    //private int nUbicaciones = 0;
     private string _result;
 
     public string Result
@@ -45,9 +53,14 @@ public partial class Orden_Recoleccion : ContentPage
         this.Title = $"Orden de Compra ({Global.folio_orden_}) / Recoleccion ({Global.cidsql_})";
 
         Global.Items_recoleccion_ = new ObservableCollection<Item_Virtual_Recoleccion>();
-        Global.regArticulosSalida = new ObservableCollection<clsArticuloSalida>();
-        ArticulosEliminados = new ObservableCollection<clsArticuloSalida>();
-        LoadItemsCommand_Orden = new Command(async () => await cargar());
+        //Global.regArticulosSalida = new ObservableCollection<Item_ArticuloSalida>();
+        ArticulosEliminados = new ObservableCollection<Item_ArticuloSalida>();
+
+        item = new Item_ArticuloSalida();
+        Items = new ObservableCollection<Item_ArticuloSalida>();
+        LoadItemsCommand_Articulo = new Command(async () => await cargar());
+        string Parametros = $"{Global.cidsql_},N";
+        BindingContext = viewModel_ArticuloSalida = new ItemsViewModel_ArticuloSalida(Parametros);
 
         if (Global.cfiltro_ == "R")
         {
@@ -60,6 +73,10 @@ public partial class Orden_Recoleccion : ContentPage
     {
         //ItemsListView.BeginRefresh();
         base.OnAppearing();
+        if (_isNavigated) return;
+
+        _isNavigated = true;
+
         if (Global.validar == true)
         {
             Global.validar = false;
@@ -71,6 +88,7 @@ public partial class Orden_Recoleccion : ContentPage
             //ItemsListView.ItemsSource = Global.regArticulosSalida;
         }
         //ItemsListView.EndRefresh();
+        viewModel_ArticuloSalida.LoadItemsCommand_ArticuloSalida.Execute(null);
     }
 
     private async Task cargar()
@@ -115,7 +133,7 @@ public partial class Orden_Recoleccion : ContentPage
     {
         capturando = false;
         string Parametros = $"{Global.cidsql_},N";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_orden_Recoleccion");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             string resp = reader.ReadToEnd();
@@ -131,8 +149,16 @@ public partial class Orden_Recoleccion : ContentPage
             Global.strArea = dt.Rows[0][1].ToString().Trim();
             Global.strCCnivel1 = dt.Rows[0][3].ToString().Trim();
             Global.strCCnivel2 = dt.Rows[0][5].ToString().Trim();
-            Global.strCCnivel3 = !string.IsNullOrEmpty(dt.Rows[0][7].ToString().Trim()) ? dt.Rows[0][7].ToString().Trim() : string.Empty;
-            Global.strCCnivel4 = !string.IsNullOrEmpty(dt.Rows[0][9].ToString().Trim()) ? dt.Rows[0][9].ToString().Trim() : string.Empty;
+            if (string.IsNullOrEmpty(dt.Rows[0][7].ToString()))
+                Global.strCCnivel3 = string.Empty;
+            else
+                Global.strCCnivel3 = dt.Rows[0][7].ToString().Trim();
+
+            if (string.IsNullOrEmpty(dt.Rows[0][9].ToString()))
+                Global.strCCnivel4 = string.Empty;
+            else
+                Global.strCCnivel4 = dt.Rows[0][9].ToString().Trim();
+
             LlenarArea();
             LlenarCentroCostoN1();
             LlenarCentroCostoN2();
@@ -151,35 +177,35 @@ public partial class Orden_Recoleccion : ContentPage
                 {
                     cbNivel4.SelectedItem = r[9].ToString().Trim() + " - " + r[10].ToString().Trim();
                 }
-                Global.regArticulosSalida.Add(new clsArticuloSalida
-                {
-                    codigo_articulo = r[11].ToString().Trim(),
-                    descripcion_general = r[12].ToString().Trim(),
-                    desc_familia = r[13].ToString().Trim(),
-                    desc_linea = r[14].ToString().Trim(),
-                    desc_grupo = r[15].ToString().Trim(),
-                    desc_medida = (r[16].ToString().Trim()),
-                    desc_marca = r[17].ToString().Trim(),
-                    desc_parte = r[18].ToString().Trim(),
-                    consecutivo = int.Parse(r[19].ToString().Trim()),
-                    cantidad = double.Parse(r[20].ToString().Trim()),
-                    noubicaciones = double.Parse(r[21].ToString().Trim()),
-                    Seccion = r[23].ToString().Trim(),
-                    desc_seccion = r[24].ToString().Trim(),
-                    Pasillo = !string.IsNullOrEmpty(r[25].ToString()) ? double.Parse(r[25].ToString().Trim()) : 0,
-                    Estanteria = r[26].ToString().Trim(),
-                    desc_estanteria = r[27].ToString().Trim(),
-                    Nivel = !string.IsNullOrEmpty(r[28].ToString()) ? double.Parse(r[28].ToString().Trim()) : 0,
-                    Tarima = !string.IsNullOrEmpty(r[29].ToString()) ? double.Parse(r[29].ToString().Trim()) : 0,
-                    Contenedor = !string.IsNullOrEmpty(r[30].ToString()) ? double.Parse(r[30].ToString().Trim()) : 0,
-                    ExistenciaUbicacion = double.Parse(r[22].ToString().Trim()),
-                    ccsucursal = Global.strSucursal.ToString(),
-                    ccarea = Global.strArea.ToString(),
-                    ccnivel1 = Global.strCCnivel1.ToString(),
-                    ccnivel2 = Global.strCCnivel2.ToString(),
-                    ccnivel3 = Global.strCCnivel3.ToString(),
-                    ccnivel4 = Global.strCCnivel4.ToString(),
-                });
+                //Global.regArticulosSalida.Add(new clsArticuloSalida
+                //{
+                //    codigo_articulo = r[11].ToString().Trim(),
+                //    descripcion_general = r[12].ToString().Trim(),
+                //    desc_familia = r[13].ToString().Trim(),
+                //    desc_linea = r[14].ToString().Trim(),
+                //    desc_grupo = r[15].ToString().Trim(),
+                //    desc_medida = (r[16].ToString().Trim()),
+                //    desc_marca = r[17].ToString().Trim(),
+                //    desc_parte = r[18].ToString().Trim(),
+                //    consecutivo = int.Parse(r[19].ToString().Trim()),
+                //    cantidad = double.Parse(r[20].ToString().Trim()),
+                //    noubicaciones = double.Parse(r[21].ToString().Trim()),
+                //    Seccion = r[23].ToString().Trim(),
+                //    desc_seccion = r[24].ToString().Trim(),
+                //    Pasillo = !string.IsNullOrEmpty(r[25].ToString()) ? double.Parse(r[25].ToString().Trim()) : 0,
+                //    Estanteria = r[26].ToString().Trim(),
+                //    desc_estanteria = r[27].ToString().Trim(),
+                //    Nivel = !string.IsNullOrEmpty(r[28].ToString()) ? double.Parse(r[28].ToString().Trim()) : 0,
+                //    Tarima = !string.IsNullOrEmpty(r[29].ToString()) ? double.Parse(r[29].ToString().Trim()) : 0,
+                //    Contenedor = !string.IsNullOrEmpty(r[30].ToString()) ? double.Parse(r[30].ToString().Trim()) : 0,
+                //    ExistenciaUbicacion = double.Parse(r[22].ToString().Trim()),
+                //    ccsucursal = Global.strSucursal.ToString(),
+                //    ccarea = Global.strArea.ToString(),
+                //    ccnivel1 = Global.strCCnivel1.ToString(),
+                //    ccnivel2 = Global.strCCnivel2.ToString(),
+                //    ccnivel3 = Global.strCCnivel3.ToString(),
+                //    ccnivel4 = Global.strCCnivel4.ToString(),
+                //});
 
                 switch (r[0].ToString().Trim())
                 {
@@ -209,7 +235,7 @@ public partial class Orden_Recoleccion : ContentPage
         Global.Editando = false;
         ExistenciaUbicacion = "0";
         bUbicacionCapturada = false;
-        Global.regArticulosSalida.Clear();
+        //Global.regArticulosSalida.Clear();
     }
 
     private void cbSucursal_SelectedIndexChanged(Object sender, EventArgs e)
@@ -349,10 +375,130 @@ public partial class Orden_Recoleccion : ContentPage
 
     private void imEliminar_Clicked(Object sender, EventArgs e)
     {
-        clsArticuloSalida Item_;
-        Item_ = (sender as MenuItem).BindingContext as clsArticuloSalida;
+        Item_ArticuloSalida Item_;
+        Item_ = (sender as MenuItem).BindingContext as Item_ArticuloSalida;
+        
         ArticulosEliminados.Add(Item_);
-        Global.regArticulosSalida.Remove(Item_);
+        //Global.regArticulosSalida.Remove(Item_);
+    }
+
+    private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+        if (status != PermissionStatus.Granted)
+        {
+            status = await Permissions.RequestAsync<Permissions.Camera>();
+        }
+
+        if (status == PermissionStatus.Granted)
+        {
+            if (BarcodeScanning.IsSupported)
+            {
+                item = e.CurrentSelection.FirstOrDefault() as Item_ArticuloSalida;
+                //item = e.CurrentSelection.FirstOrDefault() as clsArticuloSalida;
+                if (item == null || item.noubicaciones == 1)
+                {
+                    await DisplayAlertAsync("Informacion", "El articulo ya cuenta con ubicacion seleccionada", "OK");
+                    return;
+                }
+                if (item == null || item.noubicaciones == 0)
+                {
+                    await DisplayAlertAsync("Informacion", "El articulo no cuenta con Ubicacion Asignada", "OK");
+                    return;
+                }
+                var barcodePage = new BarcodePage();
+                barcodePage.ParentPageName = "Lectura_Codigo";
+                barcodePage.TextResultGenerated += OnTextResultGenerated;
+                await Navigation.PushAsync(barcodePage);               
+            }
+            else
+            {
+                await DisplayAlertAsync("Opcion no Soportada", "No se puede acceder a la cámara. Por favor, otorgue el permiso para usar esta función.", "OK");
+                return;
+            }
+        }
+        else
+        {
+            await DisplayAlertAsync("Permiso Denegado", "No se puede acceder a la cámara. Por favor, otorgue el permiso para usar esta función.", "OK");
+            return;
+        }
+    }
+
+    private async Task UpdateUbicacion(string[] Ubicacion)
+    {
+        if (Ubicacion != null)
+        {
+            //viewModel_ArticuloSalida = new ItemsViewModel_ArticuloSalida(item.codigo_articulo, Ubicacion);
+
+            string Codigo = item.codigo_articulo;
+            //string[] Ubicacion;
+            //Ubicacion = result.ToString().Split('U');
+
+            //// Aquí puedes agregar la lógica para manejar la ubicación obtenida del código QR
+            //DisplayAlertAsync("Ubicación Escaneada", $"Sección: {Ubicacion[0]}, Pasillo: {Ubicacion[1]}, Estantería: {Ubicacion[2]}, Nivel: {Ubicacion[3]}, Tarima: {Ubicacion[4]}, Contenedor: {Ubicacion[5]}", "OK");
+
+            string Parametros = "Sucursal,Seccion, (select (tmp.Clave %2B ' - ' %2B tmp.Descripcion) from CatalogoSecciones as tmp where tmp.Clave=CatalogoArticuloUbicacion.Seccion)descseccion, " +
+            "Pasillo,Estanteria, (select top(1) (tmp.Clave %2B ' - ' %2B tmp.Descripcion) from CatalogoEstanterias as tmp where tmp.Clave=CatalogoArticuloUbicacion.Estanteria)descestanteria, " +
+            "Nivel,Tarima,Contenedor,CodigoArticulo,Existencia,UnidadControl";
+            string Condicion = $"CodigoArticulo='{Codigo}' and Estanteria='{Ubicacion[1]}' and Nivel='{Ubicacion[2]}' and Tarima='{Ubicacion[3]}' and Contenedor='{Ubicacion[4]}'";
+            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT");
+            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            {
+                if (response.StatusCode == HttpStatusCode.NotFound) return;
+                string resp = reader.ReadToEnd();
+                if (resp == "[]") return;
+                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+                foreach (DataRow r in dt.Rows)
+                {
+                    switch (item.noubicaciones)
+                    {
+                        case 0:
+                            break;
+
+                        case 1:
+                            break;
+
+                        default:
+                            item.Seccion = r[1].ToString().Trim();
+                            item.desc_seccion = r[2].ToString().Trim();
+                            item.Pasillo = double.Parse(r[3].ToString().Trim());
+                            item.Estanteria = r[4].ToString().Trim();
+                            item.desc_estanteria = r[5].ToString().Trim();
+                            item.Nivel = double.Parse(r[6].ToString().Trim());
+                            item.Tarima = double.Parse(r[7].ToString().Trim());
+                            item.Contenedor = double.Parse(r[8].ToString().Trim());
+                            ExistenciaUbicacion = r[10].ToString().Trim();
+                            bUbicacionCapturada = true;
+                            break;
+                    }
+                }
+            }
+
+            if (double.Parse(ExistenciaUbicacion) < 1)
+            {
+                await DisplayAlertAsync("Informacion", "El articulo no cuenta con existencia en la ubicacion seleccionada", "OK");
+            }
+        }
+    }
+
+    private async void OnTextResultGenerated(string result)
+    {
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            if (string.IsNullOrEmpty(result))
+            {
+                await DisplayAlertAsync("Informacion", "No se ha escaneado un código válido", "OK");
+                return;
+            }
+
+            ////string Codigo = item.codigo_articulo;
+            //Ubicacion = result.ToString().Split('U');
+            await UpdateUbicacion(result.ToString().Split('U'));
+
+            //// Aquí puedes agregar la lógica para manejar la ubicación obtenida del código QR
+            //await DisplayAlertAsync("Ubicación Escaneada", $"Sección: {Ubicacion[0]}, Pasillo: {Ubicacion[1]}, Estantería: {Ubicacion[1]}, Nivel: {Ubicacion[2]}, Tarima: {Ubicacion[3]}, Contenedor: {Ubicacion[4]}", "OK");
+        });
+
     }
 
     private async void btnGuardarListaRecoleccion_Clicked(Object sender, EventArgs e)
@@ -363,14 +509,14 @@ public partial class Orden_Recoleccion : ContentPage
             return;
         }
 
-        if (Global.regArticulosSalida.Count == 0)
+        if (viewModel_ArticuloSalida.Items.Count == 0)
         {
             await DisplayAlertAsync("Informacion", "No hay articulos agregados", "OK");
             return;
         }
 
         bool ubicacionesCompletas = true;
-        foreach (clsArticuloSalida item in Global.regArticulosSalida)
+        foreach (Item_ArticuloSalida item in viewModel_ArticuloSalida.Items)
         {
             if (item.noubicaciones > 1 && (string.IsNullOrEmpty(item.Seccion) || string.IsNullOrEmpty(item.Estanteria))) //|| item.Pasillo == 0 || item.Nivel == 0
             {
@@ -396,8 +542,8 @@ public partial class Orden_Recoleccion : ContentPage
         try
         {
             FechaFormateada = DateTime.Now.Day.ToString().PadLeft(2, '0') + '/' +
-                DateTime.Now.Month.ToString().PadLeft(2, '0') + '/' +
-                DateTime.Now.Year.ToString();
+                              DateTime.Now.Month.ToString().PadLeft(2, '0') + '/' +
+                              DateTime.Now.Year.ToString();
             HoraFormateada = DateTime.Now.ToString("HH:mm:ss");
         }
         catch (Exception ex)
@@ -406,12 +552,12 @@ public partial class Orden_Recoleccion : ContentPage
             HoraFormateada = DateTime.Now.ToShortTimeString();
         }
 
-        // Validar si se entregaron de forma completo
+        // Validar si se entregaron de forma completa
         // Orden de Recoleccion si es completo es SL de lo contrario es SI
         string status = "SI";
         string Parametros = "count(FolioOrdenRecoleccion)";
         string Condicion = $"FolioOrdenRecoleccion = '{Global.cidsql_}' and FolioOrdenCompra = '{Global.folio_orden_}' and FolioRequisicion = '{Global.folio_requisicion_}' and (Seccion IS NULL or Pasillo IS NULL or Estanteria IS NULL)";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "Detalle_OrdenRecoleccion", Condicion, "SELECT");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "Detalle_OrdenRecoleccion", Condicion, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -431,7 +577,7 @@ public partial class Orden_Recoleccion : ContentPage
         string sResponce = "";
         Parametros = $"StatusPedido = '{status}'";
         Condicion = $"id = {Global.cidsql_} and FolioOrden = '{Global.folio_orden_}' and FolioRequisicion = '{Global.folio_requisicion_}' and FolioCotizacion = '{Global.folio_cotizacion_}'";
-        response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE");
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.OK)
@@ -441,11 +587,11 @@ public partial class Orden_Recoleccion : ContentPage
         }
 
         // Se actualiza la ubicacion de los articulos cargados
-        foreach (clsArticuloSalida item in Global.regArticulosSalida)
+        foreach (Item_ArticuloSalida item in Items)
         {
             string strSET = $"Seccion = '{item.Seccion}', Pasillo= '{item.Pasillo}', Estanteria='{item.Estanteria}', Nivel='{item.Nivel}', Tarima='{item.Tarima}', Contenedor='{item.Contenedor}'";
             string strWHERE = $"cve_articulo = '{item.codigo_articulo}' and consecutivo_mov = {item.consecutivo} and FolioOrdenRecoleccion = {Global.cidsql_} and FolioOrdenCompra = '{Global.folio_orden_}' and FolioRequisicion = '{Global.folio_requisicion_}' and FolioCotizacion = '{Global.folio_cotizacion_}'";
-            response = ConfigAPI.GetAPI("GET", "api/Operacion", strSET, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", strWHERE, "UPDATE");
+            response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strSET, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", strWHERE, "UPDATE");
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -460,7 +606,7 @@ public partial class Orden_Recoleccion : ContentPage
         string fromText = "Requisiciones_En_Cotizacion ";
         string whereText = $"folio_requisicion = '{Global.folio_requisicion_}' and folio_cotizacion = '{Global.folio_cotizacion_}' and folio_orden_compra = '{Global.folio_orden_}' ORDER By id desc";
         DataTable Articulos;
-        response = ConfigAPI.GetAPI("GET", "api/Operacion", selectText, "wsp_execute_qwerty", fromText, whereText, "SELECT");
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", selectText, "wsp_execute_qwerty", fromText, whereText, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -473,7 +619,7 @@ public partial class Orden_Recoleccion : ContentPage
             string strValues = $"'{Global.folio_requisicion_}','SL','{r[0].ToString().Trim()}','{Global.folio_cotizacion_}','SL','{r[1].ToString().Trim()}','0000','{Global.folio_orden_}','SL','{DateTime.Now.ToShortDateString()}'," +
                                $"'{DateTime.Now.ToString("HH:mm:ss")}','{Global.nombre_usuario}','false','{Global.cidsql_}', 'SL',NULL,NULL,NULL";
             string strCampos = $"folio_requisicion,status_requisicion,Num_Articulos_Requisicion,folio_cotizacion,status_cotizacion,cantidad_articulos,codigo_proveedor,folio_orden_compra,status_orden_compra,Fecha_Movto,Hora_Movto,Usuario,control_bascula,folio_OrdenRecoleccion,status_OrdenRecoleccion,folio_SalidaDocumento,TipoDocumento,status_SalidaDocumento";
-            response = ConfigAPI.GetAPI("GET", "api/Operacion", strValues, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "INSERT INTO", strCampos);
+            response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strValues, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "INSERT INTO", strCampos);
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -483,14 +629,14 @@ public partial class Orden_Recoleccion : ContentPage
             }
         }
 
-        //Eliminar los Articulos quitados de la Orden xe Recoleccion
+        //Eliminar los Articulos quitados de la Orden x Recoleccion
         if (ArticulosEliminados.Count > 0)
         {
-            foreach (clsArticuloSalida item in ArticulosEliminados)
+            foreach (Item_ArticuloSalida item in ArticulosEliminados)
             {
                 Parametros = "nada";
-                Condicion = $"cve_articulo='{item.codigo_articulo}' and FolioOrdenRecoleccion='{item.ID}'";
-                response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", Condicion, "DELETE");
+                Condicion = $"cve_articulo='{item.codigo_articulo}' and FolioOrdenRecoleccion='{item.id}'";
+                response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", Condicion, "DELETE");
                 using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
                     if (response.StatusCode == HttpStatusCode.OK)
@@ -507,7 +653,7 @@ public partial class Orden_Recoleccion : ContentPage
         fromText = "or_compra ";
         whereText = $"folio = '{Global.folio_orden_}' and folio_cotizacion = '{Global.folio_cotizacion_}' and cancelada = 0";
         DataTable Correos = new DataTable();
-        response = ConfigAPI.GetAPI("GET", "api/Operacion", selectText, "wsp_execute_qwerty", fromText, whereText, "SELECT");
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", selectText, "wsp_execute_qwerty", fromText, whereText, "SELECT");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;
@@ -524,102 +670,9 @@ public partial class Orden_Recoleccion : ContentPage
             email.Armar_Correos_OrdenCompra(r[0].ToString().Trim(), "", " Lista para su Recoleccion", "ORDEN RECOLECCION", Prov, Global.folio_requisicion_, Global.folio_orden_, Global.cidsql_, Global.folio_cotizacion_);
         }
 
+        capturando = false;
         LimpiarCampos();
 
         await Navigation.PopAsync();
-    }
-
-    private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
-        if (status != PermissionStatus.Granted)
-        {
-            status = await Permissions.RequestAsync<Permissions.Camera>();
-        }
-
-        if (status == PermissionStatus.Granted)
-        {
-            if (BarcodeScanning.IsSupported)
-            {
-                item = e.CurrentSelection.FirstOrDefault() as clsArticuloSalida;
-                if (item == null || item.noubicaciones == 1)
-                {
-                    await DisplayAlertAsync("Informacion", "El articulo ya cuenta con ubicacion seleccionada", "OK");
-                    return;
-                }
-                if (item == null || item.noubicaciones == 0)
-                {
-                    await DisplayAlertAsync("Informacion", "El articulo no cuenta con Ubicacion Asignada", "OK");
-                    return;
-                }
-                var barcodePage = new BarcodePage();
-                barcodePage.ParentPageName = "Lectura_Codigo";
-                barcodePage.TextResultGenerated += OnTextResultGenerated;
-                await Navigation.PushAsync(barcodePage);
-            }
-            else
-            {
-                await DisplayAlertAsync("Permiso Denegado", "No se puede acceder a la cámara. Por favor, otorgue el permiso para usar esta función.", "OK");
-                return;
-            }
-        }
-    }
-
-    private async void OnTextResultGenerated(string result)
-    {
-        MainThread.BeginInvokeOnMainThread(async () =>
-        {
-            if (string.IsNullOrEmpty(result))
-            {
-                await DisplayAlertAsync("Informacion", "No se ha escaneado un código válido", "OK");
-                return;
-            }
-            string Codigo = item.codigo_articulo;
-            string[] Ubicacion;
-            Ubicacion = result.ToString().Split('U');
-
-            //// Aquí puedes agregar la lógica para manejar la ubicación obtenida del código QR
-            //DisplayAlertAsync("Ubicación Escaneada", $"Sección: {Ubicacion[0]}, Pasillo: {Ubicacion[1]}, Estantería: {Ubicacion[2]}, Nivel: {Ubicacion[3]}, Tarima: {Ubicacion[4]}, Contenedor: {Ubicacion[5]}", "OK");
-
-            string Parametros = "Sucursal,Seccion, (select (tmp.Clave + ' - ' + tmp.Descripcion) from CatalogoSecciones as tmp where tmp.Clave=CatalogoArticuloUbicacion.Seccion)descseccion, " +
-            "Pasillo,Estanteria, (select top(1) (tmp.Clave + ' - ' + tmp.Descripcion) from CatalogoEstanterias as tmp where tmp.Clave=CatalogoArticuloUbicacion.Estanteria)descestanteria, " +
-            "Nivel,Tarima,Contenedor,CodigoArticulo,Existencia,UnidadControl";
-            string Condicion = $"CodigoArticulo='{Codigo}' and Estanteria='{Ubicacion[1]}' and Nivel='{Ubicacion[2]}' and Tarima='{Ubicacion[3]}' and Contenedor='{Ubicacion[4]}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                if (resp == "[]") return;
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    switch (nUbicaciones)
-                    {
-                        case 0:
-                            break;
-
-                        case 1:
-                            break;
-
-                        default:
-                            item.Seccion = r[2].ToString().Trim();
-                            item.Pasillo = double.Parse(r[3].ToString().Trim());
-                            item.Estanteria = r[5].ToString().Trim();
-                            item.Nivel = double.Parse(r[6].ToString().Trim());
-                            item.Tarima = double.Parse(r[7].ToString().Trim());
-                            item.Contenedor = double.Parse(r[8].ToString().Trim());
-                            ExistenciaUbicacion = r[10].ToString().Trim();
-                            bUbicacionCapturada = true;
-                            break;
-                    }
-                }
-            }
-
-            if (double.Parse(ExistenciaUbicacion) < 1)
-            {
-                await DisplayAlertAsync("Informacion", "El articulo no cuenta con existencia en la ubicacion seleccionada", "OK");
-            }
-        });
     }
 }

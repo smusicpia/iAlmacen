@@ -57,48 +57,48 @@ public partial class frmListaOrdenesRecoleccion : ContentPage
                 Global.regArticulosSalida.Clear();
             }
         }
-        viewModel_Recoleccion.LoadItemsCommand_recoleccion.Execute(null);
+        viewModel_Recoleccion.LoadItemsCommand_OrdenRecoleccion.Execute(null);
     }
 
-    private void ListItems_Refreshing(object sender, EventArgs e)
-    {
-        viewModel_Recoleccion.LoadItemsCommand_recoleccion.Execute(null);
-    }
+    //private void ListItems_Refreshing(object sender, EventArgs e)
+    //{
+    //    viewModel_Recoleccion.LoadItemsCommand_recoleccion.Execute(null);
+    //}
 
-    private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
-    {
-        if (Origen_ == "N")
-        {
-            var item = args.SelectedItem as Item_Virtual_Recoleccion;
-            if (item == null)
-                return;
+    //private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
+    //{
+    //    if (Origen_ == "N")
+    //    {
+    //        var item = args.SelectedItem as Item_Virtual_Recoleccion;
+    //        if (item == null)
+    //            return;
 
-            Global.folio_orden_ = item.folio_orden_;
-            Global.cidsql_ = int.Parse(item.id_.ToString());
-            Global.folio_requisicion_ = item.folio_requisicion_.ToString();
-            Global.folio_cotizacion_ = item.folio_cotizacion_.ToString();
-            await Navigation.PushAsync(new Orden_Recoleccion());
-        }
-        else if (Origen_ == "RL" || Origen_ == "H")
-        {
-            var item = args.SelectedItem as Item_Virtual_Recoleccion;
-            if (item == null)
-                return;
+    //        Global.folio_orden_ = item.folio_orden_;
+    //        Global.cidsql_ = int.Parse(item.id_.ToString());
+    //        Global.folio_requisicion_ = item.folio_requisicion_.ToString();
+    //        Global.folio_cotizacion_ = item.folio_cotizacion_.ToString();
+    //        await Navigation.PushAsync(new Orden_Recoleccion());
+    //    }
+    //    else if (Origen_ == "RL" || Origen_ == "H")
+    //    {
+    //        var item = args.SelectedItem as Item_Virtual_Recoleccion;
+    //        if (item == null)
+    //            return;
 
-            Global.folio_orden_ = item.folio_orden_;
-            Global.cidsql_ = int.Parse(item.id_.ToString());
-            Global.folio_requisicion_ = item.folio_requisicion_.ToString();
-            Global.folio_cotizacion_ = item.folio_cotizacion_.ToString();
-            if (Origen_ == "RL")
-            {
-                await Navigation.PushAsync(new Salida_Almacen.Almacen_Salidas(true));
-            }
-            else if (Origen_ == "H")
-            {
-                await Navigation.PushAsync(new Salida_Almacen.Almacen_Salidas(true, true));
-            }
-        }
-    }
+    //        Global.folio_orden_ = item.folio_orden_;
+    //        Global.cidsql_ = int.Parse(item.id_.ToString());
+    //        Global.folio_requisicion_ = item.folio_requisicion_.ToString();
+    //        Global.folio_cotizacion_ = item.folio_cotizacion_.ToString();
+    //        if (Origen_ == "RL")
+    //        {
+    //            await Navigation.PushAsync(new Salida_Almacen.Almacen_Salidas(true));
+    //        }
+    //        else if (Origen_ == "H")
+    //        {
+    //            await Navigation.PushAsync(new Salida_Almacen.Almacen_Salidas(true, true));
+    //        }
+    //    }
+    //}
 
     private async void OnCancel_entrada(object sender, EventArgs e)
     {
@@ -117,7 +117,7 @@ public partial class frmListaOrdenesRecoleccion : ContentPage
         string sResponce;
         string Parametros = "StatusPedido='SX'";
         string Condicion = $"id='{item_rechazar_.id_}' and FolioOrden='{item_rechazar_.folio_orden_}'";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE");
+        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.OK)
@@ -127,8 +127,8 @@ public partial class frmListaOrdenesRecoleccion : ContentPage
         }
 
         Parametros = "status_requisicion='SX',status_orden_compra='SX',status_cotizacion='SX',status_OrdenRecoleccion='SX'";
-        Condicion = $"folio_OrdenRecoleccion='{item_rechazar_.id_}' and folio_orden_compra='{item_rechazar_.folio_orden_}' and folio_requisicion='{item_rechazar_.folio_requisicion_}' and folio_cotizacion={item_rechazar_.folio_cotizacion_}";
-        response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "UPDATE");
+        Condicion = $"folio_OrdenRecoleccion='{item_rechazar_.id_}' and folio_orden_compra='{item_rechazar_.folio_orden_}' and folio_requisicion='{item_rechazar_.folio_requisicion_}' and folio_cotizacion='{item_rechazar_.folio_cotizacion_}'";
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "UPDATE");
         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
         {
             if (response.StatusCode == HttpStatusCode.OK)
@@ -148,13 +148,13 @@ public partial class frmListaOrdenesRecoleccion : ContentPage
     {
         string concepto_ = Concepto;
 
-        viewModel_Recoleccion.LoadItemsCommand_recoleccion.Execute(null);
+        viewModel_Recoleccion.LoadItemsCommand_OrdenRecoleccion.Execute(null);
         //ItemsListView.SelectedItem = null;
     }
 
     private void Actualizar_lista_event(object sender, EventArgs e)
     {
-        viewModel_Recoleccion.LoadItemsCommand_recoleccion.Execute(null);
+        viewModel_Recoleccion.LoadItemsCommand_OrdenRecoleccion.Execute(null);
         //ItemsListView.SelectedItem = null;
     }
 
@@ -170,7 +170,7 @@ public partial class frmListaOrdenesRecoleccion : ContentPage
             Global.cidsql_ = int.Parse(item.id_.ToString());
             Global.folio_requisicion_ = item.folio_requisicion_.ToString();
             Global.folio_cotizacion_ = item.folio_cotizacion_.ToString();
-            //await Navigation.PushAsync(new iAlmacen.Almacen_Refacciones.Salida_Almacen.Orden_Recoleccion());
+            await Navigation.PushAsync(new Orden_Recoleccion());
         }
         else if (Origen_ == "RL" || Origen_ == "H")
         {
@@ -184,11 +184,11 @@ public partial class frmListaOrdenesRecoleccion : ContentPage
             Global.folio_cotizacion_ = item.folio_cotizacion_.ToString();
             if (Origen_ == "RL")
             {
-                //await Navigation.PushAsync(new iAlmacen.Almacen_Refacciones.Salida_Almacen.Almacen_Salidas(true));
+                await Navigation.PushAsync(new Almacen_Salidas(true));
             }
             else if (Origen_ == "H")
             {
-                //await Navigation.PushAsync(new iAlmacen.Almacen_Refacciones.Salida_Almacen.Almacen_Salidas(true, true));
+                await Navigation.PushAsync(new Almacen_Salidas(true, true));
             }
         }
     }
