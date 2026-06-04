@@ -268,33 +268,6 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             lblParte.Text = Global.ArticuloEnInventario.DescParte;
             lblUnidadControl.Text = Global.ArticuloEnInventario.UnidadControl;
 
-            //string Parametros = "Seccion,Pasillo,Estanteria,Nivel,Tarima,Contenedor,CodigoArticulo";
-            //string Condicion = $"Familia='{Global.ArticuloEnInventario.ClaveFamilia}' and Sucursal = 'M' and CodigoArticulo = '{Global.ArticuloEnInventario.CodigoActual}'";
-            //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT");
-            //using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //{
-            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
-            //    string resp = reader.ReadToEnd();
-            //    if (resp != "[]")
-            //    {
-            //        DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            //        foreach (DataRow r in dt.Rows)
-            //        {
-            //            if (!SeccionesEncontrados.Contains(r[0].ToString().Trim()))
-            //                SeccionesEncontrados.Add(r[0].ToString().Trim());
-
-            //            if (lblCodigo.Text == r[6].ToString().Trim())
-            //            {
-            //                PasilloEncontrado = int.Parse(r[1].ToString().Trim());
-            //                EstanteriaEncontrado = r[2].ToString().Trim();
-            //                NivelEncontrado = int.Parse(r[3].ToString().Trim());
-            //                TarimaEncontrado = int.Parse(r[4].ToString().Trim());
-            //                CajaEncontrado = int.Parse(r[5].ToString().Trim());
-            //            }
-            //        }
-            //    }
-            //}
-
             CargarSeccion();
             //BuscarCapturas();
             if (Global.ArticuloEnInventario.ExisUbi == 1)
@@ -336,69 +309,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
                     btnGuardar.IsEnabled = !inventariado;
             }
         }
-
-        //private void BuscarCapturas()
-        //{
-        //    string Parametros = $"{Global.ArticuloEnInventario.id},";
-        //    HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_DetalleInventarioAlmacenxArticulo");
-        //    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-        //    {
-        //        if (response.StatusCode == HttpStatusCode.NotFound) return;
-        //        string resp = reader.ReadToEnd();
-        //        if (resp == "[]") return;
-        //        DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-        //        foreach (DataRow r in dt.Rows)
-        //        {
-        //            RegInventariosDetalle.Add(new clsInventarioDetalle
-        //            {
-        //                ID = int.Parse(r[0].ToString()),
-        //                folioInventario = r[1].ToString(),
-        //                idReferencia = r[2].ToString(),
-        //                Seccion = r[3].ToString(),
-        //                Pasillo = int.Parse(r[4].ToString()),
-        //                Estanteria = r[5].ToString(),
-        //                Nivel = int.Parse(r[6].ToString()),
-        //                Tarima = int.Parse(r[7].ToString()),
-        //                Caja = int.Parse(r[8].ToString()),
-        //                Familia = r[9].ToString(),
-        //                Linea = r[10].ToString(),
-        //                Grupo = r[11].ToString(),
-        //                CodigoArticulo = r[12].ToString(),
-        //                Existencia = double.Parse(r[13].ToString()),
-        //                UnidadControl = r[14].ToString(),
-        //                Sucursal = r[15].ToString(),
-        //                DescripcionSeccion = r[18].ToString(),
-        //                DescripcionEstanteria = r[19].ToString(),
-        //            });
-        //        }
-        //    }
-
-        //    ItemsListView.ItemsSource = RegInventariosDetalle;
-        //    if (SeccionesEncontrados.Count == 1)
-        //    {
-        //        SeleccionarEstanteria(RegInventariosDetalle[0].Estanteria);
-        //        cbNivel.SelectedIndex = RegInventariosDetalle[0].Nivel - 1;
-        //        cbTarima.SelectedIndex = RegInventariosDetalle[0].Tarima - 1;
-        //        cbCaja.SelectedIndex = RegInventariosDetalle[0].Caja - 1;
-        //    }
-
-        //    if (SeccionesEncontrados.Count > 1)
-        //    {
-        //        cbSeccion.SelectedIndex = -1;
-        //        cbEstanteria.SelectedIndex = -1;
-        //    }
-        //}
-
         private void cbSeccion_SelectedIndexChanged(Object sender, EventArgs e)
         {
-            //CargarEstanterias();
-            //cbNivel.SelectedIndex = !string.IsNullOrEmpty(NivelEncontrado.ToString()) ? NivelEncontrado - 1 : -1;
-            //if (cbTarima.IsVisible)
-            //    cbTarima.SelectedIndex = !string.IsNullOrEmpty(TarimaEncontrado.ToString()) ? TarimaEncontrado - 1 : -1;
-            //if (cbCaja.IsVisible)
-            //    cbCaja.SelectedIndex = !string.IsNullOrEmpty(CajaEncontrado.ToString()) ? CajaEncontrado - 1 : -1;
-
-
             capturando = true;
             cbEstanteria.SelectedIndex = -1;
             cbNivel.Items.Clear();
@@ -604,69 +516,6 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
                 item.Hora = DateTime.Now.ToString("HH:mm:ss");
                 item.Usuario = Global.clave_usuario;
             }
-
-            //string sResponce = "";
-            //string Parametros = "";
-            //string Condicion = $"idReferencia = '{Global.ArticuloEnInventario.id}'";
-            //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacenDetalle", Condicion, "DELETE");
-            //using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //{
-            //    if (response.StatusCode == HttpStatusCode.OK)
-            //    {
-            //        sResponce = "OK";
-            //    }
-            //}
-
-            //Parametros = "";
-            //Condicion = $"CodigoArticulo = '{Global.ArticuloEnInventario.CodigoActual}' and Sucursal='M'";
-            //response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "CatalogoArticuloUbicacion", Condicion, "DELETE");
-            //using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //{
-            //    if (response.StatusCode == HttpStatusCode.OK)
-            //    {
-            //        sResponce = "OK";
-            //    }
-            //}
-
-            //foreach (clsInventarioDetalle Inv_ in RegInventariosDetalle)
-            //{
-            //    Inv_.folioInventario = Global.FolioInventario;
-            //    Inv_.idReferencia = Global.ArticuloEnInventario.id.ToString();
-
-            //    Parametros = $"Familia='{Inv_.Familia}',DescripcionFamilia='{Inv_.DescFamilia}'";
-            //    Condicion = $"ClaveEstanteria='{Inv_.Estanteria}' and Nivel='{Inv_.Nivel}' and Sucursal='M'";
-            //    response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "CatalogoEstanteriasNieveles", Condicion, "UPDATE");
-            //    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //    {
-            //        if (response.StatusCode == HttpStatusCode.OK)
-            //        {
-            //            sResponce = "OK";
-            //        }
-            //    }
-
-            //    string strValues = $"'{Global.FolioInventario}','{Global.ArticuloEnInventario.id}','{Inv_.Seccion}','{Inv_.Pasillo}','{Inv_.Estanteria}','{Inv_.Nivel}','{Inv_.Tarima}','{Inv_.Caja}',";
-            //    strValues += $"'{Inv_.Familia}','{Inv_.Linea}','{Inv_.Grupo}','{Inv_.CodigoArticulo}','{Inv_.Existencia}','{Inv_.UnidadControl}',getdate(),getdate(),'{Global.clave_usuario}','M'";
-            //    string strCampos = "FolioInventario,idReferencia,Seccion,Pasillo,Estanteria,Nivel,Tarima,Contenedor,Familia,Linea,Grupo,CodigoArticulo,Cantidad,UnidadControl,Fecha,Hora,Usuario,Sucursal";
-            //    response = ConfigAPI.GetAPI("GET", "api/Operacion", strValues, "ws_fn_EjecutarQuerySQL", "InventarioAlmacenDetalle", Condicion, "INSERT INTO", strCampos);
-            //    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //    {
-            //        if (response.StatusCode == HttpStatusCode.OK)
-            //        {
-            //            sResponce = "OK";
-            //        }
-            //    }
-            //}
-
-            //Parametros = $"InventarioAlmacen = isnull((select sum(tmp.Cantidad) from InventarioAlmacenDetalle as tmp where tmp.idReferencia=InventarioAlmacen.id),0),Capturado=1";
-            //Condicion = $"InventarioAlmacen.id='{Global.ArticuloEnInventario.id}'";
-            //response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
-            //using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //{
-            //    if (response.StatusCode == HttpStatusCode.OK)
-            //    {
-            //        sResponce = "OK";
-            //    }
-            //}
 
             HttpResponseMessage Response = APIService.PostAPI_GuardarInventario("api/InventarioAlmacen", viewModel_InventarioDetalle.Items).Result;
             if (Response.IsSuccessStatusCode)

@@ -4,7 +4,6 @@ using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Net;
 
 namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 {
@@ -28,7 +27,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 
         public ObservableCollection<Item_InventarioDetalle> Items { get; set; }
         public Command LoadItemsCommand_InventarioDetalle { get; set; }
-        
+
         private ItemsViewModel_InventarioDetalle viewModel_InventarioDetalle;
 
         public frmCapturaInventarioH()
@@ -36,6 +35,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             InitializeComponent();
             NavigationPage.SetBackButtonTitle(this, "Atras");
             Items = new ObservableCollection<Item_InventarioDetalle>();
+
             LoadItemsCommand_InventarioDetalle = new Command(async () => await cargar());
             string Parametros = string.Empty;
             if (consulta)
@@ -506,23 +506,31 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             int iCaja = 0;
             string sSerie = "";
 
-            try
+            if (cbTarima.IsVisible)
             {
-                iTarima = int.Parse(cbTarima.SelectedItem.ToString());
+                try
+                {
+                    iTarima = int.Parse(cbTarima.SelectedItem.ToString());
+                }
+                catch (Exception)
+                {
+                    iTarima = 0;
+                }
             }
-            catch (Exception)
-            {
-                iTarima = 0;
-            }
+            else { iTarima = 0; }
 
-            try
+            if (cbCaja.IsVisible)
             {
-                iCaja = int.Parse(cbCaja.SelectedItem.ToString());
+                try
+                {
+                    iCaja = int.Parse(cbCaja.SelectedItem.ToString());
+                }
+                catch (Exception)
+                {
+                    iCaja = 0;
+                }
             }
-            catch (Exception)
-            {
-                iCaja = 0;
-            }
+            else { iCaja = 0; }
 
             try
             {
@@ -598,7 +606,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                     FolioInventario = Global.FolioInventario
                 });
 
-                NumerosSerieGenerados = ConfigAPI.PostAPI_GenerarNumerosSeries("api/InventarioAlmacenH", "GenerarNumerosSerie", GenNumerosSeries);
+                NumerosSerieGenerados = ConfigAPI.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries);
                 foreach (DataRow r in NumerosSerieGenerados.Rows)
                 {
                     bool existe = false;
@@ -673,7 +681,8 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                     DescFamilia = Global.ArticuloEnInventario.desc_familia,
                     nserie = sSerie,
                     Clasificacion = sClasificacion,
-                    Usuario = Global.clave_usuario
+                    Usuario = Global.clave_usuario,
+                    EsActivo = true // Nuevo campo para indicar si el artículo es Refaccion (false) o Herramienta (true)
                 });
             }
 
@@ -689,7 +698,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
         {
             Item_InventarioDetalle Item_;
             Item_ = (sender as MenuItem).BindingContext as Item_InventarioDetalle;
-            if (Item_.ID !> 0)
+            if (Item_.ID! > 0)
             {
                 await DisplayAlertAsync("Alerta", "Ya no es posible Modificar el Inventario", "OK");
                 return;

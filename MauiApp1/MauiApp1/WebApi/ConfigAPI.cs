@@ -51,7 +51,7 @@ namespace iAlmacen.WebApi
             return true;
         }
 
-        public static HttpWebResponse GetAPI(string MetodoHttp, string Controllador, string Parametros, string MetodoAPI, string Tabla = "", string Condicion = "", string Accion = "", string Campos = "")
+        public static HttpWebResponse GetAPI(string MetodoHttp, string Controllador, string Parametros, string MetodoAPI, string Tabla = "", string Condicion = "", string Accion = "", string Campos = "*")
         {
             //ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(ConfigAPI.AceptarTodosLosCertificados);
             HttpWebRequest request = null;
@@ -96,8 +96,8 @@ namespace iAlmacen.WebApi
 
             if (MetodoAPI == "LoginWebserver")
             {
-                request.Headers.Add("Aes1", $"{Convert.ToBase64String(Global.Key)}");
-                request.Headers.Add("Aes2", $"{Convert.ToBase64String(Global.IV)}");
+                request.Headers.Add("aes1", $"{Convert.ToBase64String(Global.Key)}");
+                request.Headers.Add("aes2", $"{Convert.ToBase64String(Global.IV)}");
             }
 
             //TODO: Authorization y Authentication tokenAPI

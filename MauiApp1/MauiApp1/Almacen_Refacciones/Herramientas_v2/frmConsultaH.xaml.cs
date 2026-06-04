@@ -251,57 +251,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 
             viewModel_Herramientas.Parametros = Parametros;
             viewModel_Herramientas.LoadItemsCommand_herramienta.Execute(null);
-
-            //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_datos_ArticulosH");
-            //using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //{
-            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
-            //    string resp = reader.ReadToEnd();
-            //    if (resp == "[]")
-            //    {
-            //        await DisplayAlertAsync("Alerta", "No se encontraron registros", "OK");
-            //        return;
-            //    }
-            //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            //    foreach (DataRow r in dt.Rows)
-            //    {
-            //        Item_orden_compra _item = new Item_orden_compra();
-            //        _item.id_orden_ = float.Parse(r[0].ToString());
-            //        _item.tipo_orden_ = r[1].ToString();
-            //        RegArticulos.Add(new RegArticulo
-            //        {
-            //            ID = int.Parse(r[0].ToString()),
-            //            CodigoActual = r[1].ToString(),
-            //            CodigoAnterior = r[2].ToString(),
-            //            Descripcion = r[3].ToString(),
-            //            ClaveFamilia = r[4].ToString(),
-            //            ClaveLinea = r[5].ToString(),
-            //            ClaveGrupo = r[6].ToString(),
-            //            desc_familia = r[7].ToString(),
-            //            desc_linea = r[8].ToString(),
-            //            desc_grupo = r[9].ToString(),
-            //            DescMarca = r[10].ToString(),
-            //            DescMedida = r[11].ToString(),
-            //            DescParte = r[12].ToString(),
-            //            existencia = double.Parse(r[13].ToString()),
-            //            Fisico = 0,
-            //            Inventario = "0",
-            //            Aplicado = "0",
-            //            Fecha_ = DateTime.Now.ToShortDateString().ToString(),
-            //            UnidadControl = r[14].ToString(),
-            //            Costo = double.Parse(r[15].ToString()),
-            //            Seccion = r[17].ToString(),
-            //            Pasillo = r[18].ToString(),
-            //            Estanteria = r[19].ToString(),
-            //            Nivel = r[20].ToString(),
-            //            Tarima = r[21].ToString(),
-            //            Contenedor = r[22].ToString(),
-            //            ExisUbi = double.Parse(r[23].ToString())
-            //        });
-            //    }
-            //}
-
-            //ItemsListView.ItemsSource = RegArticulos;
         }
 
         private void btnCancelar_Clicked(Object sender, EventArgs e)
@@ -380,56 +329,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             string Parametros = $",,,,{sSeccion},{sEstanteria},{sNivel},{sTarima},{sContenedor}";
             viewModel_Herramientas.Parametros = Parametros;
             viewModel_Herramientas.LoadItemsCommand_herramienta.Execute(null);
-
-            //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_datos_ArticulosH");
-            //using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //{
-            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
-            //    string resp = reader.ReadToEnd();
-            //    if (resp == "[]")
-            //    {
-            //        await DisplayAlertAsync("Alerta", "No se encontraron registros", "OK");
-            //        return;
-            //    }
-            //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            //    foreach (DataRow r in dt.Rows)
-            //    {
-            //        Item_orden_compra _item = new Item_orden_compra();
-            //        _item.id_orden_ = float.Parse(r[0].ToString());
-            //        _item.tipo_orden_ = r[1].ToString();
-            //        RegArticulos.Add(new RegArticulo
-            //        {
-            //            ID = int.Parse(r[0].ToString()),
-            //            CodigoActual = r[1].ToString(),
-            //            CodigoAnterior = r[2].ToString(),
-            //            Descripcion = r[3].ToString(),
-            //            ClaveFamilia = r[4].ToString(),
-            //            ClaveLinea = r[5].ToString(),
-            //            ClaveGrupo = r[6].ToString(),
-            //            desc_familia = r[7].ToString(),
-            //            desc_linea = r[8].ToString(),
-            //            desc_grupo = r[9].ToString(),
-            //            DescMarca = r[10].ToString(),
-            //            DescMedida = r[11].ToString(),
-            //            DescParte = r[12].ToString(),
-            //            existencia = double.Parse(r[13].ToString()),
-            //            Fisico = 0,
-            //            Inventario = "0",
-            //            Aplicado = "0",
-            //            Fecha_ = DateTime.Now.ToShortDateString().ToString(),
-            //            UnidadControl = r[14].ToString(),
-            //            Costo = double.Parse(r[15].ToString()),
-            //            Seccion = r[17].ToString(),
-            //            Pasillo = r[18].ToString(),
-            //            Estanteria = r[19].ToString(),
-            //            Nivel = r[20].ToString(),
-            //            Tarima = r[21].ToString(),
-            //            Contenedor = r[22].ToString(),
-            //            ExisUbi = double.Parse(r[23].ToString())
-            //        });
-            //    }
-            //}
-            //ItemsListView.ItemsSource = RegArticulos;
         }
 
         private async void btnBuscarFiltro_Clicked(Object sender, EventArgs e)
@@ -442,58 +341,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             string Parametros = $",,,{txtFiltro.Text.Trim()}";
             viewModel_Herramientas.Parametros = Parametros;
             viewModel_Herramientas.LoadItemsCommand_herramienta.Execute(null);
-
-            ////HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_datos_ArticulosH");
-            //// Cambiar al controlador InventarioAlmacenH
-            //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_datos_ArticulosH");
-            //using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //{
-            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
-            //    string resp = reader.ReadToEnd();
-            //    if (resp == "[]")
-            //    {
-            //        await DisplayAlertAsync("Alerta", "No se encontraron registros", "OK");
-            //        return;
-            //    }
-            //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            //    foreach (DataRow r in dt.Rows)
-            //    {
-            //        Item_orden_compra _item = new Item_orden_compra();
-            //        _item.id_orden_ = float.Parse(r[0].ToString());
-            //        _item.tipo_orden_ = r[1].ToString();
-            //        RegArticulos.Add(new RegArticulo
-            //        {
-            //            ID = int.Parse(r[0].ToString()),
-            //            CodigoActual = r[1].ToString(),
-            //            CodigoAnterior = r[2].ToString(),
-            //            Descripcion = r[3].ToString(),
-            //            ClaveFamilia = r[4].ToString(),
-            //            ClaveLinea = r[5].ToString(),
-            //            ClaveGrupo = r[6].ToString(),
-            //            desc_familia = r[7].ToString(),
-            //            desc_linea = r[8].ToString(),
-            //            desc_grupo = r[9].ToString(),
-            //            DescMarca = r[10].ToString(),
-            //            DescMedida = r[11].ToString(),
-            //            DescParte = r[12].ToString(),
-            //            existencia = double.Parse(r[13].ToString()),
-            //            Fisico = 0,
-            //            Inventario = "0",
-            //            Aplicado = "0",
-            //            Fecha_ = DateTime.Now.ToShortDateString().ToString(),
-            //            UnidadControl = r[14].ToString(),
-            //            Costo = double.Parse(r[15].ToString()),
-            //            Seccion = r[17].ToString(),
-            //            Pasillo = r[18].ToString(),
-            //            Estanteria = r[19].ToString(),
-            //            Nivel = r[20].ToString(),
-            //            Tarima = r[21].ToString(),
-            //            Contenedor = r[22].ToString(),
-            //            ExisUbi = double.Parse(r[23].ToString())
-            //        });
-            //    }
-            //}
-            ////ItemsListView.ItemsSource = RegArticulos;
         }
 
         private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
