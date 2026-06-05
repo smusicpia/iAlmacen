@@ -16,7 +16,6 @@ public partial class MainView : ContentPage
 
     private async void EntradaA_Clicked(object sender, EventArgs e)      //Entradas Almacen
     {
-        //await Navigation.PushAsync(new almacen_entradas_compra());  //cv_Almacen_Entradas_OCompra
         await Navigation.PushAsync(new cv_Almacen_Entradas_OCompra());  //cv_Almacen_Entradas_OCompra
     }
 
@@ -27,12 +26,12 @@ public partial class MainView : ContentPage
 
     private async void entradas_remision_Clicked(object sender, EventArgs e)     //Entradas Sin Factura
     {
-        await Navigation.PushAsync(new almacen_entrada_referencia());
+        //await Navigation.PushAsync(new almacen_entrada_referencia());
     }
 
     private async void inventario_reposicion_Clicked(object sender, EventArgs e)      //Inventario Reposicion
     {
-        await Navigation.PushAsync(new inventario_reposicion());
+        //await Navigation.PushAsync(new inventario_reposicion());
     }
 
     private async void invHerramientas_Clicked(object sender, EventArgs e)      //Herramientas
