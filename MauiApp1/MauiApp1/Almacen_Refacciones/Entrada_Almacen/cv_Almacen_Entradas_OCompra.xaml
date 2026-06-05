@@ -4,7 +4,8 @@
              xmlns:vm="clr-namespace:iAlmacen.ViewModels"
              xmlns:converters="clr-namespace:iAlmacen.Converters"
              x:Class="iAlmacen.cv_Almacen_Entradas_OCompra"
-             Title="Entradas por Vigilancia">
+             Title="Entradas por Vigilancia"
+             SafeAreaEdges="All">
     <ContentPage.BindingContext>
         <vm:ItemsViewModel_Vigilancia />
     </ContentPage.BindingContext>
@@ -16,7 +17,7 @@
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="95*" />
+                <RowDefinition Height="100*" />
                 <RowDefinition Height="5*" />
             </Grid.RowDefinitions>
             <StackLayout Grid.Row="0" Padding="0">
@@ -36,7 +37,7 @@
                         <Label FontSize="Medium" Margin="0,10,0,0" TextColor="#006b5e" HorizontalTextAlignment="Center" Grid.Column="4" Text="Vigilante" />
                     </Grid>
                 </StackLayout>
-                <StackLayout HeightRequest="945">
+                <StackLayout HeightRequest="955">
                     <RefreshView Command="{Binding LoadItemsCommand_vigilancia}" IsRefreshing="{Binding IsBusy}" RefreshColor="#872200">
                         <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
                             <CollectionView.EmptyView>
