@@ -18,6 +18,7 @@ public class Item_RegArticulo
     public string DescParte { get; set; }
     public double existencia { get; set; }
     public double Fisico { get; set; }
+    public bool Capturado { get; set; }
     public string FechaCapturado { get; set; }
     public string FechaAplicado { get; set; }
     public string Inventario { get; set; }

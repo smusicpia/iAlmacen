@@ -138,7 +138,7 @@
                                 <Label Grid.Column="1" Text="Medida" TextColor="#006b5e" FontSize="15" />
                                 <Label Grid.Column="2" Text="Parte" TextColor="#006b5e" FontSize="15" />
                                 <Label Grid.Column="3" Text="Existencia" TextColor="#006b5e" FontSize="15" HorizontalOptions="Center" />
-                                <Label Grid.Column="54" Text="Fisico" TextColor="#006b5e" FontSize="15" HorizontalOptions="Center" />
+                                <Label Grid.Column="4" Text="Fisico" TextColor="#006b5e" FontSize="15" HorizontalOptions="Center" />
                             </Grid>
                         </StackLayout>
                         <StackLayout Grid.Row="2">
