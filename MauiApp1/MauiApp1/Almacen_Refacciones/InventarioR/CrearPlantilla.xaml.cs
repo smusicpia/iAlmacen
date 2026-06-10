@@ -3,10 +3,13 @@ using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.Views;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Net;
+
 using ZXing;
 using ZXing.Net.Maui;
 using ZXing.Net.Maui.Controls;
@@ -22,8 +25,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
         private ItemsViewModel_Inventario viewModel_Inventario;
 
         private string _result;
-
-        public string Result
+		
+		public string Result
         {
             get => _result;
             set
@@ -53,7 +56,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             LoadItemsCommand_Inventario = new Command(async () => await cargar());
             BindingContext = viewModel_Inventario = new ItemsViewModel_Inventario();
 
-            CargarCategoriasFamilias();
+			CargarCategoriasFamilias();
             CargarAlmacenistas();
         }
 
@@ -68,7 +71,82 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             cbFamilia.ItemsSource = Funciones.LlenarCategoriaFamilias();
         }
 
-        private async void OnTextResultGenerated(string result)
+		private async Task ObtenerArticulo(string codigoArticulo)
+        {
+			if (codigoArticulo == null) return;
+            //Result = "0U01U1U0U1";
+            //BuscarUbicacion();
+            string Codigo = codigoArticulo;
+            //string[] Valores;
+            //Codigo = Codigo.Substring(1, 5);
+            if (viewModel_Inventario.Items != null)
+            {
+                foreach (Item_RegArticulo RegArt in viewModel_Inventario.Items)
+                {
+                    if (RegArt.CodigoActual == Codigo)
+                    {
+                        await DisplayAlertAsync("Informacion", "Articulo ya se encuentra agregado", "OK");
+                        return;
+                    }
+                }
+            }
+
+			string Parametros = $"1,{Codigo},,,,false,0";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InvCatalogo_Articulos").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]")
+				{
+					await DisplayAlertAsync("Informacion", "El Articulo no existe o no Corresponde al modulo de Refacciones.", "OK");
+					return;
+				}
+				DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					if (r[16].ToString() == "1")
+					{
+						await DisplayAlertAsync("Informacion", "Articulo ya se encuentran en proceso de inventario", "OK");
+						break;
+					}
+
+					Items.Add(new Item_RegArticulo
+					{
+						id = int.Parse(r[0].ToString()),
+						CodigoActual = r[1].ToString(),
+						CodigoAnterior = r[2].ToString(),
+						Descripcion = r[3].ToString(),
+						ClaveFamilia = r[4].ToString(),
+						ClaveLinea = r[5].ToString(),
+						ClaveGrupo = r[6].ToString(),
+						desc_familia = r[7].ToString(),
+						desc_linea = r[8].ToString(),
+						desc_grupo = r[9].ToString(),
+						DescMarca = r[10].ToString(),
+						DescMedida = r[11].ToString(),
+						DescParte = r[12].ToString(),
+						existencia = double.Parse(r[13].ToString()),
+						Fisico = 0,
+						Inventario = "0",
+						Aplicado = "0",
+						Fecha_ = DateTime.Now.ToShortDateString().ToString(),
+						UnidadControl = r[14].ToString(),
+						Costo = double.Parse(r[15].ToString()),
+						Seccion = int.Parse(r[17].ToString().Trim()) == 1 ? r[19].ToString().Trim() : "",
+						DescSeccion = int.Parse(r[17].ToString().Trim()) == 1 ? r[20].ToString().Trim() : "",
+						Pasillo = int.Parse(r[17].ToString().Trim()) == 1 ? r[21].ToString().Trim() : "",
+						Estanteria = int.Parse(r[17].ToString().Trim()) == 1 ? r[22].ToString().Trim() : "",
+						DescEstanteria = int.Parse(r[17].ToString().Trim()) == 1 ? r[23].ToString().Trim() : "",
+						Nivel = int.Parse(r[17].ToString().Trim()) == 1 ? r[24].ToString().Trim() : "",
+						Tarima = int.Parse(r[17].ToString().Trim()) == 1 ? r[25].ToString().Trim() : "",
+						Contenedor = int.Parse(r[17].ToString().Trim()) == 1 ? r[26].ToString().Trim() : ""
+					});
+				}
+			}
+		}
+
+		private async void OnTextResultGenerated(string result)
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
@@ -80,69 +158,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
                 else
                 {
                     Result = $"{result}";
-                    //Result = "0U01U1U0U1";
-                    //BuscarUbicacion();
-                    string Codigo = Result;
-                    //string[] Valores;
-                    Codigo = Codigo.Substring(1, 5);
-                    foreach (Item_RegArticulo RegArt in Items)
-                    {
-                        if (RegArt.CodigoActual == Codigo)
-                        {
-                            await DisplayAlertAsync("Informacion", "Articulo ya se encuentra agregado", "OK");
-                            return;
-                        }
-                    }
-
-                    string Parametros = $"2,{Codigo},,,,false,0";
-                    HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InvCatalogo_Articulos");
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        if (response.StatusCode == HttpStatusCode.NotFound) return;
-                        string resp = reader.ReadToEnd();
-                        if (resp == "[]") return;
-                        DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
-                        foreach (DataRow r in dt.Rows)
-                        {
-                            if (r[16].ToString() == "1")
-                            {
-                                await DisplayAlertAsync("Informacion", "Articulo ya se encuentran en proceso de inventario", "OK");
-                                break;
-                            }
-
-                            Items.Add(new Item_RegArticulo
-                            {
-                                id = int.Parse(r[0].ToString()),
-                                CodigoActual = r[1].ToString(),
-                                CodigoAnterior = r[2].ToString(),
-                                Descripcion = r[3].ToString(),
-                                ClaveFamilia = r[4].ToString(),
-                                ClaveLinea = r[5].ToString(),
-                                ClaveGrupo = r[6].ToString(),
-                                desc_familia = r[7].ToString(),
-                                desc_linea = r[8].ToString(),
-                                desc_grupo = r[9].ToString(),
-                                DescMarca = r[10].ToString(),
-                                DescMedida = r[11].ToString(),
-                                DescParte = r[12].ToString(),
-                                existencia = double.Parse(r[13].ToString()),
-                                Fisico = 0,
-                                Inventario = "0",
-                                Aplicado = "0",
-                                Fecha_ = DateTime.Now.ToShortDateString().ToString(),
-                                UnidadControl = r[14].ToString(),
-                                Costo = double.Parse(r[15].ToString()),
-                                Seccion = int.Parse(r[17].ToString().Trim()) == 1 ? r[19].ToString().Trim() : "",
-                                DescSeccion = int.Parse(r[17].ToString().Trim()) == 1 ? r[20].ToString().Trim() : "",
-                                Pasillo = int.Parse(r[17].ToString().Trim()) == 1 ? r[21].ToString().Trim() : "",
-                                Estanteria = int.Parse(r[17].ToString().Trim()) == 1 ? r[22].ToString().Trim() : "",
-                                DescEstanteria = int.Parse(r[17].ToString().Trim()) == 1 ? r[23].ToString().Trim() : "",
-                                Nivel = int.Parse(r[17].ToString().Trim()) == 1 ? r[24].ToString().Trim() : "",
-                                Tarima = int.Parse(r[17].ToString().Trim()) == 1 ? r[25].ToString().Trim() : "",
-                                Contenedor = int.Parse(r[17].ToString().Trim()) == 1 ? r[26].ToString().Trim() : ""
-                            });
-                        }
-                    }
+					await ObtenerArticulo(result.ToString());
                 }
             });
         }
@@ -310,7 +326,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 
             string Parametros = $"1,,{sFamilia[0].ToString().Trim()},{sLinea[0].ToString().Trim()},{sGrupo[0].ToString().Trim()},false,0";
 
-            viewModel_Inventario.Parametros = Parametros;
+			viewModel_Inventario.Parametros = Parametros;
             viewModel_Inventario.LoadItemsCommand_inventario.Execute(null);
 
             if (viewModel_Inventario.MEncontrado)
@@ -332,24 +348,22 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
                 return;
             }
 
-            foreach (Item_RegArticulo RegArt in Items)
+            if (viewModel_Inventario.Items != null)
             {
-                if (RegArt.CodigoActual == txtClaveArticulo.Text.ToString().Trim())
-                {
-                    await DisplayAlertAsync("Informacion", "Articulo ya se encuentra agregado", "OK");
-                    return;
-                }
-            }
+				foreach (Item_RegArticulo RegArt in viewModel_Inventario.Items)
+				{
+					if (RegArt.CodigoActual == txtClaveArticulo.Text.ToString().Trim())
+					{
+						await DisplayAlertAsync("Informacion", "Articulo ya se encuentra agregado", "OK");
+						return;
+					}
+				}
+			}
 
             string Parametros = $"1,{txtClaveArticulo.Text.ToString().Trim()},,,,false,0";
             viewModel_Inventario.Parametros = Parametros;
-            viewModel_Inventario.LoadItemsCommand_inventario.Execute(null);
-
-            if (!viewModel_Inventario.Items.Any())
-            {
-                await DisplayAlertAsync("Error", "La Clave ingresada no existe o no pertenece a la categoria de Herramienta.", "OK");
-            }
-        }
+			viewModel_Inventario.LoadItemsCommand_inventario.Execute(null);
+		}
 
         private async void btnCodigoBarras_Clicked(Object sender, EventArgs e)
         {
@@ -366,7 +380,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
                     var barcodePage = new BarcodePage();
                     barcodePage.ParentPageName = "Lectura_Codigo";
                     barcodePage.TextResultGenerated += OnTextResultGenerated;
-                }
+					await Navigation.PushAsync(barcodePage);
+				}
                 else
                 {
                     await DisplayAlertAsync("Error", "La funcionalidad de escaneo no es compatible con este dispositivo.", "OK");
@@ -386,6 +401,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             ;
 
             string Parametros = $"1,,,,,true,{cbAleatorio.SelectedItem.ToString().Trim()}";
+            viewModel_Inventario.refaccion = true;
             viewModel_Inventario.Parametros = Parametros;
             viewModel_Inventario.Aleatorio = true;
             viewModel_Inventario.AleatorioCantidad = int.Parse(cbAleatorio.SelectedItem.ToString().Trim());
@@ -406,7 +422,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
         {
             Item_RegArticulo Item_;
             Item_ = (sender as MenuItem).BindingContext as Item_RegArticulo;
-            Items.Remove(Item_);
+            viewModel_Inventario.Items.Remove(Item_);
         }
 
         private async void btnCancelar_Clicked(Object sender, EventArgs e)
@@ -478,8 +494,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             try
             {
                 string Parametros = $"{clave_aut_}";
-                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion");
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion").Result;
+                using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
                 {
                     if (response.StatusCode == HttpStatusCode.NotFound) return;
                     string resp = reader.ReadToEnd();
@@ -559,7 +575,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 
                     await DisplayAlertAsync("Informacion", $"Plantilla Generada Correctamente con el folio {sFolioInventario}", "OK");
                     await Navigation.PopAsync();
-                    Items.Clear();
+                    viewModel_Inventario.Items.Clear();
                     cbFamilia.SelectedIndex = -1;
                     cbLinea.SelectedIndex = -1;
                     cbgrupo.SelectedIndex = -1;

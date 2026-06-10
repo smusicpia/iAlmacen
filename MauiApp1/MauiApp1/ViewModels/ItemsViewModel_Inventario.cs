@@ -29,7 +29,6 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
     public string Parametros = ",,";
     public bool refaccion = false;
 
-
     public ItemsViewModel_Inventario()
     {
         Title = "Lista";
@@ -37,11 +36,11 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
         LoadItemsCommand_inventario = new Command(async () => await ExecuteLoadItemsCommand_Orden());
     }
 
-    public ItemsViewModel_Inventario(string Parametros)
+    public ItemsViewModel_Inventario(string parametros)
     {
         Title = "Lista";
         ItemsInventario = new ObservableCollection<Item_Inventario>();
-        LoadItemsCommand_inventario = new Command(async () => await ExecuteLoadItemsCommand_Cargar(Parametros));
+        LoadItemsCommand_inventario = new Command(async () => await ExecuteLoadItemsCommand_Cargar(parametros));
     }
 
     private async Task ExecuteLoadItemsCommand_Orden()
@@ -52,8 +51,8 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InvCatalogo_Articulos");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InvCatalogo_Articulos").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -130,27 +129,27 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
         }
     }
 
-    private async Task ExecuteLoadItemsCommand_Cargar(string Parametros)
+    private async Task ExecuteLoadItemsCommand_Cargar(string parametros)
     {
         try
         {
-            HttpWebResponse response;
+            HttpResponseMessage response;
             if (refaccion)
             {
-                response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InventarioAlmacen");
+                response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", parametros, "wsp_InventarioAlmacen").Result;
             }
             else
             {
-                response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_InventarioAlmacen");
+                response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", parametros, "wsp_InventarioAlmacen").Result;
             }
-            
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+			ItemsInventario.Clear();
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 if (resp == "[]") return;
                 DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
-                ItemsInventario.Clear();
+                
                 int i = 1;
                 foreach (DataRow r in dt.Rows)
                 {

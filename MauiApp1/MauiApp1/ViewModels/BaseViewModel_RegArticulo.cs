@@ -34,9 +34,23 @@ namespace iAlmacen
             }
         }
 
-        #region INotifyPropertyChanged
+		private Item_ArticuloSalida _item_ArticuloSalida;
+		public Item_ArticuloSalida item_ArticuloSalida
+		{
+			get 
+            {
+                return _item_ArticuloSalida;
+            }
+			set
+            {
+                _item_ArticuloSalida = value;
+                OnPropertyChanged(nameof(item_ArticuloSalida));
+            }
+		}
 
-        public event PropertyChangedEventHandler PropertyChanged;
+		#region INotifyPropertyChanged
+
+		public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
         {

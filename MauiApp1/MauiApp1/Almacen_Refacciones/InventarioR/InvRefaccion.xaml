@@ -2,9 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="iAlmacen.Almacen_Refacciones.InventarioR.InvRefaccion"
-             Title="Inventario Refacciones">
+             Title="Inventario Refacciones"
+             SafeAreaEdges="None">
     <ContentPage.Content>
-        <Grid>
+        <Grid SafeAreaEdges="None">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />

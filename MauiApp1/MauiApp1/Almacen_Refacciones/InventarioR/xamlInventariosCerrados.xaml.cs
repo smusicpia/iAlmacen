@@ -38,7 +38,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             viewModel_Inventario.LoadItemsCommand_inventario.Execute($",{true}");
         }
 
-        private async void btnVerificar_Clicked(Object sender, EventArgs e)
+        private async void btnReabrir_Clicked(Object sender, EventArgs e)
         {
             //clsInventario Item_;
             //Item_ = (sender as MenuItem).BindingContext as clsInventario;
@@ -71,8 +71,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             string sResponce = "";
             string Parametros = "Cerrado = 0";
             string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -83,8 +83,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             if (sResponce == "OK")
             {
                 await DisplayAlertAsync("Información", "Inventario Abierto correctamente", "OK");
-                Items.Clear();
-            }
+				viewModel_Inventario.LoadItemsCommand_inventario.Execute($",{true}");
+			}
         }
 
         private async void btnCancelar_Clicked(Object sender, EventArgs e)
@@ -121,8 +121,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             string sResponce = "";
             string Parametros = "Cancelado = 1";
             string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -133,8 +133,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             if (sResponce == "OK")
             {
                 await DisplayAlertAsync("Informacion", "Inventario Cancelado correctamente", "OK");
-                Items.Clear();
-            }
+				viewModel_Inventario.LoadItemsCommand_inventario.Execute($",{true}");
+			}
         }
 
         private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)

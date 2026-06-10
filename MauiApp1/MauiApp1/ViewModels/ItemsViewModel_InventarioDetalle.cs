@@ -44,8 +44,8 @@ public class ItemsViewModel_InventarioDetalle : BaseViewModel_InventarioDetalle
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_DetalleInventarioAlmacenxArticulo");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_DetalleInventarioAlmacenxArticulo").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();

@@ -1,6 +1,8 @@
 using iAlmacen.Models;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
@@ -42,23 +44,34 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_DetalleInventarioAlmacen");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_DetalleInventarioAlmacen").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 if (resp == "[]") return;
                 DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
                 int i = 1;
-                foreach (DataRow r in dt.Rows)
+				int contarUbicacion = 0;
+				foreach (DataRow r in dt.Rows)
                 {
-                    if (Items.Count > 0)
+					if (Items.Count > 0)
                     {
                         foreach (Item_RegArticulo RegArt in Items)
                         {
                             if (RegArt.id == int.Parse(r[0].ToString()))
                             {
                                 BEncontrado = true;
+                                contarUbicacion++;
+                                RegArt.ExisUbi = contarUbicacion;
+                                RegArt.Seccion = "";
+                                RegArt.DescSeccion = "";
+                                RegArt.Pasillo = "";
+                                RegArt.Estanteria = "";
+                                RegArt.DescEstanteria = "";
+                                RegArt.Nivel = "";
+                                RegArt.Tarima = "";
+                                RegArt.Contenedor = "";
                                 break;
                             }
                         }
@@ -66,7 +79,8 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
 
                     if (!BEncontrado)
                     {
-                        Items.Add(new Item_RegArticulo
+                        contarUbicacion = 1;
+						Items.Add(new Item_RegArticulo
                         {
                             index = i,
                             id = int.Parse(r[0].ToString()),
@@ -83,22 +97,23 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
                             DescMedida = r[8].ToString(),
                             DescParte = r[9].ToString(),
                             existencia = double.Parse(r[10].ToString()),
-                            Fisico = 0,
+                            Fisico = Boolean.Parse(r[27].ToString()) == true ? double.Parse(r[10].ToString()) : 0,
                             Inventario = "0",
                             Aplicado = "0",
                             Fecha_ = DateTime.Now.ToShortDateString().ToString(),
                             UnidadControl = r[11].ToString(),
                             Costo = double.Parse(r[12].ToString()),
-                            Seccion = int.Parse(r[18].ToString().Trim()) == 1 ? r[19].ToString().Trim() : "",
-                            DescSeccion = int.Parse(r[18].ToString().Trim()) == 1 ? r[20].ToString().Trim() : "",
-                            Pasillo = int.Parse(r[18].ToString().Trim()) == 1 ? r[21].ToString().Trim() : "",
-                            Estanteria = int.Parse(r[18].ToString().Trim()) == 1 ? r[22].ToString().Trim() : "",
-                            DescEstanteria = int.Parse(r[18].ToString().Trim()) == 1 ? r[23].ToString().Trim() : "",
-                            Nivel = int.Parse(r[18].ToString().Trim()) == 1 ? r[24].ToString().Trim() : "",
-                            Tarima = int.Parse(r[18].ToString().Trim()) == 1 ? r[25].ToString().Trim() : "",
-                            Contenedor = int.Parse(r[18].ToString().Trim()) == 1 ? r[26].ToString().Trim() : "",
-                            ExisUbi = int.Parse(r[18].ToString().Trim()) == 1 ? double.Parse(r[18].ToString().Trim()) : 0
-                        });
+							Seccion = int.Parse(r[18].ToString().Trim()) == 1 ? r[19].ToString().Trim() : "",
+							DescSeccion = int.Parse(r[18].ToString().Trim()) == 1 ? r[20].ToString().Trim() : "",
+							Pasillo = int.Parse(r[18].ToString().Trim()) == 1 ? r[21].ToString().Trim() : "",
+							Estanteria = int.Parse(r[18].ToString().Trim()) == 1 ? r[22].ToString().Trim() : "",
+							DescEstanteria = int.Parse(r[18].ToString().Trim()) == 1 ? r[23].ToString().Trim() : "",
+							Nivel = int.Parse(r[18].ToString().Trim()) == 1 ? r[24].ToString().Trim() : "",
+							Tarima = int.Parse(r[18].ToString().Trim()) == 1 ? r[25].ToString().Trim() : "",
+							Contenedor = int.Parse(r[18].ToString().Trim()) == 1 ? r[26].ToString().Trim() : "",
+							ExisUbi = int.Parse(r[18].ToString().Trim()) == 1 ? double.Parse(r[18].ToString().Trim()) : 0,
+                            Capturado = Boolean.Parse(r[27].ToString()),
+						});
                         i++;
                     }
                 }

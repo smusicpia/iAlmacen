@@ -54,7 +54,7 @@
                                     <!-- Vinculamos el color de fondo usando el Converter -->
                                     <SwipeView>
                                         <SwipeView.RightItems>
-                                            <SwipeItem Text="Cerrar" IsDestructive="True" CommandParameter="{Binding ID}" BackgroundColor="#F83A52" Clicked="btnVerificar_Clicked" />
+                                            <SwipeItem Text="Cerrar" IsDestructive="True" CommandParameter="{Binding ID}" BackgroundColor="#F83A52" Clicked="btnCerrar_Clicked" />
                                         </SwipeView.RightItems>
                                         <StackLayout>
                                             <Grid Margin="0" BackgroundColor="{Binding ., Converter={StaticResource AltColorConverter}, ConverterParameter={x:Null}}" Padding="2">

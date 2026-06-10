@@ -53,7 +53,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             await Navigation.PushAsync(new xamlArticulosInventario());
         }
 
-        private async void btnVerificar_Clicked(Object sender, EventArgs e)
+        private async void btnCerrar_Clicked(Object sender, EventArgs e)
         {
             Item_Inventario Item_ = (sender as MenuItem).BindingContext as Item_Inventario;
             if (Item_ == null)
@@ -66,8 +66,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             string sResponce = "";
             string Parametros = "Cerrado = 1, Capturado = 1";
             string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {

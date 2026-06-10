@@ -2,11 +2,17 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+             xmlns:converters="clr-namespace:iAlmacen.Converters"
              x:Class="iAlmacen.Almacen_Refacciones.InventarioR.xamlInventariosCerrados"
              Title="Inventarios Cerrados">
     <ContentPage.BindingContext>
         <vm:ItemsViewModel_Inventario />
     </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:AlternateColorConverter x:Key="AltColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -44,13 +50,13 @@
                                 <DataTemplate>
                                     <SwipeView>
                                         <SwipeView.RightItems>
-                                            <SwipeItem Text="Reabrir" IsDestructive="True" CommandParameter="{Binding ID}" Clicked="btnVerificar_Clicked" />
+                                            <SwipeItem Text="Reabrir" IsDestructive="True" CommandParameter="{Binding ID}" Clicked="btnReabrir_Clicked" />
                                             <SwipeItem Text="Cancelar" IsDestructive="True" CommandParameter="{Binding ID}" BackgroundColor="#F83A52" Clicked="btnCancelar_Clicked" />
                                         </SwipeView.RightItems>
                                         <StackLayout>
                                             <Grid Margin="0" Padding="0">
                                                 <StackLayout Margin="0" Padding="0">
-                                                    <Grid Margin="0" Padding="0,15">
+                                                    <Grid Margin="0" Padding="0,15" BackgroundColor="{Binding ., Converter={StaticResource AltColorConverter}, ConverterParameter={x:Null}}">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="90*" />
                                                         </Grid.RowDefinitions>

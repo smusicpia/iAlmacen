@@ -63,7 +63,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             if (consulta)
                 Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
             else
-                Parametros = $"{Global.ArticuloEnInventario.id},null";
+                Parametros = $"{Global.ArticuloEnInventario.id},{Global.ArticuloEnInventario.CodigoActual}";
             BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);
             LeerArticuloEnInventario();
         }
