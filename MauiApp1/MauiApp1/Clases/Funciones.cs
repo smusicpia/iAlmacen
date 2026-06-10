@@ -26,62 +26,69 @@ public class Funciones
 
     public static HttpStatusCode Login(string user, string pass)
     {
-        using (var myAes = Aes.Create())
+        if (Funciones.ChkConnected() != false)
         {
-            Global.Key = myAes.Key;
-            Global.IV = myAes.IV;
-        }
-
-        Global.pass = pass;
-
-        string Parametros = $"{Convert.ToBase64String(SecurityManager.Encrypt(user, Global.Key, Global.IV))}," +
-                            $"{Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV))}";
-
-        //TODO: Authorization y Authentication tokenAPI
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/login/Authenticate", Parametros, "LoginWebserver");
-        //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "LoginWebserver");
-        if (response.StatusCode == HttpStatusCode.OK)
-        {
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            using (var myAes = Aes.Create())
             {
-                if (response.StatusCode == HttpStatusCode.NotFound) return response.StatusCode;
-                string resp = reader.ReadToEnd();
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
+                Global.Key = myAes.Key;
+                Global.IV = myAes.IV;
+            }
+
+            Global.pass = pass;
+
+            string Parametros = $"{Convert.ToBase64String(SecurityManager.Encrypt(user, Global.Key, Global.IV))}," +
+                                $"{Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV))}";
+
+            //TODO: Authorization y Authentication tokenAPI
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/login/Authenticate", Parametros, "LoginWebserver").Result;
+            //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "LoginWebserver");
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
                 {
-                    Global.clave_usuario = user;
-                    Global.nombre_usuario = r["usuario"].ToString();
-                    Global.privilegio_usuario = dt.Rows[0]["privilegio"].ToString();
-                    Global.pass = Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV));
+                    if (response.StatusCode == HttpStatusCode.NotFound) return response.StatusCode;
+                    string resp = reader.ReadToEnd();
+                    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+                    foreach (DataRow r in dt.Rows)
+                    {
+                        Global.clave_usuario = user;
+                        Global.nombre_usuario = r["usuario"].ToString();
+                        Global.privilegio_usuario = dt.Rows[0]["privilegio"].ToString();
+                        Global.pass = Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV));
 
-                    Global.Mitem_almacen = Boolean.Parse(r["almacen"].ToString());
-                    Global.Mitem_proterm = Boolean.Parse(r["producto_terminado"].ToString());
-                    Global.Mitem_bascula = Boolean.Parse(r["bascula"].ToString());
+                        Global.Mitem_almacen = Boolean.Parse(r["almacen"].ToString());
+                        Global.Mitem_proterm = Boolean.Parse(r["producto_terminado"].ToString());
+                        Global.Mitem_bascula = Boolean.Parse(r["bascula"].ToString());
 
-                    Global.mensaje_sistema = r["mensaje"].ToString();
-                    Global.cierra_modulo = Boolean.Parse(r["cierra_modulo"].ToString());
-                    Global.modulo_afectado = r["modulo_afectado"].ToString();
-                    Global.cierra_sistema = Boolean.Parse(r["cierra_sistema"].ToString());
+                        Global.mensaje_sistema = r["mensaje"].ToString();
+                        Global.cierra_modulo = Boolean.Parse(r["cierra_modulo"].ToString());
+                        Global.modulo_afectado = r["modulo_afectado"].ToString();
+                        Global.cierra_sistema = Boolean.Parse(r["cierra_sistema"].ToString());
 
-                    Global.tasa_super = double.Parse(r["porcentaje_supervisor"].ToString());
-                    Global.tasa_admin = double.Parse(r["porcentaje_administrador"].ToString());
-                    Global.tasa_oper = double.Parse(r["porcentaje_operador"].ToString());
-                    //TODO: Authorization y Authentication tokenAPI
-                    Global.tokenAPI = r["TokenApi"].ToString();
-                    //TODO: Refresh tokenAPI
-                    Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
-                    Preferences.Default.Set("tokenAPI", Global.tokenAPI);
-                    Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
-                    Preferences.Default.Set("clave_usuario", Global.clave_usuario);
-                    Preferences.Default.Set("Password", Global.pass);
-                    if (Global.tokenAPI != "")
-                        break;
+                        Global.tasa_super = double.Parse(r["porcentaje_supervisor"].ToString());
+                        Global.tasa_admin = double.Parse(r["porcentaje_administrador"].ToString());
+                        Global.tasa_oper = double.Parse(r["porcentaje_operador"].ToString());
+                        //TODO: Authorization y Authentication tokenAPI
+                        Global.tokenAPI = r["TokenApi"].ToString();
+                        //TODO: Refresh tokenAPI
+                        Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
+                        Preferences.Default.Set("tokenAPI", Global.tokenAPI);
+                        Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
+                        Preferences.Default.Set("clave_usuario", Global.clave_usuario);
+                        Preferences.Default.Set("Password", Global.pass);
+                        if (Global.tokenAPI != "")
+                            break;
+                    }
                 }
             }
-        }
 
-        return response.StatusCode;
-    }
+            return response.StatusCode;
+        }
+		else
+		{
+			return HttpStatusCode.ServiceUnavailable;
+		}
+	}
 
     public static bool ChkConnected()
     {
@@ -95,14 +102,38 @@ public class Funciones
         return false;
     }
 
-    public static List<string> LlenarArea()
+	public async Task<PermissionStatus> CheckAndRequestLocationPermission()
+	{
+		PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+
+		if (status == PermissionStatus.Granted)
+			return status;
+
+		if (status == PermissionStatus.Denied && DeviceInfo.Platform == DevicePlatform.iOS)
+		{
+			// Prompt the user to turn on in settings
+			// On iOS once a permission has been denied it may not be requested again from the application
+			return status;
+		}
+
+		if (Permissions.ShouldShowRationale<Permissions.LocationWhenInUse>())
+		{
+			// Prompt the user with additional information as to why the permission is needed
+		}
+
+		status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+
+		return status;
+	}
+
+	public static List<string> LlenarArea()
     {
         lAreas = new List<String>();
         lAreas.Add("");
         string Parametros = "rtrim(clave_area) clave_area, rtrim(descripcion) descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
             string resp = reader.ReadToEnd();
@@ -123,8 +154,8 @@ public class Funciones
         string From = "salidas_resguardo_herramientas as salida inner join catalogo_areas as area on area.clave_area=salida.codigo_area";
         string Condicion = "not (select count(tmp.status_herramienta) from detalle_salidas_resguardo_herramientas as tmp where tmp.folio_resguardo=salida.folio_resguardo and tmp.status_herramienta='AR') = 0 " +
                            "order by codigo_area";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
             string resp = reader.ReadToEnd();
@@ -143,8 +174,8 @@ public class Funciones
         lCentroCostoN1.Add("");
         string Parametros = "codigo_nivel1, descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and status_centro_n1 = 1 order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl1", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl1", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN1;
             string resp = reader.ReadToEnd();
@@ -163,8 +194,8 @@ public class Funciones
         lCentroCostoN2.Add("");
         string Parametros = "codigo_nivel2,descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and status_centro_n2 = 1 order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl2", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl2", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN2;
             string resp = reader.ReadToEnd();
@@ -183,8 +214,8 @@ public class Funciones
         lCentroCostoN3.Add("");
         string Parametros = "codigo_nivel3, descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and status_centro_n3 = 1 order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl3", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl3", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN3;
             string resp = reader.ReadToEnd();
@@ -204,8 +235,8 @@ public class Funciones
         lCentroCostoN4.Add("");
         string Parametros = "codigo_nivel4, descripcion";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and codigo_nivel3='{Global.strCCnivel3}' and status_centro_n4 = 1 order by descripcion";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl4", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl4", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN4;
             string resp = reader.ReadToEnd();
@@ -225,8 +256,8 @@ public class Funciones
         Responsable.Add("");
         string Parametros = "rtrim(clave_solicitante)clave_solicitante, rtrim(nombre_solicitante)nombre_solicitante";
         string Condicion = $"psucursal='{Global.strSucursal}' order by nombre_solicitante";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "solicitantes", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "solicitantes", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Responsable;
             string resp = reader.ReadToEnd();
@@ -246,8 +277,8 @@ public class Funciones
         Autorizado.Add("");
         string Parametros = "rtrim(codigo_autorizado)codigo_autorizado, rtrim(nombre_autorizado)nombre_autorizado";
         string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' order by nombre_autorizado";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_autorizados", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_autorizados", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Autorizado;
             string resp = reader.ReadToEnd();
@@ -267,8 +298,8 @@ public class Funciones
         Almacenistas.Add("");
         string Parametros = "ClaveIpad,usuario,nombre";
         string Condicion = "ClaveIpad is not null";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "usuarios", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "usuarios", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Almacenistas;
             string resp = reader.ReadToEnd();
@@ -302,8 +333,8 @@ public class Funciones
             From = "catalogo_familia cf";
             Condicion = "Almacen = 1 and status_familia = 1";
         }
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return CatFamilias;
             string resp = reader.ReadToEnd();
@@ -323,8 +354,8 @@ public class Funciones
         CatLineas.Add("");
         string Parametros = "codigo_linea, descripcion";
         string Condicion = $"codigo_familia = '{familia}' and status_linea = 1";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_linea", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_linea", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return CatLineas;
             string resp = reader.ReadToEnd();
@@ -344,8 +375,8 @@ public class Funciones
         CatGrupo.Add("");
         string Parametros = "codigo_grupo, descripcion";
         string Condicion = $"codigo_familia = '{familia}' and codigo_linea = '{linea}' and status_grupo = 1";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_grupo", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_grupo", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return CatGrupo;
             string resp = reader.ReadToEnd();
@@ -369,8 +400,8 @@ public class Funciones
         {
             if (Encontrado != "") Condicion = $"Clave in ({Encontrado}) and Sucursal='{Sucursal}'";
         }
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoSecciones", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoSecciones", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Secciones;
             string resp = reader.ReadToEnd();
@@ -394,15 +425,15 @@ public class Funciones
         return Secciones;
     }
 
-    public static ObservableCollection<Clases.clsEstanteria> LlenarEstanterias(string Sucursal, string Seccion, string Pasillo = "")
+    public static ObservableCollection<Clases.clsEstanteria> LlenarEstanterias(string Sucursal, string Seccion, string? Pasillo = "")
     {
         Estanterias = new ObservableCollection<clsEstanteria>();
         string Parametros = "id,Clave,Tipo,Descripcion,Seccion,Pasillo,NumeroNiveles,Tarimas,NumeroTarimas,Contenedores,ReiniciarNumeracionContenedores,NumeroContenedores,NumeroContenedoresTarima,Sucursal";
         string Condicion = $"Seccion='{Seccion}' and Sucursal='{Sucursal}'";
         if (!string.IsNullOrEmpty(Pasillo))
             Condicion += $" and Pasillo = '{Pasillo}'";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacionacen/SQL", Parametros, "wsp_execute_qwerty", "CatalogoEstanterias", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoEstanterias", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return Estanterias;
             string resp = reader.ReadToEnd();
@@ -437,8 +468,8 @@ public class Funciones
         lSeries = new List<string>();
         lSeries.Add("");
         string Parametros = $"{CodigoArticulo}";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_NumerosSeriexArticulo");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_NumerosSeriexArticulo").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return lSeries;
             string resp = reader.ReadToEnd();

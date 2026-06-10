@@ -1,20 +1,25 @@
 ﻿using iAlmacen.Clases;
 using iAlmacen.Models;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Net;
+using System.Text.Json;
 
 namespace iAlmacen.WebApi
 {
     public class ConfigAPI
     {
-        //**************************************************
-        //** TipoProyecto = D (Pruebas, Desarrollo, Test) **
-        //** TipoProyecto = P (Produccion)                **
-        //**************************************************
+        private static readonly HttpClient _httpClient;
+		private static readonly JsonSerializerOptions _jsonOptions;
+		//**************************************************
+		//** TipoProyecto = D (Pruebas, Desarrollo, Test) **
+		//** TipoProyecto = P (Produccion)                **
+		//**************************************************
 
-        public static string Servidor = "http://192.168.0.204:8055/";
+		public static string Servidor = "http://192.168.0.204:8055/";
         public static string TipoProyecto = "D";     // "P" = Produccion, "D" = Desarrollo
         public static bool Prueba = false;
 
@@ -24,9 +29,26 @@ namespace iAlmacen.WebApi
 
         public static string Metodo = "api/Usuario";
         public static string ContentType = "application/json";
-        //private readonly IAlertDialogService alertDialogService = DependencyService.Get<IAlertDialogService>();
+		//private readonly IAlertDialogService alertDialogService = DependencyService.Get<IAlertDialogService>();
 
-        public static class HttpMethods
+		static ConfigAPI()
+		{
+			//HttpClientHandler insecureHandler = GetInsecureHandler();
+			_httpClient = new HttpClient()
+			{
+				Timeout = TimeSpan.FromSeconds(5), // Ajusta el tiempo de espera según tus necesidades
+				BaseAddress = new Uri(ConfigAPI.Servidor) // Cambia esto por la URL de tu API
+			};
+			_jsonOptions = new JsonSerializerOptions
+			{
+				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+				//PropertyNameCaseInsensitive = true,
+				//DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+				WriteIndented = true
+			};
+		}
+
+		public static class HttpMethods
         {
             public static string Get = "GET";
             public static string Post = "POST";
@@ -51,86 +73,179 @@ namespace iAlmacen.WebApi
             return true;
         }
 
-        public static HttpWebResponse GetAPI(string MetodoHttp, string Controllador, string Parametros, string MetodoAPI, string Tabla = "", string Condicion = "", string Accion = "", string Campos = "*")
+        //public static HttpWebResponse GetAPI(string MetodoHttp, string Controllador, string Parametros, string MetodoAPI, string Tabla = "", string Condicion = "", string Accion = "", string Campos = "*")
+        //{
+        //    //ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(ConfigAPI.AceptarTodosLosCertificados);
+        //    HttpWebRequest request = null;
+        //    HttpWebResponse response = null;
+        //    HttpStatusCode wRespStatusCode;
+        //    switch (MetodoHttp)
+        //    {
+        //        case "POST":
+        //            request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}") as HttpWebRequest;
+        //            request.Method = ConfigAPI.HttpMethods.Post;
+        //            break;
+
+        //        case "PUT":
+        //            request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}") as HttpWebRequest;
+        //            request.Method = ConfigAPI.HttpMethods.Put_Modify;
+        //            break;
+
+        //        case "PATCH":
+        //            request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&Tabla={Tabla}&parametros={Parametros}&Condicion={Condicion}") as HttpWebRequest;
+        //            request.Method = ConfigAPI.HttpMethods.Patch_Modify;
+        //            break;
+
+        //        case "DELETE":
+        //            request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}") as HttpWebRequest;
+        //            request.Method = ConfigAPI.HttpMethods.Delete;
+        //            break;
+
+        //        default:
+        //            switch (Accion)
+        //            {
+        //                case "":
+        //                    request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}") as HttpWebRequest;
+        //                    break;
+
+        //                default:
+        //                    request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&Tabla={Tabla}&parametros={Parametros}&Condicion={Condicion}&Accion={Accion}&Campos={Campos}") as HttpWebRequest;
+        //                    break;
+        //            }
+        //            request.Method = ConfigAPI.HttpMethods.Get;
+        //            break;
+        //    }
+
+        //    if (MetodoAPI == "LoginWebserver")
+        //    {
+        //        request.Headers.Add("aes1", $"{Convert.ToBase64String(Global.Key)}");
+        //        request.Headers.Add("aes2", $"{Convert.ToBase64String(Global.IV)}");
+        //    }
+
+        //    //TODO: Authorization y Authentication tokenAPI
+        //    request.Accept = "application/json";
+        //    if (MetodoAPI != "LoginWebserver" && (Global.tokenAPI != "" || Global.refreshTokenAPI != ""))
+        //    {
+        //        request.Headers.Add("Authorization", $"Bearer {Global.tokenAPI}");
+        //        //TODO: Refresh tokenAPI
+        //        request.Headers.Add("RefreshToken", $"{Global.refreshTokenAPI}");
+        //    }
+
+        //    request.ContentType = "application/json";
+        //    try
+        //    {
+        //        response = (HttpWebResponse)request.GetResponse();
+        //        wRespStatusCode = response.StatusCode;
+        //        return response;
+        //    }
+        //    catch (WebException ex)
+        //    {
+        //        using (WebResponse responsed = ex.Response)
+        //        {
+        //            response = (HttpWebResponse)responsed;
+        //            request = null;
+        //        }
+        //        Preferences.Remove("logueado", string.Empty);
+        //        Preferences.Default.Remove("tokenAPI", string.Empty);
+        //        Preferences.Default.Remove("refreshTokenAPI", string.Empty);
+        //    }
+        //    return response;
+        //}
+
+        private static HttpRequestMessage HttpRequestHeader(HttpRequestMessage httpRequest, string MetodoAPI, string Content = "")
         {
-            //ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(ConfigAPI.AceptarTodosLosCertificados);
-            HttpWebRequest request = null;
-            HttpWebResponse response = null;
-            HttpStatusCode wRespStatusCode;
-            switch (MetodoHttp)
-            {
-                case "POST":
-                    request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}") as HttpWebRequest;
-                    request.Method = ConfigAPI.HttpMethods.Post;
-                    break;
+            httpRequest.Headers.Add("ContentType", "application/json");
+			if (MetodoAPI == "LoginWebserver")
+			{
+				httpRequest.Headers.Add("aes1", $"{Convert.ToBase64String(Global.Key)}");
+				httpRequest.Headers.Add("aes2", $"{Convert.ToBase64String(Global.IV)}");
+			}
 
-                case "PUT":
-                    request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}") as HttpWebRequest;
-                    request.Method = ConfigAPI.HttpMethods.Put_Modify;
-                    break;
+			//TODO: Authorization y Authentication tokenAPI
+			if (MetodoAPI != "LoginWebserver" && (Global.tokenAPI != "" || Global.refreshTokenAPI != ""))
+			{
+				_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Global.tokenAPI);
+				_httpClient.DefaultRequestHeaders.Add("RefreshToken", $"{Global.refreshTokenAPI}");
+			}
 
-                case "PATCH":
-                    request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&Tabla={Tabla}&parametros={Parametros}&Condicion={Condicion}") as HttpWebRequest;
-                    request.Method = ConfigAPI.HttpMethods.Patch_Modify;
-                    break;
+			var content = new StringContent(Content, null, "application/json");
+			httpRequest.Content = content;
 
-                case "DELETE":
-                    request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}") as HttpWebRequest;
-                    request.Method = ConfigAPI.HttpMethods.Delete;
-                    break;
+			return httpRequest;
+		}
 
-                default:
-                    switch (Accion)
-                    {
-                        case "":
-                            request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}") as HttpWebRequest;
-                            break;
+		public static async Task<HttpResponseMessage> GetAPI(string MetodoHttp, string Controllador, string Parametros, string MetodoAPI, string Tabla = "", string Condicion = "", string Accion = "", string Campos = "*")
+		{
+			var request = new HttpRequestMessage();
+			string jsonresponse = string.Empty;
 
-                        default:
-                            request = WebRequest.Create(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&Tabla={Tabla}&parametros={Parametros}&Condicion={Condicion}&Accion={Accion}&Campos={Campos}") as HttpWebRequest;
-                            break;
-                    }
-                    request.Method = ConfigAPI.HttpMethods.Get;
-                    break;
-            }
+			HttpStatusCode wRespStatusCode;
+			switch (MetodoHttp)
+			{
+				case "POST":
+                    request = new HttpRequestMessage(HttpMethod.Post, ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}");
+                    HttpRequestHeader(request, MetodoAPI);
+					//response = await _httpClient.PostAsync(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}", null);
+					break;
 
-            if (MetodoAPI == "LoginWebserver")
-            {
-                request.Headers.Add("aes1", $"{Convert.ToBase64String(Global.Key)}");
-                request.Headers.Add("aes2", $"{Convert.ToBase64String(Global.IV)}");
-            }
+				case "PUT":
+					//response = await _httpClient.PutAsync(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}", null);
+                    request = new HttpRequestMessage(HttpMethod.Put, ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}");
+					HttpRequestHeader(request, MetodoAPI);
+					break;
 
-            //TODO: Authorization y Authentication tokenAPI
-            request.Accept = "application/json";
-            if (MetodoAPI != "LoginWebserver" && (Global.tokenAPI != "" || Global.refreshTokenAPI != ""))
-            {
-                request.Headers.Add("Authorization", $"Bearer {Global.tokenAPI}");
-                //TODO: Refresh tokenAPI
-                request.Headers.Add("RefreshToken", $"{Global.refreshTokenAPI}");
-            }
+				case "PATCH":
+					//response = await _httpClient.PatchAsync(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&Tabla={Tabla}&parametros={Parametros}&Condicion={Condicion}", null);
+                    request = new HttpRequestMessage(HttpMethod.Patch, ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&Tabla={Tabla}&parametros={Parametros}&Condicion={Condicion}");
+					HttpRequestHeader(request, MetodoAPI);
+					break;
 
-            request.ContentType = "application/json";
-            try
-            {
-                response = (HttpWebResponse)request.GetResponse();
-                wRespStatusCode = response.StatusCode;
+				case "DELETE":
+					//response = await _httpClient.DeleteAsync(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}");
+					request = new HttpRequestMessage(HttpMethod.Delete, ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}");
+					HttpRequestHeader(request, MetodoAPI);
+					break;
+
+				default:
+					switch (Accion)
+					{
+						case "":
+							//jsonresponse = await _httpClient.GetStringAsync(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}");
+                            request = new HttpRequestMessage(HttpMethod.Get, ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&parametros={Parametros}");
+							HttpRequestHeader(request, MetodoAPI);
+							break;
+
+						default:
+							//jsonresponse = await _httpClient.GetStringAsync(ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&Tabla={Tabla}&parametros={Parametros}&Condicion={Condicion}&Accion={Accion}&Campos={Campos}");
+                            request = new HttpRequestMessage(HttpMethod.Get, ConfigAPI.Servidor + Controllador + $"/?tProyecto={TipoProyecto}&Metodo={MetodoAPI}&Tabla={Tabla}&parametros={Parametros}&Condicion={Condicion}&Accion={Accion}&Campos={Campos}");
+							HttpRequestHeader(request, MetodoAPI);
+							break;
+					}
+					//request.Method = ConfigAPI.HttpMethods.Get;
+					break;
+			}
+
+			try
+			{
+				var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+				response.EnsureSuccessStatusCode();
                 return response;
-            }
-            catch (WebException ex)
-            {
-                using (WebResponse responsed = ex.Response)
-                {
-                    response = (HttpWebResponse)responsed;
-                    request = null;
-                }
-                Preferences.Remove("logueado", string.Empty);
-                Preferences.Default.Remove("tokenAPI", string.Empty);
-                Preferences.Default.Remove("refreshTokenAPI", string.Empty);
-            }
-            return response;
-        }
+			}
+			catch (WebException ex)
+			{
+				//using (WebResponse responsed = ex.Response)
+				//{
+				//    response = (HttpWebResponse)responsed;
+				//    request = null;
+				//}
+				Preferences.Remove("logueado", string.Empty);
+				Preferences.Default.Remove("tokenAPI", string.Empty);
+				Preferences.Default.Remove("refreshTokenAPI", string.Empty);
+				return new HttpResponseMessage(HttpStatusCode.BadRequest);
+			}
+		}
 
-        public static HttpWebResponse PostAPI_InventarioAlmacenDet(string Controllador, ObservableCollection<clsInventarioDetalle> inventarioDetalle)
+		public static HttpWebResponse PostAPI_InventarioAlmacenDet(string Controllador, ObservableCollection<clsInventarioDetalle> inventarioDetalle)
         {
             ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(ConfigAPI.AceptarTodosLosCertificados);
             HttpWebRequest request = null;
