@@ -8,8 +8,9 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
     public partial class frmConsultaH : ContentPage
     {
         private string _result;
+		//ActivityIndicator _activityIndicator;
 
-        public ObservableCollection<Item_RegArticulo> Items { get; set; }
+		public ObservableCollection<Item_RegArticulo> Items { get; set; }
         public Command LoadItemsCommand_Herramienta { get; set; }
         private ItemsViewModel_Herramienta viewModel_Herramientas;
 
@@ -33,7 +34,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
         protected override void OnAppearing()
         {
             base.OnAppearing();
-
             viewModel_Herramientas.LoadItemsCommand_herramienta.Execute(null);
         }
 
@@ -45,8 +45,9 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             Items = new ObservableCollection<Item_RegArticulo>();
             LoadItemsCommand_Herramienta = new Command(async () => await cargar());
             BindingContext = viewModel_Herramientas = new ItemsViewModel_Herramienta();
+			//_activityIndicator = new ActivityIndicator { IsRunning = false };
 
-            CargarCategoriasFamilias();
+			CargarCategoriasFamilias();
             CargarSecciones();
         }
 
@@ -246,12 +247,15 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             sGrupo = cbgrupo.SelectedItem.ToString().Split('-');
 
             string Parametros = $"{sFamilia[0].ToString().Trim()},{sLinea[0].ToString().Trim()},{sGrupo[0].ToString().Trim()}";
-            //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_datos_ArticulosH");
-            // Cambiar al controlador InventarioAlmacenH
+			//HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_datos_ArticulosH");
+			// Cambiar al controlador InventarioAlmacenH
 
-            viewModel_Herramientas.Parametros = Parametros;
+            Loading.IsVisible = true;
+
+			viewModel_Herramientas.Parametros = Parametros;
             viewModel_Herramientas.LoadItemsCommand_herramienta.Execute(null);
-        }
+            Loading.IsVisible = false;
+		}
 
         private void btnCancelar_Clicked(Object sender, EventArgs e)
         {
@@ -343,13 +347,14 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             viewModel_Herramientas.LoadItemsCommand_herramienta.Execute(null);
         }
 
-        private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var item = e.CurrentSelection.FirstOrDefault() as Item_RegArticulo;
-            if (item == null)
-                return;
-            Global.HerramientaEnInventario = item;
-            await Navigation.PushAsync(new frmCapturaInventarioH(true));
-        }
+        //private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    var item = e.CurrentSelection.FirstOrDefault() as Item_RegArticulo;
+        //    if (item == null)
+        //        return;
+        //    //Global.HerramientaEnInventario = item;
+        //    Global.ArticuloEnInventario = item;
+        //    await Navigation.PushAsync(new frmCapturaInventarioH(false));
+        //}
     }
 }

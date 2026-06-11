@@ -18,6 +18,7 @@ public class ItemsViewModel_Herramienta : BaseViewModel_Herramienta
 
     public ItemsViewModel_Herramienta()
     {
+        IsBusy = false;
         Title = "Lista";
         Items = new ObservableCollection<Item_RegArticulo>();
         LoadItemsCommand_herramienta = new Command(async () => await ExecuteLoadItemsCommand_Orden());
@@ -26,13 +27,13 @@ public class ItemsViewModel_Herramienta : BaseViewModel_Herramienta
     private async Task ExecuteLoadItemsCommand_Orden()
     {
         //if (IsBusy) return;
-        //IsBusy = true;
+        IsBusy = true;
 
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_datos_ArticulosH");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_datos_ArticulosH").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -43,6 +44,7 @@ public class ItemsViewModel_Herramienta : BaseViewModel_Herramienta
                 DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
                 if (dt.Rows.Count > 0)
                 {
+                    int index = 1;
                     foreach (DataRow r in dt.Rows)
                     {
                         Item_orden_compra _item = new Item_orden_compra();
@@ -50,6 +52,7 @@ public class ItemsViewModel_Herramienta : BaseViewModel_Herramienta
                         _item.tipo_orden_ = r[1].ToString();
                         Items.Add(new Item_RegArticulo
                         {
+                            index = index++,
                             id = int.Parse(r[0].ToString()),
                             CodigoActual = r[1].ToString(),
                             CodigoAnterior = r[2].ToString(),
@@ -92,7 +95,8 @@ public class ItemsViewModel_Herramienta : BaseViewModel_Herramienta
         }
         finally
         {
-            IsBusy = false;
+			await Task.Delay(3000);
+			IsBusy = false;
         }
     }
 }
