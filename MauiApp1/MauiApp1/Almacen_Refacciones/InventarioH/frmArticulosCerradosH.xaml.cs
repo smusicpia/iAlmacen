@@ -137,8 +137,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             string cautorizador_ = "";
 
             string Parametros = $"{clave_aut_}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -163,8 +163,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             }
 
             Parametros = $"{Global.FolioInventario}";
-            response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "ws_fnSetAplicarInventario");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "ws_fnSetAplicarInventario").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();

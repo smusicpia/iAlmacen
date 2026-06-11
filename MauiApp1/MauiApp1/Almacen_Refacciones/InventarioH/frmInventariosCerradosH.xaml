@@ -2,13 +2,20 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:iAlmacen.ViewModels"
+             xmlns:converters="clr-namespace:iAlmacen.Converters"
              x:Class="iAlmacen.Almacen_Refacciones.InventarioH.frmInventariosCerradosH"
-             Title="Inventarios Cerrados Herramientas">
+             Title="Inventarios Cerrados Herramientas"
+             SafeAreaEdges="None">
     <ContentPage.BindingContext>
         <vm:ItemsViewModel_Inventario />
     </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:AlternateColorConverter x:Key="AltColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid>
+        <Grid SafeAreaEdges="None">
             <Grid.RowDefinitions>
                 <RowDefinition Height="5*" />
                 <RowDefinition Height="90*" />
@@ -32,50 +39,52 @@
             <StackLayout Grid.Row="1" Margin="0,-2,0,0" Padding="0">
                 <ScrollView>
                     <StackLayout>
-                        <CollectionView ItemsSource="{Binding ItemsInventario}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
-                            <CollectionView.EmptyView>
-                                <ContentView>
-                                    <StackLayout>
-                                        <Label Text="Sin Registros Actualmente" HorizontalOptions="Center" VerticalOptions="Center" TextColor="DarkSlateGray" FontSize="Medium" />
-                                    </StackLayout>
-                                </ContentView>
-                            </CollectionView.EmptyView>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <SwipeView>
-                                        <SwipeView.RightItems>
-                                            <SwipeItem Text="Reabrir" IsDestructive="True" CommandParameter="{Binding ID}" Clicked="btnVerificar_Clicked" />
-                                            <SwipeItem Text="Cancelar" IsDestructive="True" CommandParameter="{Binding ID}" BackgroundColor="#F83A52" Clicked="btnCancelar_Clicked" />
-                                        </SwipeView.RightItems>
+                        <!--<RefreshView IsRefreshing="{Binding IsBusy}" Command="{Binding LoadItemsCommand_inventario}" RefreshColor="#872200">-->
+                            <CollectionView ItemsSource="{Binding ItemsInventario}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                                <CollectionView.EmptyView>
+                                    <ContentView>
                                         <StackLayout>
-                                            <Grid Margin="0" Padding="0">
-                                                <StackLayout Margin="0" Padding="0">
-                                                    <Grid Margin="0" Padding="0,15">
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="90*" />
-                                                        </Grid.RowDefinitions>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="2*" />
-                                                            <ColumnDefinition Width="20*" />
-                                                            <ColumnDefinition Width="20*" />
-                                                            <ColumnDefinition Width="19*" />
-                                                            <ColumnDefinition Width="19*" />
-                                                            <ColumnDefinition Width="18*" />
-                                                            <ColumnDefinition Width="2*" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <Label Grid.Row="0" Grid.Column="1" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Folio}" />
-                                                        <Label Grid.Row="0" Grid.Column="2" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Fecha}" />
-                                                        <Label Grid.Row="0" Grid.Column="3" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding NoArticulos}" />
-                                                        <Label Grid.Row="0" Grid.Column="4" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Capturados}" />
-                                                        <Label Grid.Row="0" Grid.Column="5" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Restantes}" />
-                                                    </Grid>
-                                                </StackLayout>
-                                            </Grid>
+                                            <Label Text="Sin Registros Actualmente" HorizontalOptions="Center" VerticalOptions="Center" TextColor="DarkSlateGray" FontSize="Medium" />
                                         </StackLayout>
-                                    </SwipeView>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                                    </ContentView>
+                                </CollectionView.EmptyView>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <SwipeView>
+                                            <SwipeView.RightItems>
+                                                <SwipeItem Text="Reabrir" IsDestructive="True" CommandParameter="{Binding ID}" Clicked="btnVerificar_Clicked" />
+                                                <SwipeItem Text="Cancelar" IsDestructive="True" CommandParameter="{Binding ID}" BackgroundColor="#F83A52" Clicked="btnCancelar_Clicked" />
+                                            </SwipeView.RightItems>
+                                            <StackLayout>
+                                                <Grid Margin="0" Padding="0">
+                                                    <StackLayout Margin="0" Padding="0">
+                                                        <Grid Margin="0" Padding="0,15">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="90*" />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="2*" />
+                                                                <ColumnDefinition Width="20*" />
+                                                                <ColumnDefinition Width="20*" />
+                                                                <ColumnDefinition Width="19*" />
+                                                                <ColumnDefinition Width="19*" />
+                                                                <ColumnDefinition Width="18*" />
+                                                                <ColumnDefinition Width="2*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Label Grid.Row="0" Grid.Column="1" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Folio}" />
+                                                            <Label Grid.Row="0" Grid.Column="2" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Fecha}" />
+                                                            <Label Grid.Row="0" Grid.Column="3" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding NoArticulos}" />
+                                                            <Label Grid.Row="0" Grid.Column="4" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Capturados}" />
+                                                            <Label Grid.Row="0" Grid.Column="5" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" FontSize="Medium" TextColor="#3E3E3E" Text="{Binding Restantes}" />
+                                                        </Grid>
+                                                    </StackLayout>
+                                                </Grid>
+                                            </StackLayout>
+                                        </SwipeView>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        <!--</RefreshView>-->
                     </StackLayout>
                 </ScrollView>
             </StackLayout>

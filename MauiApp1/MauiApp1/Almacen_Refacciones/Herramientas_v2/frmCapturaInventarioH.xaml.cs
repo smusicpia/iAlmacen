@@ -46,6 +46,11 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             LeerArticuloEnInventario();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Capturado"></param>
+        /// <param name="tInventario">H=Herramienta, R=Refacciones</param>
         public frmCapturaInventarioH(bool Capturado, string tInventario = "H")
         {
             InitializeComponent();
@@ -57,7 +62,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             LoadItemsCommand_InventarioDetalle = new Command(async () => await cargar());
             string Parametros = string.Empty;
             if (consulta)
-                Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
+                Parametros = $"{Global.ArticuloEnInventario.id},{Global.ArticuloEnInventario.CodigoActual}";
             else
                 Parametros = $"{Global.ArticuloEnInventario.id},null";
             BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);

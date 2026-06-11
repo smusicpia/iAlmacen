@@ -49,8 +49,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             string sResponce = "";
             string Parametros = "Cerrado = 1, Capturado = 1";
             string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -63,7 +63,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
                 await DisplayAlertAsync("Informacion", "Inventario cerrado correctamente", "OK");
                 //CargarInventariosDisponibles();
                 Items.Clear();
-            }
+				viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},false,true");
+			}
         }
 
         private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)

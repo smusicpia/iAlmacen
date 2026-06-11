@@ -39,7 +39,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             if (item == null)
                 return;
             Global.ArticuloEnInventario = item;
-            await Navigation.PushAsync(new frmCapturaInventarioH(false));
+            await Navigation.PushAsync(new frmCapturaInventarioH(item.Capturado));
         }
     }
 }
