@@ -34,10 +34,10 @@ namespace iAlmacen.WebApi
 		static ConfigAPI()
 		{
 			//HttpClientHandler insecureHandler = GetInsecureHandler();
-			_httpClient = new HttpClient()
+			_httpClient = new HttpClient
 			{
 				Timeout = TimeSpan.FromSeconds(5), // Ajusta el tiempo de espera según tus necesidades
-				BaseAddress = new Uri(ConfigAPI.Servidor) // Cambia esto por la URL de tu API
+				BaseAddress = new Uri(ConfigAPI.Servidor), // Cambia esto por la URL de tu API
 			};
 			_jsonOptions = new JsonSerializerOptions
 			{
@@ -164,8 +164,17 @@ namespace iAlmacen.WebApi
 			//TODO: Authorization y Authentication tokenAPI
 			if (MetodoAPI != "LoginWebserver" && (Global.tokenAPI != "" || Global.refreshTokenAPI != ""))
 			{
-				_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Global.tokenAPI);
-				_httpClient.DefaultRequestHeaders.Add("RefreshToken", $"{Global.refreshTokenAPI}");
+                if (_httpClient.DefaultRequestHeaders.Authorization == null)
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Global.tokenAPI);
+                    //            if (_httpClient.DefaultRequestHeaders.Contains("RefreshToken"))
+                    //            {
+                    //                _httpClient.DefaultRequestHeaders.GetValues("RefreshToken").ToList().ForEach(x => _httpClient.DefaultRequestHeaders.Remove("RefreshToken"));
+                    //}
+                }
+                httpRequest.Headers.Add("RefreshToken", $"{Global.refreshTokenAPI}");
+
+				//_httpClient.DefaultRequestHeaders.Add("RefreshToken", $"{Global.refreshTokenAPI}");
 			}
 
 			var content = new StringContent(Content, null, "application/json");
