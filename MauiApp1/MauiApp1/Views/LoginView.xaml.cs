@@ -65,9 +65,5 @@ public partial class LoginView : ContentPage
 
         Preferences.Set("logueado", "si");
         Application.Current.MainPage = new AppShell();
-
-        //var detailPage = new Window(new AppShell());
-        //await Navigation.PushAsync(new MainView());
-        //await Shell.Current.GoToAsync("mainview");
     }
 }

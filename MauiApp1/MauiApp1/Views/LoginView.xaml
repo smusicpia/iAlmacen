@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:iAlmacen.ViewModels"
              Title="LoginView"
              NavigationPage.HasNavigationBar="False"
-             SafeAreaEdges="All">
+             SafeAreaEdges="None">
     <ContentPage.BindingContext>
         <vm:LoginViewModel />
     </ContentPage.BindingContext>
@@ -14,7 +14,7 @@
             <Color x:Key="Accent">#96d1ff</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <Grid RowDefinitions=".3*, .7*">
+    <Grid RowDefinitions=".3*, .7*" SafeAreaEdges="SoftInput">
         <Image Source="mapsa.jpg" Opacity="0.8" Aspect="AspectFill" />
         <Grid BackgroundColor="#Fee4b9" Opacity=".2" />
         <Grid ColumnDefinitions="*,*">
