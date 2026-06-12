@@ -28,8 +28,8 @@ public class ItemsViewModel_Vigilancia : BaseViewModel_Vigilancia
         {
             Items.Clear();
             string Parametros = $"{Global.cfiltro_},{0}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "sp_entradas_vigilancia");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "sp_entradas_vigilancia").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
