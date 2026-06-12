@@ -8,7 +8,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
     public partial class frmConsultaH : ContentPage
     {
         private string _result;
-		//ActivityIndicator _activityIndicator;
 
 		public ObservableCollection<Item_RegArticulo> Items { get; set; }
         public Command LoadItemsCommand_Herramienta { get; set; }
@@ -45,7 +44,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             Items = new ObservableCollection<Item_RegArticulo>();
             LoadItemsCommand_Herramienta = new Command(async () => await cargar());
             BindingContext = viewModel_Herramientas = new ItemsViewModel_Herramienta();
-			//_activityIndicator = new ActivityIndicator { IsRunning = false };
 
 			CargarCategoriasFamilias();
             CargarSecciones();

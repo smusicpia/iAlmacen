@@ -32,11 +32,13 @@
 	<ItemGroup>
 	  <Compile Remove="Almacen_Refacciones\Entrada_Almacen\almacen_entradas_compra.xaml.cs" />
 	  <Compile Remove="Almacen_Refacciones\Salida_Almacen\Almacen_Salidas_Captura.xaml.cs" />
+	  <Compile Remove="Views\BarcodeScannerPage.xaml.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiXaml Remove="Almacen_Refacciones\Entrada_Almacen\almacen_entradas_compra.xaml" />
 	  <MauiXaml Remove="Almacen_Refacciones\Salida_Almacen\Almacen_Salidas_Captura.xaml" />
+	  <MauiXaml Remove="Views\BarcodeScannerPage.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -55,6 +57,12 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Almacen_Refacciones\InventarioH\frmInventariosDisponiblesH.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Almacen_Refacciones\InventarioR\CrearPlantilla.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Almacen_Refacciones\InventarioR\InventariosDisponibles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Almacen_Refacciones\Inventario_Reposicion\Item_inventario_reposicion.xaml">

@@ -27,7 +27,8 @@ namespace iAlmacen
             builder.Logging.AddDebug();
 #endif
 
-            return builder;
+            //builder.Services.AddSingleton<ItemsViewModel_Recoleccion>();
+			return builder;
         }
     }
 }

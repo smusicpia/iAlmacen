@@ -35,7 +35,6 @@ namespace iAlmacen
                 {
                     MainPage = new LoginView();
                 }
-                
             }
         }
 
