@@ -55,8 +55,8 @@ namespace iAlmacen.Almacen_Refacciones.Entrada_Almacen
             string Condicion = $"tipo_articulo = 'B' and status_articulo = 1 and control_bascula = 0 and sin_inventario = 0 and uso_gasto = 0 " +
                 "and uso_herramienta = 0 and extintor = 0 and insumo_intendencia = 0 and Combustible = 0 and uso_servicio = 0 " +
                 $"and codigo_articulo in ({Parametro})";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_articulo", Condicion, "SELECT");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_articulo", Condicion, "SELECT").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -106,7 +106,7 @@ namespace iAlmacen.Almacen_Refacciones.Entrada_Almacen
             {
                 string Parametros = string.Empty;
                 string Condicion = string.Empty;
-                HttpWebResponse response = null;
+				HttpResponseMessage response = null;
                 if (items.No)
                 {
                     continue;
@@ -127,8 +127,8 @@ namespace iAlmacen.Almacen_Refacciones.Entrada_Almacen
 
                     Parametros = "Control_Area=1";
                     Condicion = $"codigo_articulo='{items.codigo_articulo}'";
-                    response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "catalogo_articulo", Condicion, "UPDATE");
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "catalogo_articulo", Condicion, "UPDATE").Result;
+                    using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
                     {
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
@@ -141,8 +141,8 @@ namespace iAlmacen.Almacen_Refacciones.Entrada_Almacen
                 {
                     Parametros = "ImpresionEtiqueta=0";
                     Condicion = $"codigo_articulo='{items.codigo_articulo}'";
-                    response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "catalogo_articulo", Condicion, "UPDATE");
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "catalogo_articulo", Condicion, "UPDATE").Result;
+                    using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
                     {
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
@@ -155,8 +155,8 @@ namespace iAlmacen.Almacen_Refacciones.Entrada_Almacen
                 string Campos = "codigo_articulo,impresora,cantidad";
                 Parametros = $"'{items.codigo_articulo}','{Global.ImpresoraEtiquetas}','{items.Cantidad}'";
                 Condicion = "";
-                response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "impresionetiquetas", Condicion, "INSERT INTO", Campos);
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "impresionetiquetas", Condicion, "INSERT INTO", Campos).Result;
+                using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
                 {
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
