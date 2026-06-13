@@ -14,14 +14,14 @@ namespace iAlmacen.WebApi
     {
         private static readonly HttpClient _httpClient;
 		private static readonly JsonSerializerOptions _jsonOptions;
-		//**************************************************
-		//** TipoProyecto = D (Pruebas, Desarrollo, Test) **
-		//** TipoProyecto = P (Produccion)                **
-		//**************************************************
+        //**************************************************
+        //** TipoProyecto = D (Pruebas, Desarrollo, Test) **
+        //** TipoProyecto = P (Produccion)                **
+        //**************************************************
 
-		public static string Servidor = "http://192.168.0.204:8055/";
+        public static string Servidor = "http://192.168.0.204:8055/";
         public static string TipoProyecto = "D";     // "P" = Produccion, "D" = Desarrollo
-        public static bool Prueba = false;
+        public static bool Prueba = TipoProyecto=="P" ? false : true;
 
         //public static string Servidor = "https://localhost:44398/";
         //public static string TipoProyecto = "D";    // "P" = Produccion, "D" = Desarrollo

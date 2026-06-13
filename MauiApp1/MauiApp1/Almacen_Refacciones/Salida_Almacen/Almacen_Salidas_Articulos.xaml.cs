@@ -152,6 +152,11 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 		{
 			Result = $"{codArticulo}";
 			string Codigo = Result;
+			if (Codigo.Length != 5)
+			{
+				await DisplayAlertAsync("Información", $"El formato del código escaneado {Codigo} no es válido para un Articulo.", "OK");
+				return;
+			}
 			//Codigo = Codigo.Substring(1, 5);
 
 			// Para pruebas
@@ -174,7 +179,7 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 					{
 						if (r[16].ToString() == "1")
 						{
-							await DisplayAlertAsync("Informacion", "Articulo ya se encuentran en proceso de inventario", "OK");
+							await DisplayAlertAsync("Informacion", "Articulo ya se encuentran en proceso de inventario.", "OK");
 							break;
 						}
 
@@ -249,67 +254,68 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 
 		private async Task obtenerDatosUbicacion(string codUbicacion)
 		{
-			if (string.IsNullOrEmpty(codUbicacion))
+			Result = $"{codUbicacion}";
+			//string strUbicacion = "0U19U3U0U8";
+			string Codigo = lblClave.Text;
+			//Result = "0U01U2U3U4";
+			// 0 - U01 Estanteria - U2 Nivel - U3 Tarima - U4 Contenedor
+			//BuscarUbicacion();
+
+			//string Codigo = Result;
+			//string[] Valores;
+			//Codigo = Codigo.Substring(2, 5);
+			//string Codigo = "00391";
+
+			string[] Ubicacion;
+			Ubicacion = Result.ToString().Split('U');
+
+			if (Ubicacion.Length != 5)
 			{
-				Result = "";
+				await DisplayAlertAsync("Información", $"El formato del código escaneado {codUbicacion} no es válido para una Ubicacion.", "OK");
+				return;
 			}
-			else
+
+			if (Ubicacion[0] == "0")
 			{
-				Result = $"{codUbicacion}";
-				//string strUbicacion = "0U19U3U0U8";
-				string Codigo = lblClave.Text;
-				//Result = "0U01U2U3U4";
-				// 0 - U01 Estanteria - U2 Nivel - U3 Tarima - U4 Contenedor
-				//BuscarUbicacion();
-
-				//string Codigo = Result;
-				//string[] Valores;
-				//Codigo = Codigo.Substring(2, 5);
-				//string Codigo = "00391";
-				string[] Ubicacion;
-				Ubicacion = Result.ToString().Split('U');
-				if (Ubicacion[0] == "0")
+				string Parametros = $"{Codigo},{Ubicacion[1]},{Ubicacion[2]},{Ubicacion[3]},{Ubicacion[4]}";
+				HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DatosUbicacion").Result;
+				using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
 				{
-					string Parametros = $"{Codigo},{Ubicacion[1]},{Ubicacion[2]},{Ubicacion[3]},{Ubicacion[4]}";
-					HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DatosUbicacion").Result;
-					using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+					if (response.StatusCode == HttpStatusCode.NotFound) return;
+					string resp = reader.ReadToEnd();
+					if (resp == "[]") return;
+					DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+					foreach (DataRow r in dt.Rows)
 					{
-						if (response.StatusCode == HttpStatusCode.NotFound) return;
-						string resp = reader.ReadToEnd();
-						if (resp == "[]") return;
-						DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-						foreach (DataRow r in dt.Rows)
+						switch (nUbicaciones)
 						{
-							switch (nUbicaciones)
-							{
-								case 0:
-									break;
+							case 0:
+								break;
 
-								case 1:
-									break;
+							case 1:
+								break;
 
-								default:
-									lblSeccion.Text = r[2].ToString().Trim();
-									lblPasillo.Text = r[3].ToString().Trim();
-									lblEstanteria.Text = r[5].ToString().Trim();
-									lblNivel.Text = r[6].ToString().Trim();
-									lblTarima.Text = r[7].ToString().Trim();
-									lblContenedor.Text = r[8].ToString().Trim();
-									lblExistenciaUbicacion.Text = r[10].ToString().Trim();
-									bUbicacionCapturada = true;
-									break;
-							}
+							default:
+								lblSeccion.Text = r[2].ToString().Trim();
+								lblPasillo.Text = r[3].ToString().Trim();
+								lblEstanteria.Text = r[5].ToString().Trim();
+								lblNivel.Text = r[6].ToString().Trim();
+								lblTarima.Text = r[7].ToString().Trim();
+								lblContenedor.Text = r[8].ToString().Trim();
+								lblExistenciaUbicacion.Text = r[10].ToString().Trim();
+								bUbicacionCapturada = true;
+								break;
 						}
 					}
 				}
-				if (Ubicacion[0] != "0")
-				{
-					await DisplayAlertAsync("Informacion", "La Ubicacion no existe, favor de verificar la información.", "OK");
-				}
-				else if (double.Parse(lblExistenciaUbicacion.Text) < 1)
-				{
-					await DisplayAlertAsync("Informacion", "El articulo no cuenta con existencia en la ubicacion seleccionada", "OK");
-				}
+			}
+			if (Ubicacion[0] != "0")
+			{
+				await DisplayAlertAsync("Informacion", "La Ubicacion no existe, favor de verificar la información.", "OK");
+			}
+			else if (double.Parse(lblExistenciaUbicacion.Text) < 1)
+			{
+				await DisplayAlertAsync("Informacion", "El articulo no cuenta con existencia en la ubicacion seleccionada.", "OK");
 			}
 		}
 
@@ -364,13 +370,13 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 
 				if (!ControlEncontrado)
 				{
-					await DisplayAlertAsync("Informacion", "Etiqueta invalida", "OK");
+					await DisplayAlertAsync("Informacion", "Etiqueta invalida.", "OK");
 				}
 				else
 				{
 					if (sAreaAsignado != Global.strArea)
 					{
-						await DisplayAlertAsync("Informacion", "Los articulos asignados pertenecen a otra area, debera solicitar la autorizacion para entregarlos", "OK");
+						await DisplayAlertAsync("Informacion", "Los articulos asignados pertenecen a otra area, debera solicitar la autorizacion para entregarlos.", "OK");
 					}
 				}
 			}
@@ -378,15 +384,15 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 
 		private async void OnTextResultArtGenerated(string result)
 		{
-			MainThread.BeginInvokeOnMainThread(() =>
+			MainThread.BeginInvokeOnMainThread(async () =>
 			{
 				if (string.IsNullOrEmpty(result))
 				{
-					DisplayAlertAsync("Informacion", "No se ha escaneado un código válido", "OK");
+					await DisplayAlertAsync("Informacion", "No se ha escaneado un código válido.", "OK");
 					return;
 				}
 
-				obtenerDatosArticulo(result);
+				await obtenerDatosArticulo(result);
 			});
 		}
 
@@ -425,7 +431,7 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 			{
 				if (string.IsNullOrEmpty(result))
 				{
-					await DisplayAlertAsync("Informacion", "No se ha escaneado un código válido", "OK");
+					await DisplayAlertAsync("Informacion", "No se ha escaneado un código válido.", "OK");
 					return;
 				}
 
@@ -482,7 +488,7 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 			{
 				if (string.IsNullOrEmpty(result))
 				{
-					await DisplayAlertAsync("Informacion", "No se ha escaneado un código válido", "OK");
+					await DisplayAlertAsync("Informacion", "No se ha escaneado un código válido.", "OK");
 					return;
 				}
 

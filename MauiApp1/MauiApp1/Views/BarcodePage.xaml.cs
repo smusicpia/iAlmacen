@@ -71,7 +71,7 @@ public partial class BarcodePage : ContentPage
     public async Task SendBarcodeTextAsync(string textConverterBarcode)
     {
         // Esperar 3 segundos
-        await Task.Delay(1000);
+        await Task.Delay(100);
 
         //// Invocar el evento con el stream de la imagen generada
         //ImageStreamGenerated?.Invoke(imageBytes);
