@@ -93,8 +93,8 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             string sResponce = "";
             string Parametros = "aplicado=0,cerrado=0";
             string Condicion = $"codigo_autorizado='{Item_.clave}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -114,8 +114,8 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             string cautorizador_ = "";
 
             string Parametros = $"{clave_aut_}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "spget_login_autorizacion");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -129,7 +129,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                 foreach (DataRow r in dt.Rows)
                 {
                     cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
-                    cautorizador_ = dt.Rows[0][0].ToString(); ;
+                    cautorizador_ = dt.Rows[0][0].ToString();
                 }
             }
 
@@ -140,8 +140,8 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             }
 
             Parametros = $"{EmpleadoAplicar_clave}";
-            response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_AplicarInventarioH");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_AplicarInventarioH").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
