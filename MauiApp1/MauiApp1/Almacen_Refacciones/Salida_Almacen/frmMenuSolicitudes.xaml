@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="iAlmacen.Almacen_Refacciones.Salida_Almacen.frmMenuSolicitudes"
              Title="Salidas Almacen"
-             SafeAreaEdges="All">
+             SafeAreaEdges="None">
     <ContentPage.Content>
-        <Grid>
+        <Grid SafeAreaEdges="None">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50*" />
                 <RowDefinition Height="50*" />
