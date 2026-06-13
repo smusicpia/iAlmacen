@@ -62,16 +62,16 @@
                             <Label Text="Centro de Costo Nivel 3" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="5" Grid.ColumnSpan="2" />
                             <Label Text="Centro de Costo Nivel 4" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="6" Grid.ColumnSpan="2" />
 
-                            <Label x:Name="lblClave" Text="" FontSize="Large" Grid.Row="0" Grid.Column="1" />
-                            <Label x:Name="lblDescripcion" Text="" FontSize="Large" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" />
-                            <Label x:Name="lblMedida" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="1" />
-                            <Label x:Name="lblMarca" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="3" />
-                            <Label x:Name="lblParte" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="5" />
-                            <Label x:Name="lblFamilia" Text="" FontSize="Large" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" />
-                            <Label x:Name="lblLinea" Text="" FontSize="Large" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" />
-                            <Label x:Name="lblGrupo" Text="" FontSize="Large" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" />
-                            <Picker x:Name="cbNivel3" FontSize="Large" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="4" SelectedIndexChanged="cbNivel3_SelectedIndexChanged" />
-                            <Picker x:Name="cbNivel4" FontSize="Large" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="4" />
+                            <Label x:Name="lblClave" Text="" FontSize="Large" Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" />
+                            <Label x:Name="lblDescripcion" Text="" FontSize="Large" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="5,0,0,0"/>
+                            <Label x:Name="lblMedida" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="1" Margin="5,5,0,0" />
+                            <Label x:Name="lblMarca" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="3" Margin="5,5,0,0"/>
+                            <Label x:Name="lblParte" Text="" FontSize="Medium" Grid.Row="1" Grid.Column="5" Margin="5,5,0,0" />
+                            <Label x:Name="lblFamilia" Text="" FontSize="Large" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" Margin="5,0,0,0" />
+                            <Label x:Name="lblLinea" Text="" FontSize="Large" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Margin="5,0,0,0" />
+                            <Label x:Name="lblGrupo" Text="" FontSize="Large" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Margin="5,0,0,0" />
+                            <Picker x:Name="cbNivel3" FontSize="Large" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="4" SelectedIndexChanged="cbNivel3_SelectedIndexChanged" Margin="5,0,0,0"/>
+                            <Picker x:Name="cbNivel4" FontSize="Large" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="4" Margin="5,0,0,0" />
                         </Grid>
                     </Border>
                 </Border>
@@ -96,16 +96,16 @@
                             <Label Text="Tarima" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" Grid.Column="2" />
                             <Label Text="Contenedor" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="2" Grid.Column="2" />
 
-                            <Label x:Name="lblSeccion" Text="" FontSize="Large" Grid.Row="0" Grid.Column="1" />
-                            <Label x:Name="lblPasillo" Text="" FontSize="Large" Grid.Row="1" Grid.Column="1" />
-                            <Label x:Name="lblEstanteria" Text="" FontSize="Large" Grid.Row="2" Grid.Column="1" />
-                            <Label x:Name="lblNivel" Text="" FontSize="Large" Grid.Row="0" Grid.Column="3" />
-                            <Label x:Name="lblTarima" Text="" FontSize="Large" Grid.Row="1" Grid.Column="3" />
-                            <Label x:Name="lblContenedor" Text="" FontSize="Large" Grid.Row="2" Grid.Column="3" />
+                            <Label x:Name="lblSeccion" Text="" FontSize="Large" Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" />
+                            <Label x:Name="lblPasillo" Text="" FontSize="Large" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0" />
+                            <Label x:Name="lblEstanteria" Text="" FontSize="Large" Grid.Row="2" Grid.Column="1" Margin="5,0,0,0" />
+                            <Label x:Name="lblNivel" Text="" FontSize="Large" Grid.Row="0" Grid.Column="3" Margin="5,0,0,0" />
+                            <Label x:Name="lblTarima" Text="" FontSize="Large" Grid.Row="1" Grid.Column="3" Margin="5,0,0,0" />
+                            <Label x:Name="lblContenedor" Text="" FontSize="Large" Grid.Row="2" Grid.Column="3" Margin="5,0,0,0" />
                         </Grid>
                     </Border>
                 </Border>
-                <Border HeightRequest="100" Margin="0">
+                <Border HeightRequest="80" Margin="0">
                     <Border>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -127,10 +127,10 @@
                             <Label Text="Cantidad Salida" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" />
                             <Label Text="Unidad" FontSize="Large" TextColor="DimGray" HorizontalTextAlignment="End" Grid.Row="1" Grid.Column="2" />
 
-                            <Label x:Name="lblExistenciaglobal" Text="" FontSize="Large" Grid.Column="1" />
-                            <Label x:Name="lblExistenciaUbicacion" Text="" FontSize="Large" Grid.Column="3" />
-                            <Entry x:Name="txtCantidad" Keyboard="Numeric" Placeholder="Cantidad Salida" FontSize="Large" Grid.Row="1" Grid.Column="1" />
-                            <Label x:Name="lblUnidad" Text="" FontSize="Large" Grid.Row="1" Grid.Column="3" />
+                            <Label x:Name="lblExistenciaglobal" Text="" FontSize="Large" Grid.Column="1" Margin="5,0,0,0" />
+                            <Label x:Name="lblExistenciaUbicacion" Text="" FontSize="Large" Grid.Column="3" Margin="5,0,0,0" />
+                            <Entry x:Name="txtCantidad" Keyboard="Numeric" Placeholder="Cantidad Salida" FontSize="Large" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0" />
+                            <Label x:Name="lblUnidad" Text="" FontSize="Large" Grid.Row="1" Grid.Column="3" Margin="5,0,0,0" />
                         </Grid>
                     </Border>
                 </Border>

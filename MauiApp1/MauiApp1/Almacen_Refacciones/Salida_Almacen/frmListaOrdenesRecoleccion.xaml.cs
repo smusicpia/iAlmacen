@@ -117,8 +117,8 @@ public partial class frmListaOrdenesRecoleccion : ContentPage
         string sResponce;
         string Parametros = "StatusPedido='SX'";
         string Condicion = $"id='{item_rechazar_.id_}' and FolioOrden='{item_rechazar_.folio_orden_}'";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -128,8 +128,8 @@ public partial class frmListaOrdenesRecoleccion : ContentPage
 
         Parametros = "status_requisicion='SX',status_orden_compra='SX',status_cotizacion='SX',status_OrdenRecoleccion='SX'";
         Condicion = $"folio_OrdenRecoleccion='{item_rechazar_.id_}' and folio_orden_compra='{item_rechazar_.folio_orden_}' and folio_requisicion='{item_rechazar_.folio_requisicion_}' and folio_cotizacion='{item_rechazar_.folio_cotizacion_}'";
-        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "UPDATE");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "UPDATE").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.OK)
             {

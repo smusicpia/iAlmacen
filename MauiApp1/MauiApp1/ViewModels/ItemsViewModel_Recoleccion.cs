@@ -41,8 +41,8 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
             Items.Clear();
             string Parametros = "id, FolioOrden, FolioPedido, Convert(varchar(30), FechaPedido, 103) AS FechaPedido, Convert(varchar(30), HoraPedido, 108) AS HoraPedido, UsuarioPedido, StatusPedido, FolioRequisicion, FolioCotizacion, FechaConfirmado, HoraConfirmado";
             string Condicion = $"ISNULL(FolioPedido, '') = '{FolioPedido}' and StatusPedido IN ({Estatus})";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "OrdenRecoleccion", Condicion, "SELECT");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "OrdenRecoleccion", Condicion, "SELECT").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -88,8 +88,8 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
             Items.Clear();
             string Parametros = "id, FolioOrden, FolioPedido, Convert(varchar(30), FechaPedido, 103) AS FechaPedido, Convert(varchar(30), HoraPedido, 108) AS HoraPedido, UsuarioPedido, StatusPedido, FolioRequisicion, FolioCotizacion, FechaConfirmado, HoraConfirmado";
             string Condicion = $"StatusPedido Not In ('SP', 'SX', 'SI') and cast(FechaPedido as date) >= DATEADD(day, -600, GETDATE())";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "OrdenRecoleccion", Condicion, "SELECT");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "OrdenRecoleccion", Condicion, "SELECT").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();

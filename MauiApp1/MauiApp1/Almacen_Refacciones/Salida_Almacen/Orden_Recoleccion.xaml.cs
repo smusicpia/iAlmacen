@@ -89,7 +89,7 @@ public partial class Orden_Recoleccion : ContentPage
         }
         //ItemsListView.EndRefresh();
         viewModel_ArticuloSalida.LoadItemsCommand_ArticuloSalida.Execute(null);
-    }
+	}
 
     private async Task cargar()
     {
@@ -133,8 +133,8 @@ public partial class Orden_Recoleccion : ContentPage
     {
         capturando = false;
         string Parametros = $"{Global.cidsql_},N";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             string resp = reader.ReadToEnd();
             if (resp == "[]")
@@ -373,14 +373,18 @@ public partial class Orden_Recoleccion : ContentPage
         }
     }
 
-    private void imEliminar_Clicked(Object sender, EventArgs e)
+    private async void imEliminar_Clicked(Object sender, EventArgs e)
     {
-        Item_ArticuloSalida Item_;
+		var answer = await DisplayAlertAsync("Información", "¿Desea ELIMINAR el articulo?", "Si", "No");
+        if (answer == false) return;
+
+		Item_ArticuloSalida Item_;
         Item_ = (sender as MenuItem).BindingContext as Item_ArticuloSalida;
         
         ArticulosEliminados.Add(Item_);
-        //Global.regArticulosSalida.Remove(Item_);
-    }
+        viewModel_ArticuloSalida.Items.Remove(Item_);
+		//Global.regArticulosSalida.Remove(Item_);
+	}
 
     private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -426,7 +430,7 @@ public partial class Orden_Recoleccion : ContentPage
 
     private async Task UpdateUbicacion(string[] Ubicacion)
     {
-        if (Ubicacion != null)
+        if (Ubicacion != null && Ubicacion.Count() == 5)
         {
             //viewModel_ArticuloSalida = new ItemsViewModel_ArticuloSalida(item.codigo_articulo, Ubicacion);
 
@@ -441,8 +445,8 @@ public partial class Orden_Recoleccion : ContentPage
             "Pasillo,Estanteria, (select top(1) (tmp.Clave %2B ' - ' %2B tmp.Descripcion) from CatalogoEstanterias as tmp where tmp.Clave=CatalogoArticuloUbicacion.Estanteria)descestanteria, " +
             "Nivel,Tarima,Contenedor,CodigoArticulo,Existencia,UnidadControl";
             string Condicion = $"CodigoArticulo='{Codigo}' and Estanteria='{Ubicacion[1]}' and Nivel='{Ubicacion[2]}' and Tarima='{Ubicacion[3]}' and Contenedor='{Ubicacion[4]}'";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -498,7 +502,6 @@ public partial class Orden_Recoleccion : ContentPage
             //// Aquí puedes agregar la lógica para manejar la ubicación obtenida del código QR
             //await DisplayAlertAsync("Ubicación Escaneada", $"Sección: {Ubicacion[0]}, Pasillo: {Ubicacion[1]}, Estantería: {Ubicacion[1]}, Nivel: {Ubicacion[2]}, Tarima: {Ubicacion[3]}, Contenedor: {Ubicacion[4]}", "OK");
         });
-
     }
 
     private async void btnGuardarListaRecoleccion_Clicked(Object sender, EventArgs e)
@@ -557,8 +560,8 @@ public partial class Orden_Recoleccion : ContentPage
         string status = "SI";
         string Parametros = "count(FolioOrdenRecoleccion)";
         string Condicion = $"FolioOrdenRecoleccion = '{Global.cidsql_}' and FolioOrdenCompra = '{Global.folio_orden_}' and FolioRequisicion = '{Global.folio_requisicion_}' and (Seccion IS NULL or Pasillo IS NULL or Estanteria IS NULL)";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "Detalle_OrdenRecoleccion", Condicion, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "Detalle_OrdenRecoleccion", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;
             string resp = reader.ReadToEnd();
@@ -577,8 +580,8 @@ public partial class Orden_Recoleccion : ContentPage
         string sResponce = "";
         Parametros = $"StatusPedido = '{status}'";
         Condicion = $"id = {Global.cidsql_} and FolioOrden = '{Global.folio_orden_}' and FolioRequisicion = '{Global.folio_requisicion_}' and FolioCotizacion = '{Global.folio_cotizacion_}'";
-        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -591,8 +594,8 @@ public partial class Orden_Recoleccion : ContentPage
         {
             string strSET = $"Seccion = '{item.Seccion}', Pasillo= '{item.Pasillo}', Estanteria='{item.Estanteria}', Nivel='{item.Nivel}', Tarima='{item.Tarima}', Contenedor='{item.Contenedor}'";
             string strWHERE = $"cve_articulo = '{item.codigo_articulo}' and consecutivo_mov = {item.consecutivo} and FolioOrdenRecoleccion = {Global.cidsql_} and FolioOrdenCompra = '{Global.folio_orden_}' and FolioRequisicion = '{Global.folio_requisicion_}' and FolioCotizacion = '{Global.folio_cotizacion_}'";
-            response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strSET, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", strWHERE, "UPDATE");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strSET, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", strWHERE, "UPDATE").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -606,8 +609,8 @@ public partial class Orden_Recoleccion : ContentPage
         string fromText = "Requisiciones_En_Cotizacion ";
         string whereText = $"folio_requisicion = '{Global.folio_requisicion_}' and folio_cotizacion = '{Global.folio_cotizacion_}' and folio_orden_compra = '{Global.folio_orden_}' ORDER By id desc";
         DataTable Articulos;
-        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", selectText, "wsp_execute_qwerty", fromText, whereText, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", selectText, "wsp_execute_qwerty", fromText, whereText, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;
             string resp = reader.ReadToEnd();
@@ -619,8 +622,8 @@ public partial class Orden_Recoleccion : ContentPage
             string strValues = $"'{Global.folio_requisicion_}','SL','{r[0].ToString().Trim()}','{Global.folio_cotizacion_}','SL','{r[1].ToString().Trim()}','0000','{Global.folio_orden_}','SL','{DateTime.Now.ToShortDateString()}'," +
                                $"'{DateTime.Now.ToString("HH:mm:ss")}','{Global.nombre_usuario}','false','{Global.cidsql_}', 'SL',NULL,NULL,NULL";
             string strCampos = $"folio_requisicion,status_requisicion,Num_Articulos_Requisicion,folio_cotizacion,status_cotizacion,cantidad_articulos,codigo_proveedor,folio_orden_compra,status_orden_compra,Fecha_Movto,Hora_Movto,Usuario,control_bascula,folio_OrdenRecoleccion,status_OrdenRecoleccion,folio_SalidaDocumento,TipoDocumento,status_SalidaDocumento";
-            response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strValues, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "INSERT INTO", strCampos);
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strValues, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "INSERT INTO", strCampos).Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -636,8 +639,8 @@ public partial class Orden_Recoleccion : ContentPage
             {
                 Parametros = "nada";
                 Condicion = $"cve_articulo='{item.codigo_articulo}' and FolioOrdenRecoleccion='{item.id}'";
-                response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", Condicion, "DELETE");
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", Condicion, "DELETE").Result;
+                using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
                 {
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
@@ -653,8 +656,8 @@ public partial class Orden_Recoleccion : ContentPage
         fromText = "or_compra ";
         whereText = $"folio = '{Global.folio_orden_}' and folio_cotizacion = '{Global.folio_cotizacion_}' and cancelada = 0";
         DataTable Correos = new DataTable();
-        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", selectText, "wsp_execute_qwerty", fromText, whereText, "SELECT");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", selectText, "wsp_execute_qwerty", fromText, whereText, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;
             string resp = reader.ReadToEnd();

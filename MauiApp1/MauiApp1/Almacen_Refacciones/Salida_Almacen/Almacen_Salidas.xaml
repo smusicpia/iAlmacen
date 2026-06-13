@@ -6,7 +6,7 @@
              xmlns:converters="clr-namespace:iAlmacen.Converters"
              x:Class="iAlmacen.Almacen_Refacciones.Salida_Almacen.Almacen_Salidas"
              Title="Captura Salida Almacen"
-             SafeAreaEdges="All">
+             SafeAreaEdges="None">
     <ContentPage.BindingContext>
         <local:Orden_RecoleccionViewModel />
     </ContentPage.BindingContext>
@@ -16,7 +16,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid>
+        <Grid SafeAreaEdges="None">
             <Grid.RowDefinitions>
                 <RowDefinition Height="81" />
                 <RowDefinition />
@@ -260,7 +260,7 @@
                     </StackLayout>
                 </Grid>
             </StackLayout>
-            <StackLayout x:Name="salida2" Grid.Row="3" Grid.ColumnSpan="2" Padding="0,30" Margin="-30" BackgroundColor="#F8813A">
+            <StackLayout x:Name="salida2" Grid.Row="3" Grid.ColumnSpan="2" Padding="0,15" Margin="-25" BackgroundColor="#F8813A">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50*" />

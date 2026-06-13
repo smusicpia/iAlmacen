@@ -20,13 +20,23 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
     private bool _bEncontrado;
     public bool benProceso;
 
-    public ItemsViewModel_ArticuloSalida()
+	public ItemsViewModel_ArticuloSalida(Item_ArticuloSalida item)
     {   Title = "Lista";
         Items = new ObservableCollection<Item_ArticuloSalida>();
-        LoadItemsCommand_ArticuloSalida = new Command(async () => await ExecuteLoadItemsCommand_Cargar());
+        LoadItemsCommand_ArticuloSalida = new Command(async () => await ExecuteLoadItemsCommand_Cargar(item));
     }
 
-    public ItemsViewModel_ArticuloSalida(string Parametros)
+	public void AddItem(Item_ArticuloSalida item)
+	{
+		if (item != null)
+		{
+			Items.Add(item);
+			item_ArticuloSalida = new Item_ArticuloSalida();
+			//DataStore.AddItemAsync(item);
+		}
+	}
+
+	public ItemsViewModel_ArticuloSalida(string Parametros)
     {
         Title = "Lista";
         Items = new ObservableCollection<Item_ArticuloSalida>();
@@ -46,9 +56,53 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
         LoadItemsCommand_ArticuloSalida = new Command(async () => await ExecuteLoadItemsCommand_Cargar(Parametros, Historico));
     }
 
-    private async Task ExecuteLoadItemsCommand_Cargar()
+    private async Task ExecuteLoadItemsCommand_Cargar(Item_ArticuloSalida item)
     {
-        Items.Add(new Item_ArticuloSalida());
+        try
+        {
+            if (item.codigo_articulo != null)
+            {
+                //Items.Add(new Item_ArticuloSalida
+                //{
+                //    index = Items.Count + 1,
+                //    codigo_articulo = item.codigo_articulo,
+                //    descripcion_general = item.descripcion_general,
+                //    desc_familia = item.desc_familia,
+                //    desc_linea = item.desc_linea,
+                //    desc_grupo = item.desc_grupo,
+                //    desc_medida = item.desc_medida,
+                //    desc_marca = item.desc_marca,
+                //    desc_parte = item.desc_parte,
+                //    consecutivo = item.consecutivo,
+                //    cantidad = item.cantidad,
+                //    noubicaciones = item.noubicaciones,
+                //    Seccion = item.Seccion,
+                //    desc_seccion = item.desc_seccion,
+                //    Pasillo = item.Pasillo,
+                //    Estanteria = item.Estanteria,
+                //    desc_estanteria = item.desc_estanteria,
+                //    Nivel = item.Nivel,
+                //    Tarima = item.Tarima,
+                //    Contenedor = !string.IsNullOrEmpty(item.Contenedor.ToString()) ? double.Parse(item.Contenedor.ToString().Trim()) : 0,
+                //    ExistenciaUbicacion = item.ExistenciaUbicacion,
+                //    ccsucursal = item.ccsucursal,
+                //    ccarea = item.ccarea,
+                //    ccnivel1 = item.ccnivel1,
+                //    ccnivel2 = item.ccnivel2,
+                //    ccnivel3 = item.ccnivel3,
+                //    ccnivel4 = item.ccnivel4,
+                //});
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task ExecuteLoadItemsCommand_Cargar(string Parametros)
@@ -58,8 +112,8 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -131,9 +185,8 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
             "Pasillo,Estanteria, (select top(1) (tmp.Clave %2B ' - ' %2B tmp.Descripcion) from CatalogoEstanterias as tmp where tmp.Clave=CatalogoArticuloUbicacion.Estanteria)descestanteria, " +
             "Nivel,Tarima,Contenedor,CodigoArticulo,Existencia,UnidadControl";
         string Condicion = $"CodigoArticulo='{Articulo}' and Estanteria='{Ubicacion[1]}' and Nivel='{Ubicacion[2]}' and Tarima='{Ubicacion[3]}' and Contenedor='{Ubicacion[4]}'";
-        HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT");
-
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT").Result;
+        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
         {
             if (response.StatusCode == HttpStatusCode.NotFound) return;
             string resp = reader.ReadToEnd();
@@ -175,8 +228,8 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -185,20 +238,6 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
                 int i = 1;
                 foreach (DataRow r in dt.Rows)
                 {
-                    //Global.strSucursal = dt.Rows[0][0].ToString().Trim();
-                    //Global.strArea = dt.Rows[0][1].ToString().Trim();
-                    //Global.strCCnivel1 = dt.Rows[0][3].ToString().Trim();
-                    //Global.strCCnivel2 = dt.Rows[0][5].ToString().Trim();
-                    //if (string.IsNullOrEmpty(dt.Rows[0][7].ToString()))
-                    //    Global.strCCnivel3 = string.Empty;
-                    //else
-                    //    Global.strCCnivel3 = dt.Rows[0][7].ToString().Trim();
-
-                    //if (string.IsNullOrEmpty(dt.Rows[0][9].ToString()))
-                    //    Global.strCCnivel4 = string.Empty;
-                    //else
-                    //    Global.strCCnivel4 = dt.Rows[0][9].ToString().Trim();
-
                     Items.Add(new Item_ArticuloSalida
                     {
                         index = i++,
