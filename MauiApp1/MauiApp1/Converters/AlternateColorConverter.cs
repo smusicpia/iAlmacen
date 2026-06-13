@@ -38,6 +38,10 @@ namespace iAlmacen.Converters
             {
                 return artsal.index % 2 == 0 ? EvenColor : OddColor;
             }
+            else if (value is Item_ArticuloEnResguardo artResg)
+            {
+                return artResg.index % 2 == 0 ? EvenColor : OddColor;
+            }
 
             return Colors.Transparent;
         }

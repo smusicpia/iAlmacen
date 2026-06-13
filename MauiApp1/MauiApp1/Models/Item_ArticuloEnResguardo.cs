@@ -18,5 +18,6 @@
         public Boolean aplicado { get; set; }
         public Boolean cerrado { get; set; }
         public string fechaentregado { get; set; }
+        public int index { get; set; }
     }
 }

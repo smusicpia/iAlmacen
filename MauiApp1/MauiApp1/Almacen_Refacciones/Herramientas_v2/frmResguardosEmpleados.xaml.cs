@@ -75,8 +75,8 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 
             string sResponce = "";
             string Parametros = $"{Item_.clave}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_CerrarResguardo");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_CerrarResguardo").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();

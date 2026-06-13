@@ -43,8 +43,8 @@ public class ItemsViewModel_ResgEmpleado : BaseViewModel_Herramienta
         try
         {
             Items.Clear();
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_ResguardosEmpleados");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_ResguardosEmpleados").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
@@ -55,14 +55,13 @@ public class ItemsViewModel_ResgEmpleado : BaseViewModel_Herramienta
                 {
                     Items.Add(new Item_ResgEmpleado
                     {
-                        id = i,
+                        id = i++,
                         area = r[0].ToString(),
                         clave = r[1].ToString(),
                         empleado = r[2].ToString(),
                         fecha = ValidarFecha(r[3].ToString()),
                         articulos = int.Parse(r[4].ToString())
                     });
-                    i++;
                 }
             }
         }

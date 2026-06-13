@@ -44,17 +44,19 @@ public class ItemsViewModel_ArticuloEnResguardo : BaseViewModel_Herramienta
         {
             Items.Clear();
             string Parametros = $"{Global.ResgEmpleado.clave}";
-            HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DetalleResguardoEmpleado");
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DetalleResguardoEmpleado").Result;
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
                 if (response.StatusCode == HttpStatusCode.NotFound) return;
                 string resp = reader.ReadToEnd();
                 if (resp == "[]") return;
+                int i = 0;
                 DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
                 foreach (DataRow r in dt.Rows)
                 {
                     Items.Add(new Item_ArticuloEnResguardo
                     {
+                        index = i++,
                         folio = r[0].ToString(),
                         codigo = r[1].ToString(),
                         descripcion = r[2].ToString(),
