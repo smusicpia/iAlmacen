@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="iAlmacen.Almacen_Refacciones.Salida_Almacen.frmSubmenuSolicitudes"
              Title="Solicitudes de Recoleccion"
-             SafeAreaEdges="All">
+             SafeAreaEdges="None">
     <ContentPage.Content>
-        <Grid>
+        <Grid SafeAreaEdges="None">
             <Grid.RowDefinitions>
                 <RowDefinition Height="33*" />
                 <RowDefinition Height="33*" />
