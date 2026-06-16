@@ -15,9 +15,9 @@ namespace iAlmacen
             Routing.RegisterRoute("cv_almacen_entradas_ocompra", typeof(cv_Almacen_Entradas_OCompra));
             Routing.RegisterRoute("page_head_ordencompra", typeof(Page_Head_OrdenCompra));
             Routing.RegisterRoute("page_detail_ordencompra", typeof(Page_Detail_OrdenCompra));
-        }
+		}
 
-        private async void CerrarSesion_Clicked(object sender, EventArgs e)
+		private async void CerrarSesion_Clicked(object sender, EventArgs e)
         {
             bool answer = await Shell.Current.DisplayAlertAsync("Cerrar sesión", "¿Estás seguro de que deseas cerrar sesión?", "Sí, continuar", "No, volver");
             if (answer)
