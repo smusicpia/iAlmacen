@@ -1,49 +1,50 @@
 ﻿using iAlmacen.Models;
 using iAlmacen.Services;
+using iAlmacen.ViewModels;
+
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace iAlmacen
 {
-    public class BaseViewModel : INotifyPropertyChanged
-    {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>() ?? new MockDataStore();
-        private bool _isBusy = false;
+	public class BaseViewModel : INotifyPropertyChanged
+	{
+		public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>() ?? new MockDataStore();
+		private bool _isBusy = false;
 
-        public bool IsBusy
-        {
-            get { return _isBusy; }
-            set
-            {
-                _isBusy = value;
-                OnPropertyChanged(nameof(IsBusy));
-            }
-        }
+		public bool IsBusy
+		{
+			get { return _isBusy; }
+			set
+			{
+				_isBusy = value;
+				OnPropertyChanged(nameof(IsBusy));
+			}
+		}
 
-        private string _title = string.Empty;
+		private string _title = string.Empty;
 
-        public string Title
-        {
-            get
-            {
-                return _title;
-            }
-            set
-            {
-                _title = value;
-                OnPropertyChanged(nameof(Title));
-            }
-        }
+		public string Title
+		{
+			get
+			{
+				return _title;
+			}
+			set
+			{
+				_title = value;
+				OnPropertyChanged(nameof(Title));
+			}
+		}
 
-        #region INotifyPropertyChanged
+		#region INotifyPropertyChanged
 
-        public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+		protected void OnPropertyChanged(string propertyName)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 
-        #endregion INotifyPropertyChanged
-    }
+		#endregion INotifyPropertyChanged
+	}
 }
