@@ -26,105 +26,84 @@ public class Funciones
 
     public static HttpStatusCode Login(string user, string pass)
     {
-        if (Funciones.ChkConnected() != false)
+        using (var myAes = Aes.Create())
         {
-            using (var myAes = Aes.Create())
+            Global.Key = myAes.Key;
+            Global.IV = myAes.IV;
+        }
+
+        Global.pass = pass;
+
+        string Parametros = $"{Convert.ToBase64String(SecurityManager.Encrypt(user, Global.Key, Global.IV))}," +
+                            $"{Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV))}";
+
+        //TODO: Authorization y Authentication tokenAPI
+        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/login/Authenticate", Parametros, "LoginWebserver").Result;
+        //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "LoginWebserver");
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
             {
-                Global.Key = myAes.Key;
-                Global.IV = myAes.IV;
-            }
-
-            Global.pass = pass;
-
-            string Parametros = $"{Convert.ToBase64String(SecurityManager.Encrypt(user, Global.Key, Global.IV))}," +
-                                $"{Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV))}";
-
-            //TODO: Authorization y Authentication tokenAPI
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/login/Authenticate", Parametros, "LoginWebserver").Result;
-            //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "LoginWebserver");
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+                if (response.StatusCode == HttpStatusCode.NotFound) return response.StatusCode;
+                string resp = reader.ReadToEnd();
+                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+                foreach (DataRow r in dt.Rows)
                 {
-                    if (response.StatusCode == HttpStatusCode.NotFound) return response.StatusCode;
-                    string resp = reader.ReadToEnd();
-                    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                    foreach (DataRow r in dt.Rows)
-                    {
-                        Global.clave_usuario = user;
-                        Global.nombre_usuario = r["usuario"].ToString();
-                        Global.privilegio_usuario = dt.Rows[0]["privilegio"].ToString();
-                        Global.pass = Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV));
+                    Global.clave_usuario = user;
+                    Global.nombre_usuario = r["usuario"].ToString();
+                    Global.privilegio_usuario = dt.Rows[0]["privilegio"].ToString();
+                    Global.pass = Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV));
 
-                        Global.Mitem_almacen = Boolean.Parse(r["almacen"].ToString());
-                        Global.Mitem_proterm = Boolean.Parse(r["producto_terminado"].ToString());
-                        Global.Mitem_bascula = Boolean.Parse(r["bascula"].ToString());
+                    Global.Mitem_almacen = Boolean.Parse(r["almacen"].ToString());
+                    Global.Mitem_proterm = Boolean.Parse(r["producto_terminado"].ToString());
+                    Global.Mitem_bascula = Boolean.Parse(r["bascula"].ToString());
 
-                        Global.mensaje_sistema = r["mensaje"].ToString();
-                        Global.cierra_modulo = Boolean.Parse(r["cierra_modulo"].ToString());
-                        Global.modulo_afectado = r["modulo_afectado"].ToString();
-                        Global.cierra_sistema = Boolean.Parse(r["cierra_sistema"].ToString());
+                    Global.mensaje_sistema = r["mensaje"].ToString();
+                    Global.cierra_modulo = Boolean.Parse(r["cierra_modulo"].ToString());
+                    Global.modulo_afectado = r["modulo_afectado"].ToString();
+                    Global.cierra_sistema = Boolean.Parse(r["cierra_sistema"].ToString());
 
-                        Global.tasa_super = double.Parse(r["porcentaje_supervisor"].ToString());
-                        Global.tasa_admin = double.Parse(r["porcentaje_administrador"].ToString());
-                        Global.tasa_oper = double.Parse(r["porcentaje_operador"].ToString());
-                        //TODO: Authorization y Authentication tokenAPI
-                        Global.tokenAPI = r["TokenApi"].ToString();
-                        //TODO: Refresh tokenAPI
-                        Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
-                        Preferences.Default.Set("tokenAPI", Global.tokenAPI);
-                        Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
-                        Preferences.Default.Set("clave_usuario", Global.clave_usuario);
-                        Preferences.Default.Set("Password", Global.pass);
-                        if (Global.tokenAPI != "")
-                            break;
-                    }
+                    Global.tasa_super = double.Parse(r["porcentaje_supervisor"].ToString());
+                    Global.tasa_admin = double.Parse(r["porcentaje_administrador"].ToString());
+                    Global.tasa_oper = double.Parse(r["porcentaje_operador"].ToString());
+                    //TODO: Authorization y Authentication tokenAPI
+                    Global.tokenAPI = r["TokenApi"].ToString();
+                    //TODO: Refresh tokenAPI
+                    Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
+                    Preferences.Default.Set("tokenAPI", Global.tokenAPI);
+                    Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
+                    Preferences.Default.Set("clave_usuario", Global.clave_usuario);
+                    Preferences.Default.Set("Password", Global.pass);
+                    if (Global.tokenAPI != "")
+                        break;
                 }
             }
-
-            return response.StatusCode;
         }
-		else
-		{
-			return HttpStatusCode.ServiceUnavailable;
-		}
+
+        return response.StatusCode;
 	}
 
     public static bool ChkConnected()
     {
-        foreach (var item in Connectivity.Current.ConnectionProfiles)
-        {
-            if (item == ConnectionProfile.WiFi || item == ConnectionProfile.Cellular)
-            {
-                return true;
-            }
-        }
+        IEnumerable<ConnectionProfile> profiles = Connectivity.Current.ConnectionProfiles;
+        if (profiles.Contains(ConnectionProfile.WiFi))
+		{
+			return true;
+		}
+   //     else
+   //     {
+   //         return false;
+   //     }
+
+			//foreach (var item in Connectivity.Current.ConnectionProfiles)
+   //     {
+   //         if (item == ConnectionProfile.WiFi || item == ConnectionProfile.Cellular)
+   //         {
+   //             return true;
+   //         }
+   //     }
         return false;
     }
-
-	public async Task<PermissionStatus> CheckAndRequestLocationPermission()
-	{
-		PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-
-		if (status == PermissionStatus.Granted)
-			return status;
-
-		if (status == PermissionStatus.Denied && DeviceInfo.Platform == DevicePlatform.iOS)
-		{
-			// Prompt the user to turn on in settings
-			// On iOS once a permission has been denied it may not be requested again from the application
-			return status;
-		}
-
-		if (Permissions.ShouldShowRationale<Permissions.LocationWhenInUse>())
-		{
-			// Prompt the user with additional information as to why the permission is needed
-		}
-
-		status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
-
-		return status;
-	}
 
 	public static List<string> LlenarArea()
     {
