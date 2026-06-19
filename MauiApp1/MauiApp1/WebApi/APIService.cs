@@ -99,7 +99,24 @@ public class APIService
         }
     }
 
-    public static async Task<HttpResponseMessage> PostAPI_GuardarInventario(string Controllador, ObservableCollection<Item_InventarioDetalle> Obj)
+	public static async Task<DataTable> PostAPI_GenerarNumerosSeries(string Controllador, string MetodoAPI, ObservableCollection<CatalogoArticuloNumeroSeries> Obj)
+	{
+		try
+		{
+			var jsonContent = new StringContent(JsonSerializer.Serialize(Obj, _jsonOptions), Encoding.UTF8, "application/json");
+			var response = await _httpClient.PostAsync(ConfigAPI.Servidor + $"{Controllador}/{MetodoAPI}/?tProyecto={ConfigAPI.TipoProyecto}", jsonContent);
+			response.EnsureSuccessStatusCode();
+			var json = await response.Content.ReadAsStringAsync();
+			return JsonSerializer.Deserialize<DataTable>(json, _jsonOptions) ?? new DataTable();
+		}
+		catch (Exception ex)
+		{
+			// Manejo de errores (puedes loguear o lanzar una excepción personalizada)
+			throw new ApplicationException($"Error al obtener datos de {$"{Controllador}/{MetodoAPI}"}: {ex.Message}", ex);
+		}
+	}
+
+	public static async Task<HttpResponseMessage> PostAPI_GuardarInventario(string Controllador, ObservableCollection<Item_InventarioDetalle> Obj)
     {
         try
         {
@@ -117,7 +134,22 @@ public class APIService
         }
     }
 
-    public static async Task<HttpResponseMessage> PostAPI_Firma(string Controllador, FirmaEntity Obj)
+	public static async Task<HttpResponseMessage> PostAPI_GenerarSalida(string Controllador, string tProyecto, bool OrdenRecoleccion, string Responsable, string Autorizado, ObservableCollection<SalidaAlmacenEntity> Obj)
+	{
+		try
+		{
+			var jsonContent = new StringContent(JsonSerializer.Serialize(Obj, _jsonOptions), Encoding.UTF8, "application/json");
+			var response = await _httpClient.PostAsync(ConfigAPI.Servidor + $"/{Controllador}?tProyecto={tProyecto}&OrdenRecoleccion={OrdenRecoleccion}&Responsable={Responsable}&Autorizado={Autorizado}", jsonContent).ConfigureAwait(false);
+			return response;
+		}
+		catch (Exception ex)
+		{
+			// Manejo de errores (puedes loguear o lanzar una excepción personalizada)
+			throw new ApplicationException($"Error al obtener datos de {$"{Controllador}"}: {ex.Message}", ex);
+		}
+	}
+
+	public static async Task<HttpResponseMessage> PostAPI_Firma(string Controllador, FirmaEntity Obj)
     {
         try
         {

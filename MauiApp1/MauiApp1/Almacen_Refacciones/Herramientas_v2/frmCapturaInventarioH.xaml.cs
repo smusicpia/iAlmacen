@@ -611,8 +611,9 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                     FolioInventario = Global.FolioInventario
                 });
 
-                NumerosSerieGenerados = ConfigAPI.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries);
-                foreach (DataRow r in NumerosSerieGenerados.Rows)
+                //NumerosSerieGenerados = ConfigAPI.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries);
+                NumerosSerieGenerados = APIService.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries).Result;
+				foreach (DataRow r in NumerosSerieGenerados.Rows)
                 {
                     bool existe = false;
                     foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)

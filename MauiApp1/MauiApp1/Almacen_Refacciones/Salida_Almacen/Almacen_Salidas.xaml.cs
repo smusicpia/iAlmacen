@@ -877,7 +877,7 @@ public partial class Almacen_Salidas : ContentPage
 				}
 			}
 
-			//Eliminar los Articulos quitados de la Orden xe Recoleccion
+			//Eliminar los Articulos quitados de la Orden de Recoleccion
 			if (ArticulosEliminados.Count > 0)
 			{
 				foreach (clsArticuloSalida item in ArticulosEliminados)
@@ -912,7 +912,6 @@ public partial class Almacen_Salidas : ContentPage
 			imageBytes = reader.ReadBytes((int)stream.Length);
 		}
 		Parametros = $"{sFolioSalida}";
-		//response = ConfigAPI.PostAPI_Firma("api/Firma", Parametros, "ws_fnSet_FirmaSalida", stream);
 		HttpResponseMessage Response = APIService.PostAPI_Firma("api/Firma", new FirmaEntity { Folio = sFolioSalida, Firma = Convert.ToBase64String(imageBytes), tProyecto = ConfigAPI.TipoProyecto, Metodo = "ws_fnSet_FirmaSalida" }).Result;
 		if (response.StatusCode == HttpStatusCode.NotFound) return;
 
@@ -928,6 +927,167 @@ public partial class Almacen_Salidas : ContentPage
 		//ItemsListView.BeginRefresh();
 		//ItemsListView.ItemsSource = Global.regArticulosSalida;
 		//ItemsListView.EndRefresh();
+
+		OrdenRecoleccion = false;
+		btnGenerarSalida.IsEnabled = true;
+		await Navigation.PopAsync();
+	}
+
+	private async void btnGenerarSalida2_Clicked(Object sender, EventArgs e)
+	{
+		if (Global.strArea == "" || Global.strCCnivel1 == "" || Global.strCCnivel2 == "")  //|| Global.strCCnivel3 == ""
+		{
+			await DisplayAlertAsync("Informacion", "Informacion de centros de costo incompleta", "OK");
+			return;
+		}
+
+		if (viewModel_ArticuloSalida.Items.Count == 0)
+		{
+			await DisplayAlertAsync("Informacion", "No hay articulos relacionados a la salida", "OK");
+			return;
+		}
+
+		if (cbResonsable.SelectedIndex == -1 || cbAutorizado.SelectedIndex == -1 || String.IsNullOrEmpty(cbResonsable.SelectedItem.ToString()))
+		{
+			await DisplayAlertAsync("Informacion", "Responsable y autorizado invalidos", "OK");
+			return;
+		}
+
+		var answer = await DisplayAlertAsync("Informaciòn", "¿Desea generar la salida?", "Si", "No");
+		if (answer == false)
+		{
+			return;
+		}
+
+		UserDialogs.Instance.ShowLoading("Guardando");
+		btnGenerarSalida.IsEnabled = false;
+		string strResponsable = "";
+		string strAutorizado = "";
+		try
+		{
+			string[] stmp;
+			stmp = cbResonsable.SelectedItem.ToString().Split('-');
+			strResponsable = stmp[0].ToString().Trim();
+		}
+		catch (Exception ex)
+		{
+			//return;
+		}
+
+		try
+		{
+			string[] stmp;
+			stmp = cbAutorizado.SelectedItem.ToString().Split('-');
+			strAutorizado = stmp[0].ToString().Trim();
+		}
+		catch (Exception ex)
+		{
+			//return;
+		}
+
+		string FechaFormateada;
+		try
+		{
+			FechaFormateada = dtFechaSalida.Date.Value.Day.ToString().PadLeft(2, '0') + '/' +
+				dtFechaSalida.Date.Value.Month.ToString().PadLeft(2, '0') + '/' +
+				dtFechaSalida.Date.Value.Year.ToString();
+		}
+		catch (Exception ex)
+		{
+			FechaFormateada = DateTime.Now.ToShortDateString();
+		}
+
+		ObservableCollection<SalidaAlmacenEntity> salida = new ObservableCollection<SalidaAlmacenEntity>();
+		foreach (Item_ArticuloSalida item in viewModel_ArticuloSalida.Items)
+		{
+			salida.Add(new SalidaAlmacenEntity()
+			{
+				FolioOrdenRecoleccion = Global.cidsql_,
+				FolioOrdenCompra = Global.folio_orden_,
+				FolioRequisicion = Global.folio_requisicion_,
+				//FolioPedido = Null
+				FolioCotizacion = Global.folio_cotizacion_,
+				//solicitante = NULL,
+				area = Global.strArea,
+				ccn1 = Global.strCCnivel1,
+				ccn2 = Global.strCCnivel2,
+				ccn3 = Global.strCCnivel3,
+				ccn4 = Global.strCCnivel4,
+				cantidad = item.cantidad,
+				concepto = item.descripcion_general,
+				unidad_medida = item.desc_medida,
+				//unidad = null,
+				codigo_articulo = item.codigo_articulo,
+				consecutivo_mov = item.consecutivo,
+				//status_requisicion = "SL",
+				numero_parte = item.desc_parte,
+				marca = item.desc_marca,
+				condicion_herramienta = string.Empty,
+				Seccion = item.Seccion,
+				Pasillo = (int)item.Pasillo,
+				Estanteria = item.Estanteria,
+				Nivel = (int)item.Nivel,
+				Tarima = (int)item.Tarima,
+				Contenedor = (int)item.Contenedor,
+				//TipoDocumento = "S",
+				//Folio_DocumentoSalida = string.Empty,
+				Codigo_Responsable = strResponsable,
+				Codigo_Autorizado = strAutorizado,
+				Sucursal = Global.strSucursal,
+				Usuario = Global.clave_usuario,
+				Nombre_Usuario = Global.nombre_usuario,
+				ControlArea = item.ControlArea,
+				Reasignado = item.Reasignado,
+				//AreaAsignado = null,
+				CantidadAsignado = item.CantidadAsignado,
+				ObservacionAsignado = item.ObservacionAsignado,
+				//identrada = item.identrada
+				Fecha = DateTime.Now.ToString(),
+			});
+
+		}
+
+		string sFolioSalida = "";
+		HttpResponseMessage responseMessage = APIService.PostAPI_GenerarSalida("api/GenerarSalida", ConfigAPI.TipoProyecto, OrdenRecoleccion, strResponsable, strAutorizado, salida).Result;
+		using (StreamReader reader = new StreamReader(responseMessage.Content.ReadAsStreamAsync().Result))
+		{
+			if (responseMessage.StatusCode == HttpStatusCode.NotFound) return;
+			string resp = reader.ReadToEnd();
+			if (resp == "[]") return;
+			DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+			foreach (DataRow r in dt.Rows)
+			{
+				sFolioSalida = r[0].ToString().Trim().PadLeft(6, '0');
+			}
+		}
+
+		//TODO : Guardar la firma del responsable de la salida
+		var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+		// Obtenemos solo las lineas del dibujo para generar la imagen, esto es para evitar que se genere una imagen con fondo transparente, ya que el control de firma genera la imagen
+		//con fondo transparente y al convertirla a base64 se pierde la transparencia y se genera una imagen con fondo gris, con esta opcion se genera una imagen con fondo blanco y las
+		//lineas de la firma, evitando el problema de la transparencia
+		var Lines = new List<IDrawingLine>();
+		Lines.AddRange(signatureSample.Lines);
+		await using var stream = await DrawingViewService.GetImageStream(ImageLineOptions.JustLines(Lines, new Size(400, 280), Brush.White));
+
+		byte[] imageBytes;
+		using (BinaryReader reader = new BinaryReader(stream))
+		{
+			imageBytes = reader.ReadBytes((int)stream.Length);
+		}
+		string Parametros = $"{sFolioSalida}";
+		HttpResponseMessage Response = APIService.PostAPI_Firma("api/Firma", new FirmaEntity { Folio = sFolioSalida, Firma = Convert.ToBase64String(imageBytes), tProyecto = ConfigAPI.TipoProyecto, Metodo = "ws_fnSet_FirmaSalida" }).Result;
+		if (Response.StatusCode != HttpStatusCode.OK) return;
+
+		UserDialogs.Instance.HideHud();
+		await DisplayAlertAsync("Guardado Correcto", $"Salida {sFolioSalida}", "OK");
+		Global.regArticulosSalida = new ObservableCollection<clsArticuloSalida>();
+		Global.folio_requisicion_ = string.Empty;
+		Global.folio_cotizacion_ = string.Empty;
+		Global.folio_orden_ = string.Empty;
+		Global.cidsql_ = 0;
+		sFolioSalida = "";
 
 		OrdenRecoleccion = false;
 		btnGenerarSalida.IsEnabled = true;
