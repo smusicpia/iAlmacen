@@ -1,7 +1,10 @@
 using iAlmacen.Clases;
 using iAlmacen.Models;
+using iAlmacen.Views;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
@@ -23,9 +26,7 @@ public class ItemsViewModel_Orden : BaseViewModel_Orden
     private async Task ExecuteLoadItemsCommand_Orden()
     {
         //if (IsBusy) return;
-
         //IsBusy = true;
-
         try
         {
             Global.Items_orden_.Clear();
@@ -159,8 +160,9 @@ public class ItemsViewModel_Orden : BaseViewModel_Orden
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-        }
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
         finally
         {
             IsBusy = false;

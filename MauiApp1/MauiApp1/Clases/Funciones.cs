@@ -1,7 +1,11 @@
-﻿using iAlmacen.WebApi;
+﻿using iAlmacen.Views;
+using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Net;
 using System.Security.Cryptography;
 
@@ -70,9 +74,13 @@ public class Funciones
                     Global.tokenAPI = r["TokenApi"].ToString();
                     //TODO: Refresh tokenAPI
                     Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
+                    //TODO Agregar Guid
+                    Global.guid = r["Guid"].ToString();
                     Preferences.Default.Set("tokenAPI", Global.tokenAPI);
                     Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
-                    Preferences.Default.Set("clave_usuario", Global.clave_usuario);
+					//TODO Agregar Guid
+					Preferences.Default.Set("Guid", Global.guid);
+					Preferences.Default.Set("clave_usuario", Global.clave_usuario);
                     Preferences.Default.Set("Password", Global.pass);
                     if (Global.tokenAPI != "")
                         break;
@@ -109,41 +117,59 @@ public class Funciones
     {
         lAreas = new List<String>();
         lAreas.Add("");
-        string Parametros = "rtrim(clave_area) clave_area, rtrim(descripcion) descripcion";
-        string Condicion = $"psucursal='{Global.strSucursal}' order by descripcion";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
-            string resp = reader.ReadToEnd();
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
-        return lAreas;
-    }
+			string Parametros = "rtrim(clave_area) clave_area, rtrim(descripcion) descripcion";
+			string Condicion = $"psucursal='{Global.strSucursal}' order by descripcion";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
+				string resp = reader.ReadToEnd();
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+			
+		}
+        catch (Exception ex)
+        {
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		return lAreas;
+	}
 
     public static List<string> LlenarAreaH()
     {
         lAreas = new List<String>();
         lAreas.Add("");
-        string Parametros = "distinct rtrim(salida.codigo_area)codigo_area,rtrim(area.descripcion) descripcion";
-        string From = "salidas_resguardo_herramientas as salida inner join catalogo_areas as area on area.clave_area=salida.codigo_area";
-        string Condicion = "not (select count(tmp.status_herramienta) from detalle_salidas_resguardo_herramientas as tmp where tmp.folio_resguardo=salida.folio_resguardo and tmp.status_herramienta='AR') = 0 " +
-                           "order by codigo_area";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
-            string resp = reader.ReadToEnd();
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "distinct rtrim(salida.codigo_area)codigo_area,rtrim(area.descripcion) descripcion";
+			string From = "salidas_resguardo_herramientas as salida inner join catalogo_areas as area on area.clave_area=salida.codigo_area";
+			string Condicion = "not (select count(tmp.status_herramienta) from detalle_salidas_resguardo_herramientas as tmp where tmp.folio_resguardo=salida.folio_resguardo and tmp.status_herramienta='AR') = 0 " +
+							   "order by codigo_area";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
+				string resp = reader.ReadToEnd();
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return lAreas;
     }
 
@@ -151,19 +177,28 @@ public class Funciones
     {
         lCentroCostoN1 = new List<string>();
         lCentroCostoN1.Add("");
-        string Parametros = "codigo_nivel1, descripcion";
-        string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and status_centro_n1 = 1 order by descripcion";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl1", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN1;
-            string resp = reader.ReadToEnd();
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                lCentroCostoN1.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "codigo_nivel1, descripcion";
+			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and status_centro_n1 = 1 order by descripcion";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl1", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN1;
+				string resp = reader.ReadToEnd();
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					lCentroCostoN1.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return lCentroCostoN1;
     }
 
@@ -171,19 +206,28 @@ public class Funciones
     {
         lCentroCostoN2 = new List<string>();
         lCentroCostoN2.Add("");
-        string Parametros = "codigo_nivel2,descripcion";
-        string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and status_centro_n2 = 1 order by descripcion";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl2", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN2;
-            string resp = reader.ReadToEnd();
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                lCentroCostoN2.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "codigo_nivel2,descripcion";
+			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and status_centro_n2 = 1 order by descripcion";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl2", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN2;
+				string resp = reader.ReadToEnd();
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					lCentroCostoN2.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return lCentroCostoN2;
     }
 
@@ -191,20 +235,29 @@ public class Funciones
     {
         lCentroCostoN3 = new List<string>();
         lCentroCostoN3.Add("");
-        string Parametros = "codigo_nivel3, descripcion";
-        string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and status_centro_n3 = 1 order by descripcion";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl3", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN3;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return lCentroCostoN3;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                lCentroCostoN3.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "codigo_nivel3, descripcion";
+			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and status_centro_n3 = 1 order by descripcion";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl3", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN3;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return lCentroCostoN3;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					lCentroCostoN3.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return lCentroCostoN3;
     }
 
@@ -212,20 +265,29 @@ public class Funciones
     {
         lCentroCostoN4 = new List<string>();
         lCentroCostoN4.Add("");
-        string Parametros = "codigo_nivel4, descripcion";
-        string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and codigo_nivel3='{Global.strCCnivel3}' and status_centro_n4 = 1 order by descripcion";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl4", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN4;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return lCentroCostoN4;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                lCentroCostoN4.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "codigo_nivel4, descripcion";
+			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and codigo_nivel3='{Global.strCCnivel3}' and status_centro_n4 = 1 order by descripcion";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl4", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN4;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return lCentroCostoN4;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					lCentroCostoN4.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return lCentroCostoN4;
     }
 
@@ -233,20 +295,29 @@ public class Funciones
     {
         Responsable = new List<string>();
         Responsable.Add("");
-        string Parametros = "rtrim(clave_solicitante)clave_solicitante, rtrim(nombre_solicitante)nombre_solicitante";
-        string Condicion = $"psucursal='{Global.strSucursal}' order by nombre_solicitante";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "solicitantes", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return Responsable;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return Responsable;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                Responsable.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "rtrim(clave_solicitante)clave_solicitante, rtrim(nombre_solicitante)nombre_solicitante";
+			string Condicion = $"psucursal='{Global.strSucursal}' order by nombre_solicitante";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "solicitantes", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return Responsable;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return Responsable;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					Responsable.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return Responsable;
     }
 
@@ -254,20 +325,29 @@ public class Funciones
     {
         Autorizado = new List<string>();
         Autorizado.Add("");
-        string Parametros = "rtrim(codigo_autorizado)codigo_autorizado, rtrim(nombre_autorizado)nombre_autorizado";
-        string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' order by nombre_autorizado";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_autorizados", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return Autorizado;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return Autorizado;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                Autorizado.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "rtrim(codigo_autorizado)codigo_autorizado, rtrim(nombre_autorizado)nombre_autorizado";
+			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' order by nombre_autorizado";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_autorizados", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return Autorizado;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return Autorizado;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					Autorizado.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return Autorizado;
     }
 
@@ -275,20 +355,29 @@ public class Funciones
     {
         Almacenistas = new List<string>();
         Almacenistas.Add("");
-        string Parametros = "ClaveIpad,usuario,nombre";
-        string Condicion = "ClaveIpad is not null";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "usuarios", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return Almacenistas;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return Almacenistas;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                Almacenistas.Add(r[0].ToString().Trim() + " - " + r[2].ToString().Trim());
-            }
-        }
+			string Parametros = "ClaveIpad,usuario,nombre";
+			string Condicion = "ClaveIpad is not null";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "usuarios", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return Almacenistas;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return Almacenistas;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					Almacenistas.Add(r[0].ToString().Trim() + " - " + r[2].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return Almacenistas;
     }
 
@@ -312,18 +401,28 @@ public class Funciones
             From = "catalogo_familia cf";
             Condicion = "Almacen = 1 and status_familia = 1";
         }
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return CatFamilias;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return CatFamilias;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                CatFamilias.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return CatFamilias;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return CatFamilias;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					CatFamilias.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return CatFamilias;
     }
 
@@ -331,20 +430,29 @@ public class Funciones
     {
         CatLineas = new List<string>();
         CatLineas.Add("");
-        string Parametros = "codigo_linea, descripcion";
-        string Condicion = $"codigo_familia = '{familia}' and status_linea = 1";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_linea", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return CatLineas;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return CatLineas;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                CatLineas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "codigo_linea, descripcion";
+			string Condicion = $"codigo_familia = '{familia}' and status_linea = 1";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_linea", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return CatLineas;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return CatLineas;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					CatLineas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return CatLineas;
     }
 
@@ -352,20 +460,29 @@ public class Funciones
     {
         CatGrupo = new List<string>();
         CatGrupo.Add("");
-        string Parametros = "codigo_grupo, descripcion";
-        string Condicion = $"codigo_familia = '{familia}' and codigo_linea = '{linea}' and status_grupo = 1";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_grupo", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return CatGrupo;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return CatGrupo;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                CatGrupo.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-            }
-        }
+			string Parametros = "codigo_grupo, descripcion";
+			string Condicion = $"codigo_familia = '{familia}' and codigo_linea = '{linea}' and status_grupo = 1";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_grupo", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return CatGrupo;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return CatGrupo;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					CatGrupo.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return CatGrupo;
     }
 
@@ -379,28 +496,38 @@ public class Funciones
         {
             if (Encontrado != "") Condicion = $"Clave in ({Encontrado}) and Sucursal='{Sucursal}'";
         }
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoSecciones", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-        {
-            if (response.StatusCode == HttpStatusCode.NotFound) return Secciones;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return Secciones;
 
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                Secciones.Add(new Clases.clsSeccion
-                {
-                    ID = int.Parse(r[0].ToString().Trim()),
-                    Clave = r[1].ToString().Trim(),
-                    Descripcion = r[2].ToString().Trim(),
-                    Pasillos = Boolean.Parse(r[3].ToString().Trim()),
-                    NumeroPasillos = int.Parse(r[4].ToString().Trim()),
-                    Estanterias = Boolean.Parse(r[5].ToString().Trim()),
-                    Sucursal = r[6].ToString().Trim()
-                });
-            }
-        }
+        try
+        {
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoSecciones", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return Secciones;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return Secciones;
+
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					Secciones.Add(new Clases.clsSeccion
+					{
+						ID = int.Parse(r[0].ToString().Trim()),
+						Clave = r[1].ToString().Trim(),
+						Descripcion = r[2].ToString().Trim(),
+						Pasillos = Boolean.Parse(r[3].ToString().Trim()),
+						NumeroPasillos = int.Parse(r[4].ToString().Trim()),
+						Estanterias = Boolean.Parse(r[5].ToString().Trim()),
+						Sucursal = r[6].ToString().Trim()
+					});
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return Secciones;
     }
 
@@ -411,34 +538,44 @@ public class Funciones
         string Condicion = $"Seccion='{Seccion}' and Sucursal='{Sucursal}'";
         if (!string.IsNullOrEmpty(Pasillo))
             Condicion += $" and Pasillo = '{Pasillo}'";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoEstanterias", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-        {
-            if (response.StatusCode == HttpStatusCode.NotFound) return Estanterias;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return Estanterias;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                Estanterias.Add(new Clases.clsEstanteria
-                {
-                    ID = int.Parse(r[0].ToString().Trim()),
-                    Clave = r[1].ToString().Trim(),
-                    Tipo = r[2].ToString().Trim(),
-                    Descripcion = r[3].ToString().Trim(),
-                    Seccion = r[4].ToString().Trim(),
-                    Pasillo = int.Parse(r[5].ToString().Trim()),
-                    NumeroNiveles = int.Parse(r[6].ToString().Trim()),
-                    Tarimas = Boolean.Parse(r[7].ToString().Trim()),
-                    NumeroTarimas = int.Parse(r[8].ToString().Trim()),
-                    Cajas = Boolean.Parse(r[9].ToString().Trim()),
-                    ReiniciarNumeracionCajas = Boolean.Parse(r[10].ToString().Trim()),
-                    NumeroCajas = int.Parse(r[11].ToString().Trim()),
-                    NumeroCajasTarima = int.Parse(r[12].ToString().Trim()),
-                    Sucursal = r[13].ToString().Trim(),
-                });
-            }
-        }
+
+		try
+		{
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoEstanterias", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return Estanterias;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return Estanterias;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					Estanterias.Add(new Clases.clsEstanteria
+					{
+						ID = int.Parse(r[0].ToString().Trim()),
+						Clave = r[1].ToString().Trim(),
+						Tipo = r[2].ToString().Trim(),
+						Descripcion = r[3].ToString().Trim(),
+						Seccion = r[4].ToString().Trim(),
+						Pasillo = int.Parse(r[5].ToString().Trim()),
+						NumeroNiveles = int.Parse(r[6].ToString().Trim()),
+						Tarimas = Boolean.Parse(r[7].ToString().Trim()),
+						NumeroTarimas = int.Parse(r[8].ToString().Trim()),
+						Cajas = Boolean.Parse(r[9].ToString().Trim()),
+						ReiniciarNumeracionCajas = Boolean.Parse(r[10].ToString().Trim()),
+						NumeroCajas = int.Parse(r[11].ToString().Trim()),
+						NumeroCajasTarima = int.Parse(r[12].ToString().Trim()),
+						Sucursal = r[13].ToString().Trim(),
+					});
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return Estanterias;
     }
 
@@ -446,19 +583,29 @@ public class Funciones
     {
         lSeries = new List<string>();
         lSeries.Add("");
-        string Parametros = $"{CodigoArticulo}";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_NumerosSeriexArticulo").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-        {
-            if (response.StatusCode == HttpStatusCode.NotFound) return lSeries;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return lSeries;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                lSeries.Add(r[0].ToString().Trim());
-            }
-        }
+
+		try
+		{
+			string Parametros = $"{CodigoArticulo}";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_NumerosSeriexArticulo").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return lSeries;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return lSeries;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					lSeries.Add(r[0].ToString().Trim());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
+		
         return lSeries;
     }
 }

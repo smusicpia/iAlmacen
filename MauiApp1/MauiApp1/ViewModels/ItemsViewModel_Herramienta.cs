@@ -1,6 +1,9 @@
 using iAlmacen.Models;
+using iAlmacen.Views;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
@@ -28,7 +31,6 @@ public class ItemsViewModel_Herramienta : BaseViewModel_Herramienta
     {
         //if (IsBusy) return;
         IsBusy = true;
-
         try
         {
             Items.Clear();
@@ -91,8 +93,9 @@ public class ItemsViewModel_Herramienta : BaseViewModel_Herramienta
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-        }
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
         finally
         {
 			await Task.Delay(3000);

@@ -1,6 +1,9 @@
 using iAlmacen.Models;
+using iAlmacen.Views;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
@@ -85,8 +88,9 @@ public class ItemsViewModel_InventarioDetalle : BaseViewModel_InventarioDetalle
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-        }
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
         finally
         {
             IsBusy = false;

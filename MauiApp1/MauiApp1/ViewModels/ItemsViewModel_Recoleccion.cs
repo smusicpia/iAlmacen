@@ -1,4 +1,5 @@
 ﻿using iAlmacen.Models;
+using iAlmacen.Views;
 using iAlmacen.WebApi;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
@@ -81,7 +82,6 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
     {
         //if (IsBusy)
         //    return;
-
         //IsBusy = true;
         try
         {
@@ -117,7 +117,8 @@ public class ItemsViewModel_Recoleccion : BaseViewModel_Recoleccion
         catch (Exception ex)
         {
             Debug.WriteLine(ex);
-        }
+			App.Current.MainPage = new LoginView();
+		}
         finally
         {
             IsBusy = false;

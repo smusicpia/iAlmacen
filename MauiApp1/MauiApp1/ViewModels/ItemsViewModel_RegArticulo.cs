@@ -1,4 +1,5 @@
 using iAlmacen.Models;
+using iAlmacen.Views;
 using iAlmacen.WebApi;
 
 using Newtonsoft.Json;
@@ -121,8 +122,9 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-        }
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
         finally
         {
             IsBusy = false;

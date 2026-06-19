@@ -1,6 +1,9 @@
 ﻿using iAlmacen.Models;
+using iAlmacen.Views;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
@@ -24,15 +27,13 @@ namespace iAlmacen.ViewModels
         {
             //if (IsBusy)
             //    return;
-
             //IsBusy = true;
-
             try
             {
                 Items.Clear();
                 string Parametros = $"0";
-                HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/ProductoTerminado", Parametros, "spget_lista_fotografias");
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/ProductoTerminado", Parametros, "spget_lista_fotografias").Result;
+                using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
                 {
                     if (response.StatusCode == HttpStatusCode.NotFound) return;
                     string resp = reader.ReadToEnd();
@@ -61,8 +62,9 @@ namespace iAlmacen.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
-            }
+				Debug.WriteLine(ex);
+				App.Current.MainPage = new LoginView();
+			}
             finally
             {
                 IsBusy = false;

@@ -13,10 +13,11 @@ namespace iAlmacen
             var logueado = Preferences.Get("logueado", string.Empty);
             Global.tokenAPI = Preferences.Default.Get("tokenAPI", string.Empty);
             Global.refreshTokenAPI = Preferences.Default.Get("refreshTokenAPI", string.Empty);
-            Global.clave_usuario = Preferences.Default.Get("clave_usuario", string.Empty);
+            Global.guid = Preferences.Default.Get("Guid", string.Empty);
+			Global.clave_usuario = Preferences.Default.Get("clave_usuario", string.Empty);
             Global.pass = Preferences.Default.Get("Password", string.Empty);
 
-			if (string.IsNullOrEmpty(Global.clave_usuario) || (string.IsNullOrEmpty(logueado) && string.IsNullOrEmpty(Global.tokenAPI) && string.IsNullOrEmpty(Global.refreshTokenAPI)))
+			if (string.IsNullOrEmpty(Global.clave_usuario) || (string.IsNullOrEmpty(logueado) && string.IsNullOrEmpty(Global.tokenAPI) && string.IsNullOrEmpty(Global.refreshTokenAPI) && string.IsNullOrEmpty(Global.guid)))
             {
                 MainPage = new LoginView();
             }
@@ -28,7 +29,6 @@ namespace iAlmacen
                     if (httpStatusCode != HttpStatusCode.OK)
                     {
                         MainPage = new LoginView();
-
                     }
                     MainPage = new AppShell();
                 }
@@ -38,11 +38,5 @@ namespace iAlmacen
                 }
             }
         }
-
-		//protected override Window CreateWindow(IActivationState? activationState)
-		//{
-		//    //return new Window(new AppShell());
-		//    return new Window(new LoginView());
-		//}
 	}
 }

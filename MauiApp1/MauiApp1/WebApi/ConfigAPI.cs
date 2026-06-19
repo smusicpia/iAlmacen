@@ -176,6 +176,10 @@ namespace iAlmacen.WebApi
 
 				//_httpClient.DefaultRequestHeaders.Add("RefreshToken", $"{Global.refreshTokenAPI}");
 			}
+            else
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = null;
+            }
 
 			var content = new StringContent(Content, null, "application/json");
 			httpRequest.Content = content;

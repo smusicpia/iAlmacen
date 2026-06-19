@@ -1,7 +1,10 @@
 using iAlmacen.Clases;
 using iAlmacen.Models;
+using iAlmacen.Views;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
@@ -62,43 +65,15 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
         {
             if (item.codigo_articulo != null)
             {
-                //Items.Add(new Item_ArticuloSalida
-                //{
-                //    index = Items.Count + 1,
-                //    codigo_articulo = item.codigo_articulo,
-                //    descripcion_general = item.descripcion_general,
-                //    desc_familia = item.desc_familia,
-                //    desc_linea = item.desc_linea,
-                //    desc_grupo = item.desc_grupo,
-                //    desc_medida = item.desc_medida,
-                //    desc_marca = item.desc_marca,
-                //    desc_parte = item.desc_parte,
-                //    consecutivo = item.consecutivo,
-                //    cantidad = item.cantidad,
-                //    noubicaciones = item.noubicaciones,
-                //    Seccion = item.Seccion,
-                //    desc_seccion = item.desc_seccion,
-                //    Pasillo = item.Pasillo,
-                //    Estanteria = item.Estanteria,
-                //    desc_estanteria = item.desc_estanteria,
-                //    Nivel = item.Nivel,
-                //    Tarima = item.Tarima,
-                //    Contenedor = !string.IsNullOrEmpty(item.Contenedor.ToString()) ? double.Parse(item.Contenedor.ToString().Trim()) : 0,
-                //    ExistenciaUbicacion = item.ExistenciaUbicacion,
-                //    ccsucursal = item.ccsucursal,
-                //    ccarea = item.ccarea,
-                //    ccnivel1 = item.ccnivel1,
-                //    ccnivel2 = item.ccnivel2,
-                //    ccnivel3 = item.ccnivel3,
-                //    ccnivel4 = item.ccnivel4,
-                //});
+
             }
 
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex);
-        }
+			App.Current.MainPage = new LoginView();
+		}
         finally
         {
             IsBusy = false;
@@ -172,7 +147,8 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
         catch (Exception ex)
         {
             Debug.WriteLine(ex);
-        }
+			App.Current.MainPage = new LoginView();
+		}
         finally
         {
             IsBusy = false;
@@ -181,44 +157,52 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
 
     private async Task ExecuteLoadItemsCommand_Cargar(string Articulo, string[] Ubicacion)
     {
-        string Parametros = $"Sucursal,Seccion, (select (tmp.Clave %2B ' - ' %2B tmp.Descripcion) from CatalogoSecciones as tmp where tmp.Clave=CatalogoArticuloUbicacion.Seccion)descseccion, " +
-            "Pasillo,Estanteria, (select top(1) (tmp.Clave %2B ' - ' %2B tmp.Descripcion) from CatalogoEstanterias as tmp where tmp.Clave=CatalogoArticuloUbicacion.Estanteria)descestanteria, " +
-            "Nivel,Tarima,Contenedor,CodigoArticulo,Existencia,UnidadControl";
-        string Condicion = $"CodigoArticulo='{Articulo}' and Estanteria='{Ubicacion[1]}' and Nivel='{Ubicacion[2]}' and Tarima='{Ubicacion[3]}' and Contenedor='{Ubicacion[4]}'";
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT").Result;
-        using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        try
         {
-            if (response.StatusCode == HttpStatusCode.NotFound) return;
-            string resp = reader.ReadToEnd();
-            if (resp == "[]") return;
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-            foreach (DataRow r in dt.Rows)
-            {
-                switch (Ubicacion.Length)
-                {
-                    case 0:
-                        break;
+			string Parametros = $"Sucursal,Seccion, (select (tmp.Clave %2B ' - ' %2B tmp.Descripcion) from CatalogoSecciones as tmp where tmp.Clave=CatalogoArticuloUbicacion.Seccion)descseccion, " +
+			"Pasillo,Estanteria, (select top(1) (tmp.Clave %2B ' - ' %2B tmp.Descripcion) from CatalogoEstanterias as tmp where tmp.Clave=CatalogoArticuloUbicacion.Estanteria)descestanteria, " +
+			"Nivel,Tarima,Contenedor,CodigoArticulo,Existencia,UnidadControl";
+			string Condicion = $"CodigoArticulo='{Articulo}' and Estanteria='{Ubicacion[1]}' and Nivel='{Ubicacion[2]}' and Tarima='{Ubicacion[3]}' and Contenedor='{Ubicacion[4]}'";
+			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT").Result;
+			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			{
+				if (response.StatusCode == HttpStatusCode.NotFound) return;
+				string resp = reader.ReadToEnd();
+				if (resp == "[]") return;
+				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				foreach (DataRow r in dt.Rows)
+				{
+					switch (Ubicacion.Length)
+					{
+						case 0:
+							break;
 
-                    case 1:
-                        break;
+						case 1:
+							break;
 
-                    default:
-                        foreach (Item_ArticuloSalida item in Items)
-                        {
-                            if (item.codigo_articulo != Articulo) continue;
-                            item.Seccion = r[2].ToString().Trim();
-                            item.Pasillo = double.Parse(r[3].ToString().Trim());
-                            item.Estanteria = r[5].ToString().Trim();
-                            item.Nivel = double.Parse(r[6].ToString().Trim());
-                            item.Tarima = double.Parse(r[7].ToString().Trim());
-                            item.Contenedor = double.Parse(r[8].ToString().Trim());
-                            //ExistenciaUbicacion = r[10].ToString().Trim();
-                            //bUbicacionCapturada = true;
-                    }
-                        break;
-                }
-            }
-        }
+						default:
+							foreach (Item_ArticuloSalida item in Items)
+							{
+								if (item.codigo_articulo != Articulo) continue;
+								item.Seccion = r[2].ToString().Trim();
+								item.Pasillo = double.Parse(r[3].ToString().Trim());
+								item.Estanteria = r[5].ToString().Trim();
+								item.Nivel = double.Parse(r[6].ToString().Trim());
+								item.Tarima = double.Parse(r[7].ToString().Trim());
+								item.Contenedor = double.Parse(r[8].ToString().Trim());
+								//ExistenciaUbicacion = r[10].ToString().Trim();
+								//bUbicacionCapturada = true;
+							}
+							break;
+					}
+				}
+			}
+		}
+        catch (Exception ex)
+        {
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
     }
 
     private async Task ExecuteLoadItemsCommand_Cargar(string Parametros, bool Historico)
@@ -273,8 +257,9 @@ public class ItemsViewModel_ArticuloSalida : BaseViewModel_RegArticulo
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-        }
+			Debug.WriteLine(ex);
+			App.Current.MainPage = new LoginView();
+		}
         finally
         {
             IsBusy = false;

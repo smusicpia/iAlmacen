@@ -1,5 +1,4 @@
 using iAlmacen.Clases;
-using iAlmacen.Models;
 using iAlmacen.ViewModels;
 
 using System.Net;
@@ -48,45 +47,52 @@ public partial class LoginView : ContentPage
         }
         if (Funciones.ChkConnected())
         {
-            HttpStatusCode httpStatusCode = Funciones.Login(txt_user.Text.ToLower(), txt_pass.Text.ToLower());
-            if (httpStatusCode != HttpStatusCode.OK)
+            try
             {
-                if (httpStatusCode == HttpStatusCode.Unauthorized)
-                {
-                    Global.nombre_usuario = Global.nombre_usuario.Trim();
-                    if (Global.nombre_usuario == "")
-                    {
-                        await DisplayAlertAsync("Advertencia", "Acceso Invalido", "OK");
-                        txt_user.Text = "";
-                        txt_pass.Text = "";
-                        return;
-                    }
-                }
-                else if (httpStatusCode == HttpStatusCode.NotFound)
-                {
-                    await DisplayAlertAsync("Advertencia", "Acceso Invalido", "OK");
-                    txt_user.Text = "";
-                    txt_pass.Text = "";
-                    return;
-                }
-                else
-                {
-                    if (Global.cierra_sistema == false)
-                    {
-                        await DisplayAlertAsync("Error", httpStatusCode.ToString(), "OK");
-                        txt_user.Text = "";
-                        txt_pass.Text = "";
-                        return;
-                    }
-                    else
-                    {
-                        System.Threading.Thread.CurrentThread.Abort();
-                    }
-                }
-            }
+				HttpStatusCode httpStatusCode = Funciones.Login(txt_user.Text.ToLower(), txt_pass.Text.ToLower());
+				if (httpStatusCode != HttpStatusCode.OK)
+				{
+					if (httpStatusCode == HttpStatusCode.Unauthorized)
+					{
+						Global.nombre_usuario = Global.nombre_usuario.Trim();
+						if (Global.nombre_usuario == "")
+						{
+							await DisplayAlertAsync("Advertencia", "Acceso Invalido", "OK");
+							txt_user.Text = "";
+							txt_pass.Text = "";
+							return;
+						}
+					}
+					else if (httpStatusCode == HttpStatusCode.NotFound)
+					{
+						await DisplayAlertAsync("Advertencia", "Acceso Invalido", "OK");
+						txt_user.Text = "";
+						txt_pass.Text = "";
+						return;
+					}
+					else
+					{
+						if (Global.cierra_sistema == false)
+						{
+							await DisplayAlertAsync("Error", httpStatusCode.ToString(), "OK");
+							txt_user.Text = "";
+							txt_pass.Text = "";
+							return;
+						}
+						else
+						{
+							System.Threading.Thread.CurrentThread.Abort();
+						}
+					}
+				}
 
-            Preferences.Set("logueado", "si");
-            Application.Current.MainPage = new AppShell();
+				Preferences.Set("logueado", "si");
+				Application.Current.MainPage = new AppShell();
+			}
+            catch (Exception ex)
+            {
+				return;
+            }
         }
     }
 }
