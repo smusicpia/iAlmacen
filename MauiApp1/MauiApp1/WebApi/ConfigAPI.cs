@@ -20,7 +20,7 @@ namespace iAlmacen.WebApi
         //**************************************************
 
         public static string Servidor = "http://192.168.0.204:8055/";
-        public static string TipoProyecto = "P";     // "P" = Produccion, "D" = Desarrollo
+        public static string TipoProyecto = "D";     // "P" = Produccion, "D" = Desarrollo
         public static bool Prueba = TipoProyecto=="P" ? false : true;
 
         //public static string Servidor = "https://localhost:44398/";

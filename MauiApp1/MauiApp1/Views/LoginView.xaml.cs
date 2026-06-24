@@ -27,7 +27,7 @@ public partial class LoginView : ContentPage
 		viewModel_Login.CheckCameraPermissionCommand.Execute(null);
 		viewModel_Login.CheckPhotosPermissionCommand.Execute(null);
 		viewModel_Login.CheckPhotosAddOnlyPermissionCommand.Execute(null);
-        viewModel_Login.CheckConnectedCommand.Execute(null);
+		viewModel_Login.CheckConnectedCommand.Execute(null);
 	}
 
 	private void Connectivity_ConnectivityChanged(object? sender, ConnectivityChangedEventArgs e)
