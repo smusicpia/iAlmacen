@@ -26,7 +26,8 @@ namespace iAlmacen
                 Preferences.Default.Remove("tokenAPI", string.Empty);
                 Preferences.Default.Remove("refreshTokenAPI", string.Empty);
                 Application.Current.MainPage = new LoginView();
-            }
+                //await Shell.Current.GoToAsync("loginview");
+			}
         }
     }
 }
