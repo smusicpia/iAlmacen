@@ -117,27 +117,31 @@ public class Funciones
     {
         lAreas = new List<String>();
         lAreas.Add("");
-        try
-        {
+		try
+		{
 			string Parametros = "rtrim(clave_area) clave_area, rtrim(descripcion) descripcion";
-			string Condicion = $"psucursal='{Global.strSucursal}' order by descripcion";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+		string Condicion = $"psucursal='{Global.strSucursal}' order by descripcion";
+		HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT").Result;
+		using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+		{
+			if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
+			string resp = reader.ReadToEnd();
+			DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+			foreach (DataRow r in dt.Rows)
 			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
-				string resp = reader.ReadToEnd();
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
+				lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
 			}
-			
 		}
-        catch (Exception ex)
-        {
+
+		}
+		catch (Exception ex)
+		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
 		return lAreas;
 	}
@@ -167,10 +171,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return lAreas;
+
+		return lAreas;
     }
 
     public static List<string> LlenarCentroCostoN1()
@@ -196,10 +204,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return lCentroCostoN1;
+
+		return lCentroCostoN1;
     }
 
     public static List<string> LlenarCentroCostoN2()
@@ -225,10 +237,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return lCentroCostoN2;
+
+		return lCentroCostoN2;
     }
 
     public static List<string> LlenarCentroCostoN3()
@@ -255,10 +271,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return lCentroCostoN3;
+
+		return lCentroCostoN3;
     }
 
     public static List<string> LlenarCentroCostoN4()
@@ -285,10 +305,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return lCentroCostoN4;
+
+		return lCentroCostoN4;
     }
 
     public static List<string> LlenarResponsables()
@@ -315,10 +339,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return Responsable;
+
+		return Responsable;
     }
 
     public static List<string> LlenarAutorizado()
@@ -345,10 +373,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return Autorizado;
+
+		return Autorizado;
     }
 
     public static List<string> LlenarAlmacenistas()
@@ -375,10 +407,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return Almacenistas;
+
+		return Almacenistas;
     }
 
     public static List<string> LlenarCategoriaFamilias(bool EsHerramienta = false)
@@ -420,10 +456,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return CatFamilias;
+
+		return CatFamilias;
     }
 
     public static List<string> LlenarCategoriaLineas(string familia)
@@ -450,10 +490,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return CatLineas;
+
+		return CatLineas;
     }
 
     public static List<string> LlenarCategoriaGrupo(string familia, string linea)
@@ -480,10 +524,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return CatGrupo;
+
+		return CatGrupo;
     }
 
     public static ObservableCollection<Clases.clsSeccion> LlenarSecciones(string Sucursal = "", string Encontrado = "", bool EsHerramienta = false)
@@ -525,10 +573,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return Secciones;
+
+		return Secciones;
     }
 
     public static ObservableCollection<Clases.clsEstanteria> LlenarEstanterias(string Sucursal, string Seccion, string? Pasillo = "")
@@ -573,10 +625,14 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return Estanterias;
+
+		return Estanterias;
     }
 
     public static List<string> LlenarSeries(string CodigoArticulo)
@@ -603,9 +659,13 @@ public class Funciones
 		catch (Exception ex)
 		{
 			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			// Redirige directamente al LoginView en caso de error
+			if (!Global.isAutoRefreshToken)
+			{
+				App.Current.MainPage = new LoginView();
+			}
 		}
-		
-        return lSeries;
+
+		return lSeries;
     }
 }

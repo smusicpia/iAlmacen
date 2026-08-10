@@ -40,6 +40,7 @@ public partial class LoginView : ContentPage
 
 	private async void btnIniciarSesion_Clicked(object sender, EventArgs e)
     {
+		btnIniciarSesion.IsEnabled = false;
         if (string.IsNullOrEmpty(txt_user.Text) || string.IsNullOrEmpty(txt_pass.Text))
         {
             await DisplayAlertAsync("Advertencia", "Falta ingresar usuario o contraseña", "OK");
@@ -60,6 +61,7 @@ public partial class LoginView : ContentPage
 							await DisplayAlertAsync("Advertencia", "Acceso Invalido", "OK");
 							txt_user.Text = "";
 							txt_pass.Text = "";
+							btnIniciarSesion.IsEnabled = true;
 							return;
 						}
 					}
@@ -68,6 +70,7 @@ public partial class LoginView : ContentPage
 						await DisplayAlertAsync("Advertencia", "Acceso Invalido", "OK");
 						txt_user.Text = "";
 						txt_pass.Text = "";
+						btnIniciarSesion.IsEnabled = true;
 						return;
 					}
 					else
@@ -77,6 +80,7 @@ public partial class LoginView : ContentPage
 							await DisplayAlertAsync("Error", httpStatusCode.ToString(), "OK");
 							txt_user.Text = "";
 							txt_pass.Text = "";
+							btnIniciarSesion.IsEnabled = true;
 							return;
 						}
 						else
@@ -91,8 +95,15 @@ public partial class LoginView : ContentPage
 			}
             catch (Exception ex)
             {
+				btnIniciarSesion.IsEnabled = true;
 				return;
             }
         }
     }
+
+	private void chkAutoRefreshToken_CheckedChanged(object sender, CheckedChangedEventArgs e)
+	{
+		Global.isAutoRefreshToken = chkAutoRefreshToken.IsChecked;
+		//viewModel_Login.AutoRefreshToken = chkAutoRefreshToken.IsChecked;
+	}
 }

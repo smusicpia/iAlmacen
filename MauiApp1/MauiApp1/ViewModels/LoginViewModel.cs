@@ -6,7 +6,8 @@ namespace iAlmacen.ViewModels;
 
 public class LoginViewModel : BaseViewModel
 {
-    public Command LoginCommand { get; }
+	public bool AutoRefreshToken { get; set; }
+	public Command LoginCommand { get; }
 	public ICommand CheckCameraPermissionCommand { get; set; }
 	public ICommand CheckPhotosPermissionCommand { get; set; }
 	public ICommand CheckPhotosAddOnlyPermissionCommand { get; set; }

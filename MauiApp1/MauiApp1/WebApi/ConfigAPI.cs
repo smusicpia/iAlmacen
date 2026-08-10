@@ -1,4 +1,5 @@
 ﻿using iAlmacen.Clases;
+using iAlmacen.Handlers;
 using iAlmacen.Models;
 
 using Newtonsoft.Json;
@@ -34,7 +35,18 @@ namespace iAlmacen.WebApi
 		static ConfigAPI()
 		{
 			//HttpClientHandler insecureHandler = GetInsecureHandler();
-			_httpClient = new HttpClient
+
+			// 1. Instancia el manejador final que se conecta a internet
+			var networkHandler = new HttpClientHandler();
+
+			// 2. Crea tu manejador de refresco pasándole el de red como su "InnerHandler"
+			
+            var refreshHandler = new RefreshTokenHandler()
+			{
+				InnerHandler = networkHandler
+			};
+
+			_httpClient = new HttpClient(refreshHandler)
 			{
 				Timeout = TimeSpan.FromSeconds(5), // Ajusta el tiempo de espera según tus necesidades
 				BaseAddress = new Uri(ConfigAPI.Servidor), // Cambia esto por la URL de tu API
@@ -247,11 +259,6 @@ namespace iAlmacen.WebApi
 			}
 			catch (WebException ex)
 			{
-				//using (WebResponse responsed = ex.Response)
-				//{
-				//    response = (HttpWebResponse)responsed;
-				//    request = null;
-				//}
 				Preferences.Remove("logueado", string.Empty);
 				Preferences.Default.Remove("tokenAPI", string.Empty);
 				Preferences.Default.Remove("refreshTokenAPI", string.Empty);
