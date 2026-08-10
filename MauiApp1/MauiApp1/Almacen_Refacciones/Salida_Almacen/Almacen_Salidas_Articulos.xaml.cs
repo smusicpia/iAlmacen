@@ -150,20 +150,14 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 
 		private async Task obtenerDatosArticulo(string codArticulo)
 		{
-			Result = $"{codArticulo}";
+			Result = $"{codArticulo.Substring(1, codArticulo.Length - 1)}";
 			string Codigo = Result;
 			if (Codigo.Length != 5)
 			{
 				await DisplayAlertAsync("Información", $"El formato del código escaneado {Codigo} no es válido para un Articulo.", "OK");
 				return;
 			}
-			//Codigo = Codigo.Substring(1, 5);
-
-			// Para pruebas
-			//Result = "0U01U2U3U4";
-			//0 - U01 Estanteria - U2 Nivel - U3 Tarima - U4 Contenedor
-			//BuscarUbicacion();
-			//string[] Valores;
+			//Codigo = Codigo.Substring(2, 5);
 			//string Codigo = "00391";
 
 			string Parametros = $"{Codigo}";
@@ -260,11 +254,6 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 			//Result = "0U01U2U3U4";
 			// 0 - U01 Estanteria - U2 Nivel - U3 Tarima - U4 Contenedor
 			//BuscarUbicacion();
-
-			//string Codigo = Result;
-			//string[] Valores;
-			//Codigo = Codigo.Substring(2, 5);
-			//string Codigo = "00391";
 
 			string[] Ubicacion;
 			Ubicacion = Result.ToString().Split('U');

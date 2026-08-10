@@ -136,10 +136,18 @@ public class APIService
 
 	public static async Task<HttpResponseMessage> PostAPI_GenerarSalida(string Controllador, string tProyecto, bool OrdenRecoleccion, string Responsable, string Autorizado, ObservableCollection<SalidaAlmacenEntity> Obj)
 	{
+		var json = JsonSerializer.Serialize(Obj, _jsonOptions);
+		var jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
+		string requestUri = ConfigAPI.Servidor + $"/{Controllador}?tProyecto={tProyecto}&OrdenRecoleccion={OrdenRecoleccion}&Responsable={Responsable}&Autorizado={Autorizado}";
+
+		var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)); // Espera máximo 10 segundos
+
 		try
 		{
-			var jsonContent = new StringContent(JsonSerializer.Serialize(Obj, _jsonOptions), Encoding.UTF8, "application/json");
-			var response = await _httpClient.PostAsync(ConfigAPI.Servidor + $"/{Controllador}?tProyecto={tProyecto}&OrdenRecoleccion={OrdenRecoleccion}&Responsable={Responsable}&Autorizado={Autorizado}", jsonContent).ConfigureAwait(false);
+			var response = await _httpClient.PostAsync(requestUri, jsonContent, cts.Token).ConfigureAwait(false);
+
+			//var response = await _httpClient.PostAsync(requestUri, jsonContent, cts.Token);
+			//response.EnsureSuccessStatusCode();
 			return response;
 		}
 		catch (Exception ex)

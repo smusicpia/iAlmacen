@@ -1042,13 +1042,12 @@ public partial class Almacen_Salidas : ContentPage
 				CantidadAsignado = item.CantidadAsignado,
 				ObservacionAsignado = item.ObservacionAsignado,
 				//identrada = item.identrada
-				Fecha = DateTime.Now.ToString(),
+				Fecha = DateTime.Now.ToShortDateString(),
 			});
-
 		}
 
 		string sFolioSalida = "";
-		HttpResponseMessage responseMessage = APIService.PostAPI_GenerarSalida("api/GenerarSalida", ConfigAPI.TipoProyecto, OrdenRecoleccion, strResponsable, strAutorizado, salida).Result;
+		HttpResponseMessage responseMessage = APIService.PostAPI_GenerarSalida("api/Operacion/GenerarSalida", ConfigAPI.TipoProyecto, OrdenRecoleccion, strResponsable, strAutorizado, salida).Result;
 		using (StreamReader reader = new StreamReader(responseMessage.Content.ReadAsStreamAsync().Result))
 		{
 			if (responseMessage.StatusCode == HttpStatusCode.NotFound) return;
