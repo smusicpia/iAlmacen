@@ -1011,12 +1011,12 @@ public partial class Almacen_Salidas : ContentPage
 				area = Global.strArea,
 				ccn1 = Global.strCCnivel1,
 				ccn2 = Global.strCCnivel2,
-				ccn3 = Global.strCCnivel3,
-				ccn4 = Global.strCCnivel4,
+				ccn3 = item.ccnivel3,
+				ccn4 = item.ccnivel4,
 				cantidad = item.cantidad,
 				concepto = item.descripcion_general,
 				unidad_medida = item.desc_medida,
-				//unidad = null,
+				unidad = item.UnidadControlUbicacion,
 				codigo_articulo = item.codigo_articulo,
 				consecutivo_mov = item.consecutivo,
 				//status_requisicion = "SL",
@@ -1038,10 +1038,10 @@ public partial class Almacen_Salidas : ContentPage
 				Nombre_Usuario = Global.nombre_usuario,
 				ControlArea = item.ControlArea,
 				Reasignado = item.Reasignado,
-				//AreaAsignado = null,
+				AreaAsignado = item.AreaAsignado,
 				CantidadAsignado = item.CantidadAsignado,
 				ObservacionAsignado = item.ObservacionAsignado,
-				//identrada = item.identrada
+				IdEntrada = item.identrada,
 				Fecha = DateTime.Now.ToShortDateString(),
 			});
 		}

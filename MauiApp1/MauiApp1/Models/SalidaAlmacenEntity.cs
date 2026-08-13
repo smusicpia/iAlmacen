@@ -38,7 +38,7 @@
 		public string Nombre_Usuario { get; set; }
 		public bool ControlArea { get; set; }
 		public bool Reasignado { get; set; }
-		public bool AreaAsignado { get; set; }
+		public string AreaAsignado { get; set; }
 		public double CantidadAsignado { get; set; }
 		public string ObservacionAsignado { get; set; }
 		public int IdEntrada { get; set; }

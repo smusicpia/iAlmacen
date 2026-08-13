@@ -53,7 +53,6 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 		private ItemsViewModel_ArticuloSalida viewModel_ArticuloSalida;
 		Item_ArticuloSalida item_ArticuloSalida { get; set; }
 
-
 		public Almacen_Salidas_Articulos(string Nivel3, string Nivel4, ItemsViewModel_ArticuloSalida vm_ArticuloSalida)
 		{
 			InitializeComponent();
