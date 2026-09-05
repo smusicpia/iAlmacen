@@ -49,14 +49,14 @@ public class ItemsViewModel_Inventario : BaseViewModel_Inventario
 		MEncontrado = false;
 		try
 		{
-			//if (Parametros.Split(',').Length > 0)
-			//{
-			//	string[] param = Parametros.Split(',');
-			//	if (param[1].Length == 0)
-			//	{
-			Items.Clear();
-			//	}
-			//}
+			if (Parametros.Split(',').Length > 0)
+			{
+				string[] param = Parametros.Split(',');
+				if (param[1].Length == 0)
+				{
+					Items.Clear();
+				}
+			}
 			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_InvCatalogo_Articulos").Result;
 			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
 			{
