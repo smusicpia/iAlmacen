@@ -56,6 +56,7 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
 				int contarUbicacion = 0;
 				foreach (DataRow r in dt.Rows)
                 {
+					BEncontrado = false;
 					if (Items.Count > 0)
                     {
                         foreach (Item_RegArticulo RegArt in Items)
@@ -115,7 +116,8 @@ public class ItemsViewModel_RegArticulo : BaseViewModel_RegArticulo
 							ExisUbi = int.Parse(r[18].ToString().Trim()) == 1 ? double.Parse(r[18].ToString().Trim()) : 0,
                             Capturado = Boolean.Parse(r[27].ToString()),
 						});
-                        i++;
+						BEncontrado = false;
+						i++;
                     }
                 }
             }

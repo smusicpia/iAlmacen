@@ -292,7 +292,14 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             viewModel_Inventario.Parametros = Parametros;
             viewModel_Inventario.LoadItemsCommand_inventario.Execute(null);
 
-            if (!viewModel_Inventario.Items.Any())
+            bool agregado = false;
+            foreach (var item in viewModel_Inventario.Items)
+            {
+                if (item.CodigoActual == txtClaveArticulo.Text.ToString().Trim())
+                    agregado = true;
+            }
+
+            if (!agregado)
             {
                 await DisplayAlertAsync("Error", "La Clave ingresada no existe o no pertenece a la categoria de Herramienta.", "OK");
             }
@@ -354,7 +361,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
         {
             Item_RegArticulo Item_;
             Item_ = (sender as MenuItem).BindingContext as Item_RegArticulo;
-            Items.Remove(Item_);
+            viewModel_Inventario.Items.Remove(Item_);
         }
 
         private async void btnCancelar_Clicked(Object sender, EventArgs e)
