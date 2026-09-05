@@ -38,62 +38,6 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             viewModel_RegArticulo.LoadItemsCommand_regArticulo.Execute($"{Global.FolioInventario}");
         }
 
-        //protected override void OnAppearing()
-        //{
-        //    base.OnAppearing();
-        //    CargarArticulos();
-        //}
-
-        //private void CargarArticulos()
-        //{
-        //    //RegArticulos.Clear();
-        //    string Parametros = $"{Global.FolioInventario}";
-        //    HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_DetalleInventarioAlmacen");
-        //    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-        //    {
-        //        if (response.StatusCode == HttpStatusCode.NotFound) return;
-        //        string resp = reader.ReadToEnd();
-        //        if (resp == "[]") return;
-        //        DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-        //        foreach (DataRow r in dt.Rows)
-        //        {
-        //            bool existe = false;
-        //            foreach (RegArticulo item in RegArticulos)
-        //            {
-        //                if (item.ID == int.Parse(r[0].ToString())) existe = true;
-        //            }
-
-        //            if (!existe)
-        //            {
-        //                RegArticulos.Add(new RegArticulo
-        //                {
-        //                    ID = int.Parse(r[0].ToString()),
-        //                    CodigoActual = r[1].ToString(),
-        //                    CodigoAnterior = "",
-        //                    Descripcion = r[2].ToString(),
-        //                    ClaveFamilia = r[14].ToString(),
-        //                    ClaveLinea = r[15].ToString(),
-        //                    ClaveGrupo = r[16].ToString(),
-        //                    desc_familia = r[3].ToString(),
-        //                    desc_linea = r[4].ToString(),
-        //                    desc_grupo = r[5].ToString(),
-        //                    DescMarca = r[6].ToString(),
-        //                    DescMedida = r[7].ToString(),
-        //                    DescParte = r[8].ToString(),
-        //                    existencia = double.Parse(r[9].ToString()),
-        //                    Fisico = double.Parse(r[13].ToString()),
-        //                    Inventario = "0",
-        //                    Aplicado = "0",
-        //                    Fecha_ = DateTime.Now.ToShortDateString().ToString(),
-        //                    UnidadControl = r[10].ToString(),
-        //                    Costo = double.Parse(r[11].ToString())
-        //                });
-        //            }
-        //        }
-        //    }
-        //    ItemsListView.ItemsSource = RegArticulos;
-        //}
-
         private async void btnGuardar_Clicked(Object sender, EventArgs e)
         {
             var answer = await DisplayAlertAsync("Informaciòn", "Desea aplicar el inventario seleccionado ¿Desea Continuar?", "Si", "No");

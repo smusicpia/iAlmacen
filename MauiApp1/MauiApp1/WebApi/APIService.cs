@@ -14,7 +14,6 @@ public class APIService
     private static readonly JsonSerializerOptions _jsonOptions;
     static APIService()
     {
-        //HttpClientHandler insecureHandler = GetInsecureHandler();
         _httpClient = new HttpClient()
         {
             Timeout = TimeSpan.FromSeconds(20), // Ajusta el tiempo de espera según tus necesidades
@@ -32,29 +31,11 @@ public class APIService
         _httpClient.DefaultRequestHeaders.Add("RefreshToken", $"Bearer {Global.refreshTokenAPI}");
     }
 
-    // This method must be in a class in a platform project, even if
-    // the HttpClient object is constructed in a shared project.
-    //public static HttpClientHandler GetInsecureHandler()
-    //{
-    //    HttpClientHandler handler = new HttpClientHandler();
-    //    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
-    //    {
-    //        if (cert.Issuer.Equals("CN=localhost"))
-    //            return true;
-    //        return errors == System.Net.Security.SslPolicyErrors.None;
-    //    };
-    //    return handler;
-    //}
-
     public static async Task<HttpResponseMessage> GetPostAPI_NvaPlantillaHAsync(string Controllador, string MetodoAPI, ObservableCollection<InventarioAlmacen> Obj)
     {
         try
         {
             var jsonContent = new StringContent(JsonSerializer.Serialize(Obj, _jsonOptions), Encoding.UTF8, "application/json");
-            //var response = await _httpClient.PostAsync($"{Controllador}/{MetodoAPI}", jsonContent);
-            //response.EnsureSuccessStatusCode();
-            //var json = await response.Content.ReadAsStringAsync();
-            //return JsonSerializer.Deserialize<DataTable>(json, _jsonOptions) ?? new DataTable();
             var response = await _httpClient.PostAsync(ConfigAPI.Servidor + $"/{Controllador}/CrearPlantilla/?tProyecto={ConfigAPI.TipoProyecto}", jsonContent).ConfigureAwait(false);
             return response;
         }
@@ -121,9 +102,6 @@ public class APIService
         try
         {
             var jsonContent = new StringContent(JsonSerializer.Serialize(Obj, _jsonOptions), Encoding.UTF8, "application/json");
-            //var request = new HttpRequestMessage(HttpMethod.Post, ConfigAPI.Servidor + $"/{Controllador}/GuardarInventario/?tProyecto={ConfigAPI.TipoProyecto}");
-            //request.Content = jsonContent;
-            //HttpResponseMessage response = await _httpClient.SendAsync(request);
             var response = await _httpClient.PostAsync(ConfigAPI.Servidor + $"/{Controllador}/GuardarInventario/?tProyecto={ConfigAPI.TipoProyecto}", jsonContent).ConfigureAwait(false);
             return response;
         }
@@ -145,9 +123,6 @@ public class APIService
 		try
 		{
 			var response = await _httpClient.PostAsync(requestUri, jsonContent, cts.Token).ConfigureAwait(false);
-
-			//var response = await _httpClient.PostAsync(requestUri, jsonContent, cts.Token);
-			//response.EnsureSuccessStatusCode();
 			return response;
 		}
 		catch (Exception ex)
@@ -162,9 +137,6 @@ public class APIService
         try
         {
             var jsonContent = new StringContent(JsonSerializer.Serialize(Obj, _jsonOptions), Encoding.UTF8, "application/json");
-            //var request = new HttpRequestMessage(HttpMethod.Post, ConfigAPI.Servidor + $"/{Controllador}/GuardarInventario/?tProyecto={ConfigAPI.TipoProyecto}");
-            //request.Content = jsonContent;
-            //HttpResponseMessage response = await _httpClient.SendAsync(request);
             var response = await _httpClient.PostAsync(ConfigAPI.Servidor + $"/{Controllador}", jsonContent).ConfigureAwait(false);
             return response;
         }

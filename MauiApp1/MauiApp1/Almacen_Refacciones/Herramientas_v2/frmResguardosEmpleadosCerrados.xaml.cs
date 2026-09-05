@@ -16,9 +16,6 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
         public Command LoadItemsCommand_ResgEmpleado { get; set; }
         private ItemsViewModel_ResgEmpleado viewModel_ResgEmpleado;
 
-        //private ObservableCollection<clsHerramientaEmpleados> RegEmpleados = new ObservableCollection<clsHerramientaEmpleados>();
-        //private clsEmpleadoHerramienta EmpleadoAplicar;
-
         private async Task cargar()
         { }
 

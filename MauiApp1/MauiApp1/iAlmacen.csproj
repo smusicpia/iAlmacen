@@ -32,6 +32,7 @@
 	<ItemGroup>
 	  <Compile Remove="Almacen_Refacciones\Entrada_Almacen\almacen_entradas_compra.xaml.cs" />
 	  <Compile Remove="Almacen_Refacciones\Salida_Almacen\Almacen_Salidas_Captura.xaml.cs" />
+	  <Compile Remove="Clases\UnauthorizeInterceptorHandler.cs" />
 	  <Compile Remove="Views\BarcodeScannerPage.xaml.cs" />
 	</ItemGroup>
 
@@ -52,6 +53,8 @@
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.50" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
+		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.android" Version="2.1.12" />
 		<PackageReference Include="ZXing.Net.Maui" Version="0.7.4" />
 		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.7.4" />
 	</ItemGroup>
