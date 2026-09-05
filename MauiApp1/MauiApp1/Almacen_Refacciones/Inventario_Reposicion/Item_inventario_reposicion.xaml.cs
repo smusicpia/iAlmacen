@@ -24,60 +24,6 @@ public partial class Item_inventario_reposicion : ContentPage
         if (Global.item_select.cantidad_inventario > 0)
             cantidad_inventario.Text = Global.item_select.cantidad_inventario.ToString();
 
-        //takePhoto.Clicked += async (sender, args) =>
-        //{
-        //    if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
-        //    {
-        //        return;
-        //    }
-
-        //    var file = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions
-        //    {
-        //        Directory = "Test",
-        //        SaveToAlbum = true,
-        //        CompressionQuality = 75,
-        //        CustomPhotoSize = 50,
-        //        PhotoSize = PhotoSize.Small,
-        //        DefaultCamera = CameraDevice.Rear
-        //    });
-
-        //    if (file == null)
-        //        return;
-
-        //    filePath = file.Path;
-        //    byteData = File.ReadAllBytes(filePath);
-        //    image.Source = ImageSource.FromStream(() =>
-        //    {
-        //        var stream = file.GetStream();
-        //        file.Dispose();
-        //        return stream;
-        //    });
-        //};
-
-        //pickPhoto.Clicked += async (sender, args) =>
-        //{
-        //    if (!CrossMedia.Current.IsPickPhotoSupported)
-        //    {
-        //        return;
-        //    }
-        //    var file = await Plugin.Media.CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
-        //    {
-        //        PhotoSize = Plugin.Media.Abstractions.PhotoSize.Medium,
-        //        MaxWidthHeight = 500,
-        //    });
-
-        //    if (file == null)
-        //        return;
-
-        //    filePath = file.Path;
-        //    byteData = File.ReadAllBytes(filePath);
-        //    image.Source = ImageSource.FromStream(() =>
-        //    {
-        //        var stream = file.GetStream();
-        //        file.Dispose();
-        //        return stream;
-        //    });
-        //};
 
         BindingContext = this;
     }
@@ -101,6 +47,7 @@ public partial class Item_inventario_reposicion : ContentPage
             goto no_imagen;
         }
 
+        //Cambiar a HttpClient
         Stream memoryStream = new MemoryStream(byteData);
         string Parametros = $"{Global.item_select.codigo_articulo}";
         HttpWebResponse response = ConfigAPI.PostAPI_Imagen("api/Firma", Parametros, "spset_foto_reposicion", memoryStream);
@@ -112,10 +59,10 @@ public partial class Item_inventario_reposicion : ContentPage
 
     no_imagen:
         Parametros = $"I,{Global.item_select.codigo_articulo},{float.Parse(cantidad_inventario.Text)},";
-        response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_template_reposiciones");
-        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+        HttpResponseMessage responseM = await ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_template_reposiciones");
+        using (StreamReader reader = new StreamReader(await responseM.Content.ReadAsStreamAsync()))
         {
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (responseM.StatusCode != HttpStatusCode.OK)
             {
                 await DisplayAlertAsync("Advertencia", "Error Al Actualizar", "OK");
                 return;
