@@ -560,8 +560,11 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 
             try
             {
-                sSerie = cbSeries.SelectedItem.ToString();
-                listaSeries.Remove(sSerie);
+                if (cbSeries.SelectedIndex >= 0)
+                {
+					sSerie = cbSeries.SelectedItem.ToString();
+					listaSeries.Remove(sSerie);
+				}
             }
             catch (Exception)
             {
@@ -570,7 +573,10 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 
             try
             {
-                sClasificacion = cbClasificacion.SelectedItem.ToString();
+                if (cbClasificacion.SelectedIndex >= 0)
+                {
+					sClasificacion = cbClasificacion.SelectedItem.ToString();
+				}
             }
             catch
             {
@@ -597,7 +603,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                 // Se Generan las nuevas Series para el Articulo
                 GenNumerosSeries.Add(new CatalogoArticuloNumeroSeries
                 {
-                    Codigo_Articulo = Global.HerramientaEnInventario.CodigoActual,
+                    Codigo_Articulo = Global.ArticuloEnInventario.CodigoActual,
                     Cantidad = int.Parse(dCantidad.ToString()),
                     Status_Herramienta = "AA",
                     Aplica = true,
@@ -611,7 +617,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                     FolioInventario = Global.FolioInventario
                 });
 
-                //NumerosSerieGenerados = ConfigAPI.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries);
+                //NumerosSerieGenerados = APIService.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries);
                 NumerosSerieGenerados = APIService.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries).Result;
 				foreach (DataRow r in NumerosSerieGenerados.Rows)
                 {
