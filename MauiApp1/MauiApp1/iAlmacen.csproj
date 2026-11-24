@@ -34,6 +34,7 @@
 	  <Compile Remove="Almacen_Refacciones\Salida_Almacen\Almacen_Salidas_Captura.xaml.cs" />
 	  <Compile Remove="Clases\UnauthorizeInterceptorHandler.cs" />
 	  <Compile Remove="Views\BarcodeScannerPage.xaml.cs" />
+	  <Compile Remove="WebApi\APIService.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -54,13 +54,12 @@ namespace iAlmacen
 
 			// Registrar tus servicios o páginas que usen el cliente
 			builder.Services.AddTransient<ConfigAPI>();
-			builder.Services.AddTransient<APIService>();
+			//builder.Services.AddTransient<SesionApi>();
+			//builder.Services.AddTransient<APIService>();
 			builder.Services.AddTransient<Funciones>();
-
 #if DEBUG
 			builder.Logging.AddDebug();
 #endif
-
             //builder.Services.AddSingleton<ItemsViewModel_Recoleccion>();
 			return builder;
         }

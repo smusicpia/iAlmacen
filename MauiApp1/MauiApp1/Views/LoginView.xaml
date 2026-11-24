@@ -24,7 +24,7 @@
                         Source="name.png" />
             </Grid>
             <Grid Grid.Row="1" BackgroundColor="#fee4b9">
-                <RoundRectangle Margin="-5,-30,-5, -2" CornerRadius="30,30,0,0" Fill="#fee4b9" />
+                <RoundRectangle Margin="-5,-30,-5, -19" CornerRadius="30,30,0,0" Fill="#fee4b9" />
                 <VerticalStackLayout Padding="50,170,60,0" Margin="10,0,10,0" Spacing="5">
                     <Grid Margin="0,30,0,0" ColumnDefinitions=".2*, .8*">
                         <RoundRectangle Background="#FAA61A"

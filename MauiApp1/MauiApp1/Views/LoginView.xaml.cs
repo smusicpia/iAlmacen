@@ -10,12 +10,33 @@ public partial class LoginView : ContentPage
 	public Command LoadItemsCommand_Login { get; set; }
 	private LoginViewModel viewModel_Login;
 
+	private readonly TaskCompletionSource<bool>? _tcs;
+
+	// Modo modal: se muestra sobre la pagina actual y al autenticarse regresa a ella.
+	public LoginView(TaskCompletionSource<bool> tcs) : this()
+	{
+		_tcs = tcs;
+	}
+
+	protected override bool OnBackButtonPressed() => _tcs != null || base.OnBackButtonPressed();
+
 	public LoginView()
     {
         InitializeComponent();
         txt_user.Text = "";
         txt_pass.Text = "";
-        txt_user.Focus();
+		//Global.clave_usuario = "";
+		//Global.pass = "";
+		//Global.tokenAPI = "";
+		//Global.refreshTokenAPI = "";
+		//Global.guid = "";
+		//Preferences.Default.Set("tokenAPI", Global.tokenAPI);
+		//Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
+		////TODO Agregar Guid
+		//Preferences.Default.Set("Guid", Global.guid);
+		//Preferences.Default.Set("clave_usuario", Global.clave_usuario);
+		//Preferences.Default.Set("Password", Global.pass);
+		txt_user.Focus();
 		BindingContext = viewModel_Login = new LoginViewModel();
 		Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
 	}
@@ -50,7 +71,7 @@ public partial class LoginView : ContentPage
         {
             try
             {
-				HttpStatusCode httpStatusCode = Funciones.Login(txt_user.Text.ToLower(), txt_pass.Text.ToLower());
+				HttpStatusCode httpStatusCode = await Funciones.Login(txt_user.Text.ToLower(), txt_pass.Text.ToLower());
 				if (httpStatusCode != HttpStatusCode.OK)
 				{
 					if (httpStatusCode == HttpStatusCode.Unauthorized)
@@ -91,6 +112,12 @@ public partial class LoginView : ContentPage
 				}
 
 				Preferences.Set("logueado", "si");
+				if (_tcs != null)
+				{
+					await Navigation.PopModalAsync();
+					_tcs.TrySetResult(true);
+					return;
+				}
 				Application.Current.MainPage = new AppShell();
 			}
             catch (Exception ex)

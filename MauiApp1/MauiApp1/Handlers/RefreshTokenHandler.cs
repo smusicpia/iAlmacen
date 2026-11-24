@@ -65,7 +65,7 @@ namespace iAlmacen.Handlers
 					{
 						request.Headers.Add("X-Retry-Refresh", "true");
 
-						var refreshed = await RenewTokensAsync(); // Tu lógica segura
+						var refreshed = await SesionApi.RenovarTokensAsync(); // Tu lógica segura
 																  //if (!string.IsNullOrEmpty(newToken))
 																  //{
 																  //	request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", newToken);

@@ -9,12 +9,12 @@ namespace iAlmacen
             InitializeComponent();
 
             //Register all router
-            Routing.RegisterRoute("loginview", typeof(LoginView));
-            Routing.RegisterRoute("mainview", typeof(MainView));
+            Routing.RegisterRoute(nameof(LoginView), typeof(LoginView));
+            Routing.RegisterRoute(nameof(MainView), typeof(MainView));
             //Routing.RegisterRoute("almacen_entradas_compra", typeof(almacen_entradas_compra));
-            Routing.RegisterRoute("cv_almacen_entradas_ocompra", typeof(cv_Almacen_Entradas_OCompra));
-            Routing.RegisterRoute("page_head_ordencompra", typeof(Page_Head_OrdenCompra));
-            Routing.RegisterRoute("page_detail_ordencompra", typeof(Page_Detail_OrdenCompra));
+            Routing.RegisterRoute(nameof(cv_Almacen_Entradas_OCompra), typeof(cv_Almacen_Entradas_OCompra));
+            Routing.RegisterRoute(nameof(Page_Head_OrdenCompra), typeof(Page_Head_OrdenCompra));
+            Routing.RegisterRoute(nameof(Page_Detail_OrdenCompra), typeof(Page_Detail_OrdenCompra));
 		}
 
 		private async void CerrarSesion_Clicked(object sender, EventArgs e)
@@ -25,7 +25,7 @@ namespace iAlmacen
                 Preferences.Remove("logueado", string.Empty);
                 Preferences.Default.Remove("tokenAPI", string.Empty);
                 Preferences.Default.Remove("refreshTokenAPI", string.Empty);
-                Application.Current.MainPage = new LoginView();
+                Application.Current.MainPage = new NavigationPage(new LoginView());
                 //await Shell.Current.GoToAsync("loginview");
 			}
         }
