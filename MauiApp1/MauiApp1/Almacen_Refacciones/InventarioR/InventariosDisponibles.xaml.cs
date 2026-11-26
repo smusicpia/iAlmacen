@@ -3,17 +3,18 @@ using iAlmacen.Clases;
 using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Net;
 
 namespace iAlmacen.Almacen_Refacciones.InventarioR
 {
     public partial class InventariosDisponibles : ContentPage
     {
-        //private ObservableCollection<clsInventario> RegInventarios = new ObservableCollection<clsInventario>();
-
         public ObservableCollection<Item_Inventario> Items { get; set; }
         public Command LoadItemsCommand_Inventario { get; set; }
         private ItemsViewModel_Inventario viewModel_Inventario;
@@ -63,23 +64,50 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
             if (answer == false)
             { return; }
 
-            string sResponce = "";
-            string Parametros = "Cerrado = 1, Capturado = 1";
-            string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    sResponce = "OK";
-                }
-            }
+			//string sResponce = "";
+			//string Parametros = "Cerrado = 1, Capturado = 1";
+			//string Condicion = $"FolioInventario='{Item_.Folio}'";
+			//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
+			//using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			//{
+			//    if (response.StatusCode == HttpStatusCode.OK)
+			//    {
+			//        sResponce = "OK";
+			//    }
+			//}
 
-            if (sResponce == "OK")
-            {
-                await DisplayAlertAsync("Informacion", "Inventario cerrado correctamente", "OK");
-                viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},false,false");
-            }
-        }
+			//if (sResponce == "OK")
+			//{
+			//    await DisplayAlertAsync("Informacion", "Inventario cerrado correctamente", "OK");
+			//    viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},false,false");
+			//}
+
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.PostAsync($"api/InventarioAlmacen/CerrarInventario?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}&folioInventario={Item_.Folio}", new StringContent(string.Empty));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows.Count > 0)
+					{
+						if (dt.Rows[0]["Code"].ToString() == "200 OK")
+						{
+							await DisplayAlertAsync("Información", "Inventario Cerrado correctamente", "OK");
+							viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},false,false");
+						}
+						else
+						{
+							await DisplayAlertAsync("Informacion", "Error al cerrar el inventario", "OK");
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+		}
     }
 }

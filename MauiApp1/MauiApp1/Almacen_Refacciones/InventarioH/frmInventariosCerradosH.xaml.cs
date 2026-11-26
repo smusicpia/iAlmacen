@@ -2,7 +2,12 @@ using iAlmacen.Clases;
 using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
+
+using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
+using System.Data;
+using System.Diagnostics;
 using System.Net;
 using System.Windows.Input;
 
@@ -41,23 +46,44 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             var answer = await DisplayAlertAsync("Información", "Desea abrir nuevamente el inventario seleccionado ¿Desea Continuar?", "Si", "No");
             if (answer == false) { return; }
 
-            string sResponce = "";
-            string Parametros = "Cerrado = 0";
-            string Condicion = $"FolioInventario='{Item_.Folio}'";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    sResponce = "OK";
-                }
-            }
+			//         string sResponce = "";
+			//         string Parametros = "Cerrado = 0";
+			//         string Condicion = $"FolioInventario='{Item_.Folio}'";
+			//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
+			//         using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			//         {
+			//             if (response.StatusCode == HttpStatusCode.OK)
+			//             {
+			//                 sResponce = "OK";
+			//             }
+			//         }
 
-            if (sResponce == "OK")
-            {
-                await DisplayAlertAsync("Información", "Inventario Abierto correctamente", "OK");
-                Items.Clear();
-				viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},true,true");
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.PostAsync($"api/InventarioAlmacen/ReabrirInventario?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}&folioInventario={Item_.Folio}", new StringContent(string.Empty));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows.Count > 0)
+					{
+						if (dt.Rows[0]["Code"].ToString() == "200 OK")
+						{
+							await DisplayAlertAsync("Información", "Inventario Abierto correctamente", "OK");
+							Items.Clear();
+							viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},true,true");
+						}
+						else
+						{
+							await DisplayAlertAsync("Informacion", "Error al reabrir el inventario", "OK");
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 			}
         }
 
@@ -70,25 +96,53 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             var answer = await DisplayAlertAsync("Información", "Desea cancelar el inventario seleccionado ¿Desea Continuar?", "Si", "No");
             if (answer == false) { return; }
 
-            string sResponce = "";
-            string Parametros = "Cancelado = 1";
-            string Condicion = $"FolioInventario='{Item_.Folio}'";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    sResponce = "OK";
-                }
-            }
+			//         string sResponce = "";
+			//         string Parametros = "Cancelado = 1";
+			//         string Condicion = $"FolioInventario='{Item_.Folio}'";
+			//         HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "InventarioAlmacen", Condicion, "UPDATE").Result;
+			//         using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			//         {
+			//             if (response.StatusCode == HttpStatusCode.OK)
+			//             {
+			//                 sResponce = "OK";
+			//             }
+			//         }
 
-            if (sResponce == "OK")
-            {
-                await DisplayAlertAsync("Informacion", "Inventario Cancelado correctamente", "OK");
-                Items.Clear();
-				viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},true,true");
+			//         if (sResponce == "OK")
+			//         {
+			//             await DisplayAlertAsync("Informacion", "Inventario Cancelado correctamente", "OK");
+			//             Items.Clear();
+			//	viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},true,true");
+			//}
+
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.PostAsync($"api/InventarioAlmacen/CancelarInventario?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}&folioInventario={Item_.Folio}", new StringContent(string.Empty));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows.Count > 0)
+					{
+						if (dt.Rows[0]["Code"].ToString() == "200 OK")
+						{
+							await DisplayAlertAsync("Información", "Inventario Cancelado correctamente", "OK");
+							Items.Clear();
+							viewModel_Inventario.LoadItemsCommand_inventario.Execute($"{Global.clave_usuario},true,true");
+						}
+						else
+						{
+							await DisplayAlertAsync("Informacion", "Error al cancelar el inventario", "OK");
+						}
+					}
+				}
 			}
-        }
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+		}
 
         private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
