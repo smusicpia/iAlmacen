@@ -53,7 +53,7 @@
                     <Picker x:Name="cbFamilia" Grid.Column="0" Grid.Row="1" SelectedIndexChanged="cbFamilia_SelectedIndexChanged" />
                     <Picker x:Name="cbLinea" Grid.Column="1" Grid.Row="1" SelectedIndexChanged="cbLinea_SelectedIndexChanged" />
                     <Picker x:Name="cbgrupo" Grid.Column="2" Grid.Row="1" />
-                    <Button x:Name="btnAgregarCategoria" BackgroundColor="#872200" Text="Buscar" Grid.Column="3" Grid.Row="1" Clicked="btnAgregarCategoria_Clicked" />
+                    <Button x:Name="btnBuscarFamilias" BackgroundColor="#872200" Text="Buscar" Grid.Column="3" Grid.Row="1" Clicked="btnBuscarFamilias_Clicked" />
                 </Grid>
                 <Grid Grid.Row="1" x:Name="PanelUbicacion" IsVisible="False" >
                     <Grid.ColumnDefinitions>

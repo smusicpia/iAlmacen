@@ -1,13 +1,18 @@
 ﻿using iAlmacen.Clases;
 using iAlmacen.Models;
 using iAlmacen.ViewModels;
+
 using System.Collections.ObjectModel;
+using System.Data;
 
 namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 {
     public partial class frmConsultaH : ContentPage
     {
         private string _result;
+		public List<string> lFamilias { get; set; }
+		public List<string> lLineas { get; set; }
+		public List<string> lGrupos { get; set; }
 
 		public ObservableCollection<Item_RegArticulo> Items { get; set; }
         public Command LoadItemsCommand_Herramienta { get; set; }
@@ -45,11 +50,175 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             LoadItemsCommand_Herramienta = new Command(async () => await cargar());
             BindingContext = viewModel_Herramientas = new ItemsViewModel_Herramienta();
 
-			CargarCategoriasFamilias();
-            CargarSecciones();
+			Task task = LlenarDatos();
         }
 
-        private void rbFamilias_CheckedChanged(Object sender, CheckedChangedEventArgs e)
+        private async Task LlenarDatos()
+        {
+			await CargarCategoriasFamilias();
+            await CargarSecciones();
+		}
+
+		private async Task CargarCategoriasFamilias()
+		{
+			lFamilias = new List<String>();
+			lFamilias.Add("");
+			DataTable? dt = await Funciones.LlenarCategoriaFamilias(true);
+			foreach (DataRow r in dt.Rows)
+			{
+				lFamilias.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+			}
+			cbFamilia.ItemsSource = lFamilias;
+		}
+
+		private async Task CargarCategoriasLineas(string ClaveFamilia)
+		{
+			lLineas = new List<String>();
+			lLineas.Add("");
+			DataTable? dt = await Funciones.LlenarCategoriaLineas(ClaveFamilia);
+			foreach (DataRow r in dt.Rows)
+			{
+				lLineas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+			}
+			cbLinea.ItemsSource = lLineas;
+		}
+
+		private async Task CargarCategoriasGrupos(string ClaveFamilia, string ClaveLinea)
+		{
+			lGrupos = new List<String>();
+			lGrupos.Add("");
+			DataTable? dt = await Funciones.LlenarCategoriaGrupo(ClaveFamilia, ClaveLinea);
+			foreach (DataRow r in dt.Rows)
+			{
+				lGrupos.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+			}
+			cbgrupo.ItemsSource = lGrupos;
+		}
+
+		private async Task CargarSecciones()
+		{
+			RegSecciones = new ObservableCollection<clsSeccion>();
+			DataTable? dtSecciones = await Funciones.LlenarSecciones("", "");
+			foreach (DataRow r in dtSecciones.Rows)
+			{
+				RegSecciones.Add(new clsSeccion
+				{
+					ID = int.Parse(r[0].ToString().Trim()),
+					Clave = r[1].ToString().Trim(),
+					Descripcion = r[2].ToString().Trim(),
+					Pasillos = Boolean.Parse(r[3].ToString().Trim()),
+					NumeroPasillos = int.Parse(r[4].ToString().Trim()),
+					Estanterias = Boolean.Parse(r[5].ToString().Trim()),
+					Sucursal = r[6].ToString().Trim()
+				});
+			}
+			cbSeccion.ItemsSource = RegSecciones;
+			cbSeccion.SelectedIndex = -1;
+		}
+
+		private async Task CargarEstanterias()
+		{
+			clsSeccion iSeccion;
+			iSeccion = (clsSeccion)cbSeccion.SelectedItem;
+			RegEstanterias.Clear();
+			if (iSeccion == null) return;
+			if (!iSeccion.Estanterias)
+			{
+				//cbEstanteria.IsEnabled = false;
+			}
+			else
+			{
+				DataTable? dtEstanterias = await Funciones.LlenarEstanterias("M", iSeccion.Clave);
+				foreach (DataRow r in dtEstanterias.Rows)
+				{
+					RegEstanterias.Add(new Clases.clsEstanteria
+					{
+						ID = int.Parse(r[0].ToString().Trim()),
+						Clave = r[1].ToString().Trim(),
+						Tipo = r[2].ToString().Trim(),
+						Descripcion = r[3].ToString().Trim(),
+						Seccion = r[4].ToString().Trim(),
+						Pasillo = int.Parse(r[5].ToString().Trim()),
+						NumeroNiveles = int.Parse(r[6].ToString().Trim()),
+						Tarimas = Boolean.Parse(r[7].ToString().Trim()),
+						NumeroTarimas = int.Parse(r[8].ToString().Trim()),
+						Cajas = Boolean.Parse(r[9].ToString().Trim()),
+						ReiniciarNumeracionCajas = Boolean.Parse(r[10].ToString().Trim()),
+						NumeroCajas = int.Parse(r[11].ToString().Trim()),
+						NumeroCajasTarima = int.Parse(r[12].ToString().Trim()),
+						Sucursal = r[13].ToString().Trim(),
+					});
+				}
+				cbEstanteria.ItemsSource = RegEstanterias;
+				cbEstanteria.SelectedIndex = -1;
+			}
+		}
+
+		private void CargarNiveles()
+		{
+			clsEstanteria iEstanteria;
+			iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
+			cbNivel.Items.Clear();
+			if (iEstanteria == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < iEstanteria.NumeroNiveles; i++)
+			{
+				cbNivel.Items.Add((i + 1).ToString());
+			}
+
+			cbNivel.SelectedIndex = -1;
+		}
+
+		private void CargarTarimas()
+		{
+			clsEstanteria iEstanteria;
+			iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
+			cbTarima.Items.Clear();
+
+			for (int i = 0; i < iEstanteria.NumeroTarimas; i++)
+			{
+				cbTarima.Items.Add((i + 1).ToString());
+			}
+
+			cbTarima.SelectedIndex = -1;
+		}
+
+		private void CargarCajas()
+		{
+			clsEstanteria iEstanteria;
+			iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
+			cbContenedor.Items.Clear();
+
+			int Cajas = 0;
+
+			if (iEstanteria.Cajas)
+			{
+				if (iEstanteria.ReiniciarNumeracionCajas)
+				{
+					Cajas = iEstanteria.NumeroCajasTarima;
+				}
+				else
+				{
+					Cajas = iEstanteria.NumeroCajas;
+				}
+
+				for (int i = 0; i < Cajas; i++)
+				{
+					cbContenedor.Items.Add((i + 1).ToString());
+				}
+
+				cbContenedor.SelectedIndex = -1;
+			}
+			else
+			{
+				cbContenedor.SelectedIndex = -1;
+			}
+		}
+
+		private void rbFamilias_CheckedChanged(Object sender, CheckedChangedEventArgs e)
         {
             if (rbFamilias.IsChecked)
             {
@@ -85,108 +254,14 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             }
         }
 
-        private void CargarCategoriasFamilias()
-        {
-            cbFamilia.ItemsSource = Funciones.LlenarCategoriaFamilias(true);
-        }
-
-        private void CargarSecciones()
-        {
-            RegSecciones = Funciones.LlenarSecciones("", "", true);
-            cbSeccion.ItemsSource = RegSecciones;
-            cbSeccion.SelectedIndex = 0;
-        }
-
-        private void CargarEstanterias()
-        {
-            clsSeccion iSeccion;
-            iSeccion = (clsSeccion)cbSeccion.SelectedItem;
-            RegEstanterias.Clear();
-            if (iSeccion == null) return;
-            if (!iSeccion.Estanterias)
-            {
-                //cbEstanteria.IsEnabled = false;
-            }
-            else
-            {
-                RegEstanterias = Funciones.LlenarEstanterias("M", iSeccion.Clave);
-                cbEstanteria.ItemsSource = RegEstanterias;
-                cbEstanteria.SelectedIndex = -1;
-            }
-        }
-
-        private void CargarNiveles()
-        {
-            clsEstanteria iEstanteria;
-            iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
-            cbNivel.Items.Clear();
-            if (iEstanteria == null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < iEstanteria.NumeroNiveles; i++)
-            {
-                cbNivel.Items.Add((i + 1).ToString());
-            }
-
-            cbNivel.SelectedIndex = -1;
-        }
-
-        private void CargarTarimas()
-        {
-            clsEstanteria iEstanteria;
-            iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
-            cbTarima.Items.Clear();
-
-            for (int i = 0; i < iEstanteria.NumeroTarimas; i++)
-            {
-                cbTarima.Items.Add((i + 1).ToString());
-            }
-
-            cbTarima.SelectedIndex = -1;
-        }
-
-        private void CargarCajas()
-        {
-            clsEstanteria iEstanteria;
-            iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
-            cbContenedor.Items.Clear();
-
-            int Cajas = 0;
-
-            if (iEstanteria.Cajas)
-            {
-                if (iEstanteria.ReiniciarNumeracionCajas)
-                {
-                    Cajas = iEstanteria.NumeroCajasTarima;
-                }
-                else
-                {
-                    Cajas = iEstanteria.NumeroCajas;
-                }
-
-                for (int i = 0; i < Cajas; i++)
-                {
-                    cbContenedor.Items.Add((i + 1).ToString());
-                }
-
-                cbContenedor.SelectedIndex = -1;
-            }
-            else
-            {
-                cbContenedor.SelectedIndex = -1;
-            }
-        }
-
-        private void cbFamilia_SelectedIndexChanged(Object sender, EventArgs e)
+        private async void cbFamilia_SelectedIndexChanged(Object sender, EventArgs e)
         {
             string[] sFamilia;
             sFamilia = cbFamilia.SelectedItem.ToString().Split('-');
-            cbLinea.ItemsSource = Funciones.LlenarCategoriaLineas(sFamilia[0].ToString().Trim());
+            await CargarCategoriasLineas(sFamilia[0].ToString().Trim());
         }
 
-        private void cbLinea_SelectedIndexChanged(Object sender, EventArgs e)
+        private async void cbLinea_SelectedIndexChanged(Object sender, EventArgs e)
         {
             string[] sFamilia;
             string[] sLinea;
@@ -200,12 +275,12 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
                 cbgrupo.Items.Clear();
                 return;
             }
-            cbgrupo.ItemsSource = Funciones.LlenarCategoriaGrupo(sFamilia[0].ToString().Trim(), sLinea[0].ToString().Trim());
+            await CargarCategoriasGrupos(sFamilia[0].ToString().Trim(), sLinea[0].ToString().Trim());
         }
 
-        private void cbSeccion_SelectedIndexChanged(Object sender, EventArgs e)
+        private async void cbSeccion_SelectedIndexChanged(Object sender, EventArgs e)
         {
-            CargarEstanterias();
+            await CargarEstanterias();
         }
 
         private void cbEstanteria_SelectedIndexChanged(Object sender, EventArgs e)
@@ -215,7 +290,7 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             CargarCajas();
         }
 
-        private async void btnAgregarCategoria_Clicked(Object sender, EventArgs e)
+        private async void btnBuscarFamilias_Clicked(Object sender, EventArgs e)
         {
             if (cbFamilia.SelectedIndex == -1)
             {
