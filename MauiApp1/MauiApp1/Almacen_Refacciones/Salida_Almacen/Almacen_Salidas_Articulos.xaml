@@ -10,7 +10,7 @@
                 <RowDefinition Height="20" />
                 <RowDefinition Height="50" />
                 <RowDefinition />
-                <RowDefinition Height="60" />
+                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
                 <Grid>
@@ -172,7 +172,7 @@
                     </Border>
                 </Border>
             </StackLayout>
-            <StackLayout Grid.Row="3" Grid.ColumnSpan="2" Padding="0,30" Margin="-30" BackgroundColor="#F8813A">
+            <StackLayout Grid.Row="3" Grid.ColumnSpan="2" Padding="0,15" Margin="-30" BackgroundColor="#F8813A">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />

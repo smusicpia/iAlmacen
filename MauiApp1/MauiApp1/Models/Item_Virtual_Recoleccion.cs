@@ -15,5 +15,7 @@ public class Item_Virtual_Recoleccion
     public string hora_confirmacion_ { get; set; }
     public string proveedor_ { get; set; }
     public string codigo_proovedor_ { get; set; }
-    public int index { get; set; }
+	public string usuarioCancelacion { get; set; }
+	public string motivoCancelacion { get; set; }
+	public int index { get; set; }
 }

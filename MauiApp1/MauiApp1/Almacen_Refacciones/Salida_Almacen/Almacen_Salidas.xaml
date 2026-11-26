@@ -45,11 +45,11 @@
                             </x:Array>
                         </Picker.ItemsSource>
                     </Picker>
-                    <Picker x:Name="cbArea" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="3" Title="AREA" SelectedIndexChanged="cbArea_SelectedIndexChanged" />
-                    <Picker x:Name="cbNivel1" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Title="C.C. NIVEL 1" SelectedIndexChanged="cbNivel1_SelectedIndexChanged" />
-                    <Picker x:Name="cbNivel2" Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="2" Title="C.C. NIVEL 2" SelectedIndexChanged="cbNivel2_SelectedIndexChanged" />
-                    <Picker x:Name="cbNivel3" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Title="C.C. NIVEL 3" SelectedIndexChanged="cbNivel3_SelectedIndexChanged" />
-                    <Picker x:Name="cbNivel4" Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="2" Title="C.C. NIVEL 4" />
+                    <Picker x:Name="cbArea" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="3" Title="AREA" SelectedIndexChanged="cbArea_SelectedIndexChanged" Focused="cbArea_Focused"/>
+                    <Picker x:Name="cbNivel1" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Title="C.C. NIVEL 1" SelectedIndexChanged="cbNivel1_SelectedIndexChanged" Focused="cbNivel1_Focused"/>
+                    <Picker x:Name="cbNivel2" Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="2" Title="C.C. NIVEL 2" SelectedIndexChanged="cbNivel2_SelectedIndexChanged" Focused="cbNivel2_Focused"/>
+                    <Picker x:Name="cbNivel3" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Title="C.C. NIVEL 3" SelectedIndexChanged="cbNivel3_SelectedIndexChanged" Focused="cbNivel3_Focused"/>
+                    <Picker x:Name="cbNivel4" Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="2" Title="C.C. NIVEL 4" SelectedIndexChanged="cbNivel4_SelectedIndexChanged" Focused="cbNivel4_Focused"/>
                 </Grid>
             </StackLayout>
             <StackLayout Grid.Row="1" Grid.ColumnSpan="2">

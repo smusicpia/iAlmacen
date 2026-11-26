@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Net;
+using System.Diagnostics;
 
 namespace iAlmacen.Almacen_Refacciones.Salida_Almacen;
 
@@ -22,10 +22,17 @@ public partial class Almacen_Salidas : ContentPage
 	private bool capturando = true;
 	public List<string> lAreas { get; set; }
 	public ObservableCollection<clsArticuloSalida> ArticulosEliminados { get; set; }
+	private bool cArea = false;
+	private bool ccn1 = false;
+	private bool ccn2 = false;
+	private bool ccn3 = false;
+	private bool ccn4 = false;
 	public List<string> lCentroCostoN1 { get; set; }
 	public List<string> lCentroCostoN2 { get; set; }
 	public List<string> lCentroCostoN3 { get; set; }
 	public List<string> lCentroCostoN4 { get; set; }
+	public List<string> lResponsable { get; set; }
+	public List<string> lAutorizado { get; set; }
 	public bool OrdenRecoleccion = false;
 	public string Origen = string.Empty;
 
@@ -52,13 +59,6 @@ public partial class Almacen_Salidas : ContentPage
 		Global.strCCnivel3 = "";
 		Global.strCCnivel4 = "";
 
-		LlenarArea();
-		LlenarCentroCostoN1();
-		LlenarCentroCostoN2();
-		LlenarCentroCostoN3();
-		LlenarCentroCostoN4();
-		LlenarResponsables();
-
 		cbSucursal.SelectedItem = "MÉRIDA";
 		cbSucursal.IsEnabled = true;
 		cbArea.IsEnabled = true;
@@ -71,6 +71,8 @@ public partial class Almacen_Salidas : ContentPage
 		dtFechaSalida.Date = DateTime.Now;
 		Item_ArticuloSalida item_ArticuloSalida = new Item_ArticuloSalida();
 		BindingContext = viewModel_ArticuloSalida = new ItemsViewModel_ArticuloSalida(item_ArticuloSalida);
+
+		buscar_datos(false);
 	}
 
 	/// <summary>
@@ -124,12 +126,8 @@ public partial class Almacen_Salidas : ContentPage
 		InitializeComponent();
 		NavigationPage.SetBackButtonTitle(this, "Atras");
 		OrdenRecoleccion = Orden_Lista;
-		this.Title += $" ({Orden_Lista})";
+		this.Title = $"Orden de Compra ({Global.folio_orden_}) / Recoleccion ({Global.cidsql_})";
 
-		//Items = new ObservableCollection<Item_ArticuloSalida>();
-		//LoadItemsCommand_Articulo = new Command(async () => await cargar());
-
-		//Global.regArticulosSalida = new ObservableCollection<clsArticuloSalida>();
 		ArticulosEliminados = new ObservableCollection<clsArticuloSalida>();
 
 		Items = new ObservableCollection<Item_ArticuloSalida>();
@@ -150,8 +148,8 @@ public partial class Almacen_Salidas : ContentPage
 		btnRefacciones.IsEnabled = false;
 		btnGenerarSalida.IsEnabled = true;
 		dtFechaSalida.Date = DateTime.Now;
-		string Parametros = $"{Global.cidsql_},RL";
-		BindingContext = viewModel_ArticuloSalida = new ItemsViewModel_ArticuloSalida(Parametros);
+		BindingContext = viewModel_ArticuloSalida = new ItemsViewModel_ArticuloSalida(Global.cidsql_, "RL");
+		viewModel_ArticuloSalida.LoadItemsCommand_ArticuloSalida.Execute(null);
 
 		buscar_datos();
 	}
@@ -195,10 +193,10 @@ public partial class Almacen_Salidas : ContentPage
 		srcFirma.IsVisible = true;
 
 		dtFechaSalida.IsEnabled = false;
+		BindingContext = viewModel_ArticuloSalida = new ItemsViewModel_ArticuloSalida(Global.cidsql_, "H");
+		viewModel_ArticuloSalida.LoadItemsCommand_ArticuloSalida.Execute(null);
+
 		buscar_datos(historico);
-		//BindingContext = new OrdenViewModel();
-		string Parametros = $"{Global.cidsql_},H";
-		BindingContext = viewModel_ArticuloSalida = new ItemsViewModel_ArticuloSalida(Parametros);
 	}
 
 	private async Task cargar()
@@ -219,43 +217,95 @@ public partial class Almacen_Salidas : ContentPage
 		{
 			Global.validar = false;
 		}
-		viewModel_ArticuloSalida.LoadItemsCommand_ArticuloSalida.Execute(null);
 	}
 
-	private void LlenarArea()
+	private async Task LlenarArea()
 	{
-		cbArea.ItemsSource = Funciones.LlenarArea();
+		lAreas = new List<String>();
+		lAreas.Add("");
+		DataTable? dt = await Funciones.LlenarArea();
+		foreach (DataRow r in dt.Rows)
+		{
+			lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+		}
+		cbArea.ItemsSource = lAreas;
 	}
 
-	private void LlenarCentroCostoN1()
+	private async Task LlenarCentroCostoN1()
 	{
-		cbNivel1.ItemsSource = Funciones.LlenarCentroCostoN1();
+		lCentroCostoN1 = new List<String>();
+		lCentroCostoN1.Add("");
+		DataTable? dt = await Funciones.LlenarCentroCostoN1();
+		foreach (DataRow r in dt.Rows)
+		{
+			lCentroCostoN1.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+		}
+		cbNivel1.ItemsSource = lCentroCostoN1;
 	}
 
-	private void LlenarCentroCostoN2()
+	private async Task LlenarCentroCostoN2()
 	{
-		cbNivel2.ItemsSource = Funciones.LlenarCentroCostoN2();
+		lCentroCostoN2 = new List<String>();
+		lCentroCostoN2.Add("");
+		DataTable? dt = await Funciones.LlenarCentroCostoN2();
+		foreach (DataRow r in dt.Rows)
+		{
+			lCentroCostoN2.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+		}
+		cbNivel2.ItemsSource = lCentroCostoN2;
 	}
 
-	private void LlenarCentroCostoN3()
+	private async Task LlenarCentroCostoN3()
 	{
-		cbNivel3.ItemsSource = Funciones.LlenarCentroCostoN3();
+		lCentroCostoN3 = new List<String>();
+		lCentroCostoN3.Add("");
+		DataTable? dt = await Funciones.LlenarCentroCostoN3();
+		foreach (DataRow r in dt.Rows)
+		{
+			lCentroCostoN3.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+		}
+		cbNivel3.ItemsSource = lCentroCostoN3;
 	}
 
-	private void LlenarCentroCostoN4()
+	private async Task LlenarCentroCostoN4()
 	{
-		cbNivel4.ItemsSource = Funciones.LlenarCentroCostoN4();
+		lCentroCostoN4 = new List<String>();
+		lCentroCostoN4.Add("");
+		DataTable? dt = await Funciones.LlenarCentroCostoN4();
+		foreach (DataRow r in dt.Rows)
+		{
+			lCentroCostoN4.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+		}
+		cbNivel4.ItemsSource = lCentroCostoN4;
 	}
 
-	private void LlenarResponsables()
+	private async Task LlenarResponsables()
 	{
-		cbResonsable.ItemsSource = Funciones.LlenarResponsables();
+		lResponsable = new List<String>();
+		lResponsable.Add("");
+		DataTable? dt = await Funciones.LlenarResponsables();
+		foreach (DataRow r in dt.Rows)
+		{
+			lResponsable.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+		}
+		cbResonsable.ItemsSource = lResponsable;
 	}
 
-	private void LimpiarCampos()
+	private async Task LlenarAutorizador()
+	{
+		lAutorizado = new List<String>();
+		lAutorizado.Add("");
+		DataTable? dt = await Funciones.LlenarAutorizado();
+		foreach (DataRow r in dt.Rows)
+		{
+			lAutorizado.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+		}
+		cbAutorizado.ItemsSource = lAutorizado;
+	}
+
+	private async void LimpiarCampos()
 	{
 		Global.regArticulosSalida = new ObservableCollection<clsArticuloSalida>();
-		//ItemsListView.ItemsSource = Global.regArticulosSalida;
 		ArticulosEliminados.Clear();
 		cbArea.SelectedIndex = 0;
 		capturando = false;
@@ -267,12 +317,12 @@ public partial class Almacen_Salidas : ContentPage
 		Global.strCCnivel3 = "";
 		Global.strCCnivel4 = "";
 
-		LlenarArea();
-		LlenarCentroCostoN1();
-		LlenarCentroCostoN2();
-		LlenarCentroCostoN3();
-		LlenarCentroCostoN4();
-		LlenarResponsables();
+		await LlenarArea();
+		await LlenarCentroCostoN1();
+		await LlenarCentroCostoN2();
+		await LlenarCentroCostoN3();
+		await LlenarCentroCostoN4();
+		await LlenarResponsables();
 		capturando = true;
 
 		Global.Editando = false;
@@ -290,88 +340,47 @@ public partial class Almacen_Salidas : ContentPage
 	private async void buscar_datos()
 	{
 		capturando = false;
-		string Parametros = $"{Global.cidsql_},RL";
-		HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion").Result;
-		using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+		await LlenarArea();
+		await LlenarCentroCostoN1();
+		await LlenarCentroCostoN2();
+		await LlenarCentroCostoN3();
+		await LlenarCentroCostoN4();
+		await LlenarResponsables();
+
+		foreach (Item_ArticuloSalida item in viewModel_ArticuloSalida.Items)
 		{
-			string resp = reader.ReadToEnd();
-			if (resp == "[]")
+			cbArea.SelectedItem = item.area.ToString().Trim() + " - " + item.desc_area.ToString().Trim();
+			if (cbNivel1.ItemsSource.Count <= 1)
+				await LlenarCentroCostoN1();
+			cbNivel1.SelectedItem = item.ccnivel1.ToString().Trim() + " - " + item.desc_nivel1.ToString().Trim();
+			cbNivel2.SelectedItem = item.ccnivel2.ToString().Trim() + " - " + item.desc_nivel2.ToString().Trim();
+			if (!string.IsNullOrEmpty(item.ccnivel3))
 			{
-				await DisplayAlertAsync("Informacion", "La Orden de recoleccion no tiene detalle, Favor de validar la Informacion con el administrador del sistema.", "OK");
-				return;
+				cbNivel3.SelectedItem = item.ccnivel3.ToString().Trim() + " - " + item.desc_nivel3.ToString().Trim();
+			}
+			if (!string.IsNullOrEmpty(item.ccnivel4))
+			{
+				cbNivel4.SelectedItem = item.ccnivel4.ToString().Trim() + " - " + item.desc_nivel4.ToString().Trim();
 			}
 
-			DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-			Global.strSucursal = dt.Rows[0][0].ToString();
-			Global.strArea = dt.Rows[0][1].ToString();
-			Global.strCCnivel1 = dt.Rows[0][3].ToString();
-			Global.strCCnivel2 = dt.Rows[0][5].ToString();
-			Global.strCCnivel3 = dt.Rows[0][7].ToString();
-			Global.strCCnivel4 = dt.Rows[0][9].ToString();
-			LlenarArea();
-			LlenarCentroCostoN1();
-			LlenarCentroCostoN2();
-			LlenarCentroCostoN3();
-			LlenarCentroCostoN4();
-			LlenarResponsables();
-			foreach (DataRow r in dt.Rows)
+			switch (item.sucursal.ToString().Trim())
 			{
-				cbArea.SelectedItem = r[1].ToString().Trim() + " - " + r[2].ToString().Trim();
-				cbNivel1.SelectedItem = r[3].ToString().Trim() + " - " + r[4].ToString().Trim();
-				cbNivel2.SelectedItem = r[5].ToString().Trim() + " - " + r[6].ToString().Trim();
-				if (!string.IsNullOrEmpty(r[7].ToString().Trim()))
-				{
-					cbNivel3.SelectedItem = r[7].ToString().Trim() + " - " + r[8].ToString().Trim();
-				}
-				if (!string.IsNullOrEmpty(r[9].ToString().Trim()))
-				{
-					cbNivel4.SelectedItem = r[9].ToString().Trim() + " - " + r[10].ToString().Trim();
-				}
-				//Global.regArticulosSalida.Add(new clsArticuloSalida
-				//{
-				//    codigo_articulo = r[11].ToString().Trim(),
-				//    descripcion_general = r[12].ToString().Trim(),
-				//    desc_familia = r[13].ToString().Trim(),
-				//    desc_linea = r[14].ToString().Trim(),
-				//    desc_grupo = r[15].ToString().Trim(),
-				//    desc_medida = (r[16].ToString().Trim()),
-				//    desc_marca = r[17].ToString().Trim(),
-				//    desc_parte = r[18].ToString().Trim(),
-				//    consecutivo = int.Parse(r[19].ToString().Trim()),
-				//    cantidad = double.Parse(r[20].ToString().Trim()),
-				//    noubicaciones = double.Parse(r[21].ToString().Trim()),
-				//    Seccion = r[23].ToString().Trim(),
-				//    desc_seccion = r[24].ToString().Trim(),
-				//    Pasillo = !string.IsNullOrEmpty(r[25].ToString()) ? double.Parse(r[25].ToString().Trim()) : 0,
-				//    Estanteria = r[26].ToString().Trim(),
-				//    desc_estanteria = r[27].ToString().Trim(),
-				//    Nivel = !string.IsNullOrEmpty(r[28].ToString()) ? double.Parse(r[28].ToString().Trim()) : 0,
-				//    Tarima = !string.IsNullOrEmpty(r[29].ToString()) ? double.Parse(r[29].ToString().Trim()) : 0,
-				//    Contenedor = !string.IsNullOrEmpty(r[30].ToString()) ? double.Parse(r[30].ToString().Trim()) : 0,
-				//    ExistenciaUbicacion = double.Parse(r[22].ToString().Trim()),
-				//    ccsucursal = Global.strSucursal.ToString(),
-				//    ccarea = Global.strArea.ToString(),
-				//    ccnivel1 = Global.strCCnivel1.ToString(),
-				//    ccnivel2 = Global.strCCnivel2.ToString(),
-				//    ccnivel3 = Global.strCCnivel3.ToString(),
-				//    ccnivel4 = Global.strCCnivel4.ToString(),
-				//    Empleado = r[31].ToString()
-				//});
+				case "M":
+					cbSucursal.SelectedItem = "MÉRIDA";
+					Global.strSucursal = "M";
+					break;
 
-				switch (r[0].ToString().Trim())
-				{
-					case "M":
-						cbSucursal.SelectedItem = "MÉRIDA";
-						Global.strSucursal = "M";
-						break;
-
-					case "T":
-						cbSucursal.SelectedItem = "TEBEC";
-						Global.strSucursal = "T";
-						break;
-				}
+				case "T":
+					cbSucursal.SelectedItem = "TEBEC";
+					Global.strSucursal = "T";
+					break;
 			}
+			cbResonsable.SelectedItem = item.Responsable + " - " + item.nom_responsable;
+			cbAutorizado.SelectedItem = item.Autorizador + " - " + item.nom_autorizador;
+			if (!string.IsNullOrEmpty(item.FechaConfirmado))
+				dtFechaSalida.Date = DateTime.Parse(item.FechaConfirmado);
 		}
+
 		capturando = true;
 	}
 
@@ -386,75 +395,30 @@ public partial class Almacen_Salidas : ContentPage
 	private async void buscar_datos(bool Historico)
 	{
 		capturando = false;
-		string Parametros = $"{Global.cidsql_},H";
-		HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_Recoleccion").Result;
-		using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+		await LlenarArea();
+		await LlenarCentroCostoN1();
+		await LlenarCentroCostoN2();
+		await LlenarCentroCostoN3();
+		await LlenarCentroCostoN4();
+		await LlenarResponsables();
+
+		if (Historico)
 		{
-			string resp = reader.ReadToEnd();
-			if (resp == "[]")
+			foreach (Item_ArticuloSalida item in viewModel_ArticuloSalida.Items)
 			{
-				await DisplayAlertAsync("Informacion", "La Orden de recoleccion no tiene detalle, Favor de validar la Informacion con el administrador del sistema.", "OK");
-				return;
-			}
-
-			DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-			Global.strSucursal = dt.Rows[0][0].ToString();
-			Global.strArea = dt.Rows[0][1].ToString();
-			Global.strCCnivel1 = dt.Rows[0][3].ToString();
-			Global.strCCnivel2 = dt.Rows[0][5].ToString();
-			Global.strCCnivel3 = dt.Rows[0][7].ToString();
-			Global.strCCnivel4 = dt.Rows[0][9].ToString();
-			LlenarArea();
-			LlenarCentroCostoN1();
-			LlenarCentroCostoN2();
-			LlenarCentroCostoN3();
-			LlenarCentroCostoN4();
-			LlenarResponsables();
-			foreach (DataRow r in dt.Rows)
-			{
-				cbArea.SelectedItem = r[1].ToString().Trim() + " - " + r[2].ToString().Trim();
-				cbNivel1.SelectedItem = r[3].ToString().Trim() + " - " + r[4].ToString().Trim();
-				cbNivel2.SelectedItem = r[5].ToString().Trim() + " - " + r[6].ToString().Trim();
-				if (!string.IsNullOrEmpty(r[7].ToString().Trim()))
+				cbArea.SelectedItem = item.area.ToString().Trim() + " - " + item.desc_area.ToString().Trim();
+				cbNivel1.SelectedItem = item.ccnivel1.ToString().Trim() + " - " + item.desc_nivel1.ToString().Trim();
+				cbNivel2.SelectedItem = item.ccnivel2.ToString().Trim() + " - " + item.desc_nivel2.ToString().Trim();
+				if (!string.IsNullOrEmpty(item.ccnivel3))
 				{
-					cbNivel3.SelectedItem = r[7].ToString().Trim() + " - " + r[8].ToString().Trim();
+					cbNivel3.SelectedItem = item.ccnivel3.ToString().Trim() + " - " + item.desc_nivel3.ToString().Trim();
 				}
-				if (!string.IsNullOrEmpty(r[9].ToString().Trim()))
+				if (!string.IsNullOrEmpty(item.ccnivel4))
 				{
-					cbNivel4.SelectedItem = r[9].ToString().Trim() + " - " + r[10].ToString().Trim();
+					cbNivel4.SelectedItem = item.ccnivel4.ToString().Trim() + " - " + item.desc_nivel4.ToString().Trim();
 				}
-				//Global.regArticulosSalida.Add(new clsArticuloSalida
-				//{
-				//    codigo_articulo = r[11].ToString().Trim(),
-				//    descripcion_general = r[12].ToString().Trim(),
-				//    desc_familia = r[13].ToString().Trim(),
-				//    desc_linea = r[14].ToString().Trim(),
-				//    desc_grupo = r[15].ToString().Trim(),
-				//    desc_medida = (r[16].ToString().Trim()),
-				//    desc_marca = r[17].ToString().Trim(),
-				//    desc_parte = r[18].ToString().Trim(),
-				//    consecutivo = int.Parse(r[19].ToString().Trim()),
-				//    cantidad = double.Parse(r[20].ToString().Trim()),
-				//    noubicaciones = double.Parse(r[21].ToString().Trim()),
-				//    Seccion = r[23].ToString().Trim(),
-				//    desc_seccion = r[24].ToString().Trim(),
-				//    Pasillo = !string.IsNullOrEmpty(r[25].ToString()) ? double.Parse(r[25].ToString().Trim()) : 0,
-				//    Estanteria = r[26].ToString().Trim(),
-				//    desc_estanteria = r[27].ToString().Trim(),
-				//    Nivel = !string.IsNullOrEmpty(r[28].ToString()) ? double.Parse(r[28].ToString().Trim()) : 0,
-				//    Tarima = !string.IsNullOrEmpty(r[29].ToString()) ? double.Parse(r[29].ToString().Trim()) : 0,
-				//    Contenedor = !string.IsNullOrEmpty(r[30].ToString()) ? double.Parse(r[30].ToString().Trim()) : 0,
-				//    ExistenciaUbicacion = double.Parse(r[22].ToString().Trim()),
-				//    ccsucursal = Global.strSucursal.ToString(),
-				//    ccarea = Global.strArea.ToString(),
-				//    ccnivel1 = Global.strCCnivel1.ToString(),
-				//    ccnivel2 = Global.strCCnivel2.ToString(),
-				//    ccnivel3 = Global.strCCnivel3.ToString(),
-				//    ccnivel4 = Global.strCCnivel4.ToString(),
-				//    Empleado = r[31].ToString().Trim()
-				//});
 
-				switch (r[0].ToString().Trim())
+				switch (item.sucursal.ToString().Trim())
 				{
 					case "M":
 						cbSucursal.SelectedItem = "MÉRIDA";
@@ -466,19 +430,30 @@ public partial class Almacen_Salidas : ContentPage
 						Global.strSucursal = "T";
 						break;
 				}
+				cbResonsable.SelectedItem = item.Responsable + " - " + item.nom_responsable;
+				cbAutorizado.SelectedItem = item.Autorizador + " - " + item.nom_autorizador;
+				if (!string.IsNullOrEmpty(item.FechaConfirmado))
+					dtFechaSalida.Date = DateTime.Parse(item.FechaConfirmado);
 			}
-			cbResonsable.SelectedItem = dt.Rows[0][32].ToString().Trim() + " - " + dt.Rows[0][33].ToString().Trim();
-			cbAutorizado.SelectedItem = dt.Rows[0][34].ToString().Trim() + " - " + dt.Rows[0][35].ToString().Trim();
-			if (!string.IsNullOrEmpty(dt.Rows[0][37].ToString()))
-				dtFechaSalida.Date = DateTime.Parse(dt.Rows[0][37].ToString());
+
 			spvFirma.IsVisible = false;
 			imgFirma.IsVisible = true;
-			srcFirma.Source = ImageSource.FromStream(() =>
+			DataTable? dt = await Funciones.ObtenerFirma(Global.cidsql_);
+			string? firma = string.Empty;
+			foreach (DataRow r in dt.Rows)
 			{
-				var stream = new MemoryStream(Base64StringIntoImage(dt.Rows[0][36].ToString().Trim()));
-				return stream;
-			});
+				firma = dt.Rows[0][0].ToString().Trim();
+			}
+			if (!string.IsNullOrEmpty(firma))
+			{
+				srcFirma.Source = ImageSource.FromStream(() =>
+				{
+					var stream = new MemoryStream(Base64StringIntoImage(firma));
+					return stream;
+				});
+			}
 		}
+
 		capturando = true;
 	}
 
@@ -488,7 +463,7 @@ public partial class Almacen_Salidas : ContentPage
 		return img;
 	}
 
-	private void cbSucursal_SelectedIndexChanged(Object sender, EventArgs e)
+	private async void cbSucursal_SelectedIndexChanged(Object sender, EventArgs e)
 	{
 		if (capturando)
 		{
@@ -522,12 +497,12 @@ public partial class Almacen_Salidas : ContentPage
 			}
 
 			Global.strSucursal = cbSucursal.SelectedItem.ToString().Substring(0, 1);
-			LlenarArea();
-			LlenarResponsables();
+			await LlenarArea();
+			await LlenarResponsables();
 		}
 	}
 
-	private void cbArea_SelectedIndexChanged(Object sender, EventArgs e)
+	private async void cbArea_SelectedIndexChanged(Object sender, EventArgs e)
 	{
 		if (capturando)
 		{
@@ -560,19 +535,41 @@ public partial class Almacen_Salidas : ContentPage
 				cbNivel4.ItemsSource = lCentroCostoN4;
 				return;
 			}
-			LlenarCentroCostoN1();
+			await LlenarCentroCostoN1();
+			if (cbArea.SelectedItem != null || cbArea.SelectedIndex > 0)
+			{
+				if (cbResonsable.SelectedItem != null || cbResonsable.SelectedIndex > 0)
+				{
+					await LlenarAutorizador();
+				}
+			}
+			cbArea.Unfocus();
 		}
 	}
 
-	private void cbNivel1_SelectedIndexChanged(Object sender, EventArgs e)
+	private async void cbNivel1_SelectedIndexChanged(Object sender, EventArgs e)
 	{
 		if (capturando)
 		{
+			if (cbArea.SelectedItem == null || (string.IsNullOrEmpty(cbArea.SelectedItem.ToString()) && ccn1))
+			{
+				DisplayAlertAsync("Alerta", "Debe seleccionar un Area para continuar.", "OK");
+				cbNivel1.Unfocus();
+				ccn2 = false;
+				return;
+			}
+			if (cbNivel1.SelectedItem == null || (string.IsNullOrEmpty(cbNivel1.SelectedItem.ToString()) && ccn1))
+			{
+				cbNivel1.Unfocus();
+				ccn2 = false;
+				return;
+			}
 			string[] stmp;
 			cbNivel2.SelectedIndex = -1;
 
 			try
 			{
+				if (cbNivel1.SelectedItem == null) return;
 				stmp = cbNivel1.SelectedItem.ToString().Split('-');
 				Global.strCCnivel1 = stmp[0].ToString().Trim();
 			}
@@ -588,14 +585,29 @@ public partial class Almacen_Salidas : ContentPage
 				cbNivel4.SelectedIndex = -1;
 				return;
 			}
-			LlenarCentroCostoN2();
+			await LlenarCentroCostoN2();
+			cbNivel1.Unfocus();
 		}
 	}
 
-	private void cbNivel2_SelectedIndexChanged(Object sender, EventArgs e)
+	private async void cbNivel2_SelectedIndexChanged(Object sender, EventArgs e)
 	{
 		if (capturando)
 		{
+			if (cbNivel1.SelectedItem == null || (string.IsNullOrEmpty(cbNivel1.SelectedItem.ToString()) && ccn2))
+			{
+				await DisplayAlertAsync("Alerta", "Debe seleccionar un Centro de Costo para continuar.", "OK");
+				cbNivel2.Unfocus();
+				ccn2 = false;
+				return;
+			}
+			if (cbNivel2.SelectedItem == null || (string.IsNullOrEmpty(cbNivel2.SelectedItem.ToString()) && ccn2))
+			{
+				await DisplayAlertAsync("Alerta", "Debe seleccionar un Centro de Costo de Nivel 2 para continuar.", "OK");
+				cbNivel2.Unfocus();
+				ccn2 = false;
+				return;
+			}
 			string[] stmp;
 			cbNivel3.SelectedIndex = -1;
 
@@ -613,14 +625,29 @@ public partial class Almacen_Salidas : ContentPage
 				cbNivel4.SelectedIndex = -1;
 				return;
 			}
-			LlenarCentroCostoN3();
+			await LlenarCentroCostoN3();
+			cbNivel2.Unfocus();
 		}
 	}
 
-	private void cbNivel3_SelectedIndexChanged(Object sender, EventArgs e)
+	private async void cbNivel3_SelectedIndexChanged(Object sender, EventArgs e)
 	{
 		if (capturando)
 		{
+			if (cbNivel2.SelectedItem == null || (string.IsNullOrEmpty(cbNivel2.SelectedItem.ToString()) && ccn3))
+			{
+				await DisplayAlertAsync("Alerta", "Debe seleccionar un Centro de Costo de Nivel 2 para continuar.", "OK");
+				cbNivel3.Unfocus();
+				ccn3 = false;
+				return;
+			}
+			if (cbNivel3.SelectedItem == null || (string.IsNullOrEmpty(cbNivel3.SelectedItem.ToString()) && ccn3))
+			{
+				//await DisplayAlertAsync("Alerta", "Debe seleccionar un Centro de Costo de Nivel 3 para continuar.", "OK");
+				cbNivel3.Unfocus();
+				ccn3 = false;
+				return;
+			}
 			string[] stmp;
 			cbNivel4.SelectedIndex = -1;
 
@@ -636,7 +663,45 @@ public partial class Almacen_Salidas : ContentPage
 				cbNivel4.SelectedIndex = -1;
 				return;
 			}
-			LlenarCentroCostoN4();
+			await LlenarCentroCostoN4();
+			cbNivel3.Unfocus();
+		}
+	}
+
+	private async void cbNivel4_SelectedIndexChanged(Object sender, EventArgs e)
+	{
+		if (capturando)
+		{
+			if (cbNivel3.SelectedItem == null || (string.IsNullOrEmpty(cbNivel3.SelectedItem.ToString()) && ccn4))
+			{
+				await DisplayAlertAsync("Alerta", "Debe seleccionar un Centro de Costo de Nivel 3 para continuar.", "OK");
+				cbNivel4.Unfocus();
+				ccn4 = false;
+				return;
+			}
+
+			if (cbNivel4.SelectedItem == null || (string.IsNullOrEmpty(cbNivel4.SelectedItem.ToString()) && ccn4))
+			{
+				//await DisplayAlertAsync("Alerta", "Debe seleccionar un Centro de Costo de Nivel 4 para continuar.", "OK");
+				cbNivel4.Unfocus();
+				ccn4 = false;
+				return;
+			}
+			string[] stmp;
+			cbNivel4.SelectedIndex = -1;
+
+			try
+			{
+				stmp = cbNivel4.SelectedItem.ToString().Split('-');
+				Global.strCCnivel4 = stmp[0].ToString().Trim();
+			}
+			catch (Exception ex)
+			{
+				Global.strCCnivel4 = "";
+				cbNivel4.SelectedIndex = -1;
+				return;
+			}
+			cbNivel4.Unfocus();
 		}
 	}
 
@@ -669,15 +734,16 @@ public partial class Almacen_Salidas : ContentPage
 		}
 	}
 
-	private void cbResonsable_SelectedIndexChanged(Object sender, EventArgs e)
+	private async void cbResonsable_SelectedIndexChanged(Object sender, EventArgs e)
 	{
-		if (string.IsNullOrEmpty(cbResonsable.SelectedItem.ToString()) || cbResonsable.SelectedIndex <= 0)
+		if (cbArea.SelectedItem == null || (string.IsNullOrEmpty(cbArea.SelectedItem.ToString()) || cbArea.SelectedIndex <= 0))
 		{
+			await DisplayAlertAsync("Alerta", "Debe seleccionar un Area para continuar.", "OK");
 			return;
 		}
+		if (string.IsNullOrEmpty(cbResonsable.SelectedItem.ToString()) || cbResonsable.SelectedIndex <= 0) return;
 
-		cbAutorizado.ItemsSource = null;
-		cbAutorizado.ItemsSource = Funciones.LlenarAutorizado();
+		await LlenarAutorizador();
 	}
 
 	private async void btnAgregarItems_Clicked(Object sender, EventArgs e)
@@ -761,137 +827,42 @@ public partial class Almacen_Salidas : ContentPage
 		}
 
 		string sFolioSalida = "";
-		string Parametros = "folio_salidas_consumo";
-		string Condicion = $"1=1";
-		HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "control_folios_sistema", Condicion, "SELECT").Result;
-		using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+		HttpResponseMessage response;
+		try
 		{
-			if (response.StatusCode == HttpStatusCode.NotFound) return;
-			string resp = reader.ReadToEnd();
-			if (resp == "[]") return;
-			DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-			foreach (DataRow r in dt.Rows)
+			response = await SesionApi.PostAsync($"api/Operacion/GenerarSalida?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}&OrdenRecoleccion={OrdenRecoleccion}&Responsable={strResponsable}&Autorizado={strAutorizado}", Funciones.jsonContent(viewModel_ArticuloSalida.Items));
+			if (response.IsSuccessStatusCode)
 			{
-				sFolioSalida = r[0].ToString().Trim().PadLeft(6, '0');
-			}
-		}
-
-		string sResponce = "";
-		Parametros = $"folio_salidas_consumo={int.Parse(sFolioSalida) + 1}";
-		Condicion = "id=1";
-		response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "control_folios_sistema", Condicion, "UPDATE", "folio_salidas_consumo").Result;
-		using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-		{
-			if (response.StatusCode == HttpStatusCode.OK)
-			{
-				sResponce = "OK";
-			}
-		}
-
-		foreach (Item_ArticuloSalida item in viewModel_ArticuloSalida.Items)
-		{
-			if (OrdenRecoleccion)
-			{
-				// Se Actualiza el Detalle de la orden de recoleccion (Detalle_OrdenRecoleccion) con el folio de la salida
-				Parametros = $"TipoDocumento = 'S', Folio_DocumentoSalida = '{sFolioSalida}'";
-				Condicion = $"cve_articulo = '{item.codigo_articulo}' and consecutivo_mov = {item.consecutivo} and FolioOrdenRecoleccion = {Clases.Global.cidsql_} and FolioOrdenCompra = '{Clases.Global.folio_orden_}'";
-				Condicion += $"and FolioRequisicion = '{Clases.Global.folio_requisicion_}' and FolioCotizacion = '{Clases.Global.folio_cotizacion_}'";
-				response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", Condicion, "UPDATE").Result;
-				using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+				int i = 1;
+				foreach (DataRow r in dt.Rows)
 				{
-					if (response.StatusCode == HttpStatusCode.OK)
-					{
-						sResponce = "OK";
-					}
+					sFolioSalida = r[0].ToString().Trim().PadLeft(6, '0');
 				}
 			}
-			Parametros = $"{strResponsable},{strAutorizado},{Global.strSucursal},{Global.strArea},{Global.strCCnivel1.Trim()},{Global.strCCnivel2.Trim()}," +
-						 $"{item.ccnivel3.Trim()},{item.ccnivel4.Trim()},{Clases.Global.clave_usuario}," +
-						 $"{item.codigo_articulo},{item.cantidad},{item.UnidadControlUbicacion},{item.Seccion},{item.Pasillo},{item.Estanteria},{item.Nivel},{item.Tarima},{item.Contenedor},{sFolioSalida}," +
-						 $"{item.ControlArea},{item.Reasignado},{item.AreaAsignado},{item.CantidadAsignado},{item.ObservacionAsignado},{item.identrada},{FechaFormateada}";
-			response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "ws_fnSet_InsertarSalida_v3").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.OK)
-				{
-					sResponce = "OK";
-				}
-			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 		}
 
 		if (OrdenRecoleccion)
 		{
-			// Se valida si fueron entregados, todos los articulos de la Orden de recoleccion, para cambiar el estatus de la Orden
-			DataTable dt = new DataTable();
-			Parametros = "count(FolioOrdenRecoleccion)";
-			Condicion = $"FolioOrdenRecoleccion = '{Clases.Global.cidsql_}' and FolioOrdenCompra = '{Clases.Global.folio_orden_}' and FolioRequisicion = '{Clases.Global.folio_requisicion_}' and Folio_DocumentoSalida IS NULL";
-			response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "Detalle_OrdenRecoleccion", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return;
-				dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-			}
-
-			// Se Actualiza el Detalle de la orden de recoleccion (Detalle_OrdenRecoleccion) con el folio de la salida
-			foreach (DataRow r in dt.Rows)
-			{
-				Parametros = $"StatusPedido = 'SR', FechaConfirmado = '{DateTime.Now.ToShortDateString()}', HoraConfirmado = '{DateTime.Now.ToString("HH:mm:ss")}'";
-				Condicion = $"id = {Clases.Global.cidsql_} and FolioOrden = '{Clases.Global.folio_orden_}' and FolioRequisicion = '{Clases.Global.folio_requisicion_}' and FolioCotizacion = '{Clases.Global.folio_cotizacion_}'";
-				response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "OrdenRecoleccion", Condicion, "UPDATE").Result;
-				using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-				{
-					if (response.StatusCode == HttpStatusCode.OK)
-					{
-						sResponce = "OK";
-					}
-				}
-			}
-
-			// Se agrega registro en Requisiciones_En_Cotizaciones, para llevar el Historial de la Requisicion
-			string selectText = "top 1 Num_Articulos_Requisicion, cantidad_articulos, codigo_proveedor ";
-			string whereText = $"folio_requisicion = '{Global.folio_requisicion_}' and folio_cotizacion = '{Global.folio_cotizacion_}' and folio_orden_compra = '{Global.folio_orden_}' ORDER By id desc";
-			Parametros = selectText;
-			Condicion = whereText;
-			response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "Requisiciones_En_Cotizacion", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return;
-				dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-			}
-			foreach (DataRow r in dt.Rows)
-			{
-				string strValues = $"'{Global.folio_requisicion_}','SL','{r[0].ToString().Trim()}','{Global.folio_cotizacion_}','SL','{r[1].ToString().Trim()}','0000','{Global.folio_orden_}','SL','{DateTime.Now.ToShortDateString()}'," +
-							   $"'{DateTime.Now.ToString("HH:mm:ss")}','{Global.nombre_usuario}','false','{Global.cidsql_}', 'SL',NULL,NULL,NULL";
-				string strCampos = $"folio_requisicion,status_requisicion,Num_Articulos_Requisicion,folio_cotizacion,status_cotizacion,cantidad_articulos,codigo_proveedor,folio_orden_compra,status_orden_compra,Fecha_Movto,Hora_Movto,Usuario,control_bascula,folio_OrdenRecoleccion,status_OrdenRecoleccion,folio_SalidaDocumento,TipoDocumento,status_SalidaDocumento";
-				response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", strValues, "ws_fn_EjecutarQuerySQL", "Requisiciones_En_Cotizacion", Condicion, "INSERT INTO", strCampos).Result;
-				using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-				{
-					if (response.StatusCode == HttpStatusCode.OK)
-					{
-						sResponce = "OK";
-					}
-				}
-			}
-
 			//Eliminar los Articulos quitados de la Orden de Recoleccion
 			if (ArticulosEliminados.Count > 0)
 			{
-				foreach (clsArticuloSalida item in ArticulosEliminados)
+				try
 				{
-					Parametros = "nada";
-					Condicion = $"cve_articulo='{item.codigo_articulo}' and FolioOrdenRecoleccion='{item.ID}'";
-					response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "Detalle_OrdenRecoleccion", Condicion, "DELETE").Result;
-					using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+					response = await SesionApi.DeleteAsync($"api/Operacion/EliminarDetalleRecoleccion?tProyecto={ConfigAPI.TipoProyecto}", Funciones.jsonContent(viewModel_ArticuloSalida.Items));
+					if (!response.IsSuccessStatusCode)
 					{
-						if (response.StatusCode == HttpStatusCode.OK)
-						{
-							sResponce = "OK";
-						}
+						await DisplayAlertAsync("Alerta", "Los Articulos eliminados no se puedieron eliminar correctamente.", "OK");
 					}
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 				}
 			}
 		}
@@ -911,9 +882,26 @@ public partial class Almacen_Salidas : ContentPage
 		{
 			imageBytes = reader.ReadBytes((int)stream.Length);
 		}
-		Parametros = $"{sFolioSalida}";
-		HttpResponseMessage Response = APIService.PostAPI_Firma("api/Firma", new FirmaEntity { Folio = sFolioSalida, Firma = Convert.ToBase64String(imageBytes), tProyecto = ConfigAPI.TipoProyecto, Metodo = "ws_fnSet_FirmaSalida" }).Result;
-		if (response.StatusCode == HttpStatusCode.NotFound) return;
+
+		try
+		{
+			response = await SesionApi.PostAsync($"api/Firma", Funciones.jsonContent(new FirmaEntity
+			{
+				Folio = sFolioSalida,
+				Firma = Convert.ToBase64String(imageBytes),
+				tProyecto = ConfigAPI.TipoProyecto,
+				Metodo = "ws_fnSet_FirmaSalida"
+			}));
+			if (!response.IsSuccessStatusCode)
+			{
+				await DisplayAlertAsync("Alerta", "La firma no se pudo guardar correctamente.", "OK");
+				return;
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
 
 		UserDialogs.Instance.HideHud();
 		await DisplayAlertAsync("Guardado Correcto", "Salida " + sFolioSalida, "OK");
@@ -923,10 +911,6 @@ public partial class Almacen_Salidas : ContentPage
 		Global.folio_orden_ = string.Empty;
 		Global.cidsql_ = 0;
 		sFolioSalida = "";
-
-		//ItemsListView.BeginRefresh();
-		//ItemsListView.ItemsSource = Global.regArticulosSalida;
-		//ItemsListView.EndRefresh();
 
 		OrdenRecoleccion = false;
 		btnGenerarSalida.IsEnabled = true;
@@ -962,12 +946,15 @@ public partial class Almacen_Salidas : ContentPage
 		UserDialogs.Instance.ShowLoading("Guardando");
 		btnGenerarSalida.IsEnabled = false;
 		string strResponsable = "";
+		string strnom_resp = "";
 		string strAutorizado = "";
+		string strnom_Aut = "";
 		try
 		{
 			string[] stmp;
 			stmp = cbResonsable.SelectedItem.ToString().Split('-');
 			strResponsable = stmp[0].ToString().Trim();
+			strnom_resp = stmp[1].ToString().Trim();
 		}
 		catch (Exception ex)
 		{
@@ -979,6 +966,7 @@ public partial class Almacen_Salidas : ContentPage
 			string[] stmp;
 			stmp = cbAutorizado.SelectedItem.ToString().Split('-');
 			strAutorizado = stmp[0].ToString().Trim();
+			strnom_Aut = stmp[1].ToString().Trim();
 		}
 		catch (Exception ex)
 		{
@@ -1000,64 +988,35 @@ public partial class Almacen_Salidas : ContentPage
 		ObservableCollection<SalidaAlmacenEntity> salida = new ObservableCollection<SalidaAlmacenEntity>();
 		foreach (Item_ArticuloSalida item in viewModel_ArticuloSalida.Items)
 		{
-			salida.Add(new SalidaAlmacenEntity()
-			{
-				FolioOrdenRecoleccion = Global.cidsql_,
-				FolioOrdenCompra = Global.folio_orden_,
-				FolioRequisicion = Global.folio_requisicion_,
-				//FolioPedido = Null
-				FolioCotizacion = Global.folio_cotizacion_,
-				//solicitante = NULL,
-				area = Global.strArea,
-				ccn1 = Global.strCCnivel1,
-				ccn2 = Global.strCCnivel2,
-				ccn3 = item.ccnivel3,
-				ccn4 = item.ccnivel4,
-				cantidad = item.cantidad,
-				concepto = item.descripcion_general,
-				unidad_medida = item.desc_medida,
-				unidad = item.UnidadControlUbicacion,
-				codigo_articulo = item.codigo_articulo,
-				consecutivo_mov = item.consecutivo,
-				//status_requisicion = "SL",
-				numero_parte = item.desc_parte,
-				marca = item.desc_marca,
-				condicion_herramienta = string.Empty,
-				Seccion = item.Seccion,
-				Pasillo = (int)item.Pasillo,
-				Estanteria = item.Estanteria,
-				Nivel = (int)item.Nivel,
-				Tarima = (int)item.Tarima,
-				Contenedor = (int)item.Contenedor,
-				//TipoDocumento = "S",
-				//Folio_DocumentoSalida = string.Empty,
-				Codigo_Responsable = strResponsable,
-				Codigo_Autorizado = strAutorizado,
-				Sucursal = Global.strSucursal,
-				Usuario = Global.clave_usuario,
-				Nombre_Usuario = Global.nombre_usuario,
-				ControlArea = item.ControlArea,
-				Reasignado = item.Reasignado,
-				AreaAsignado = item.AreaAsignado,
-				CantidadAsignado = item.CantidadAsignado,
-				ObservacionAsignado = item.ObservacionAsignado,
-				IdEntrada = item.identrada,
-				Fecha = DateTime.Now.ToShortDateString(),
-			});
+			item.FechaConfirmado = FechaFormateada;
+			item.Responsable = strResponsable;
+			item.nom_responsable = strnom_resp;
+			item.Autorizador = strAutorizado;
+			item.nom_autorizador = strnom_Aut;
+			item.Usuario = Global.clave_usuario;
+			item.Nombre_Usuario = Global.nombre_usuario;
 		}
 
 		string sFolioSalida = "";
-		HttpResponseMessage responseMessage = APIService.PostAPI_GenerarSalida("api/Operacion/GenerarSalida", ConfigAPI.TipoProyecto, OrdenRecoleccion, strResponsable, strAutorizado, salida).Result;
-		using (StreamReader reader = new StreamReader(responseMessage.Content.ReadAsStreamAsync().Result))
+		HttpResponseMessage response;
+		try
 		{
-			if (responseMessage.StatusCode == HttpStatusCode.NotFound) return;
-			string resp = reader.ReadToEnd();
-			if (resp == "[]") return;
-			DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-			foreach (DataRow r in dt.Rows)
+			response = await SesionApi.PostAsync($"api/Operacion/GenerarSalida?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}&OrdenRecoleccion={OrdenRecoleccion}&Responsable={strResponsable}&Autorizado={strAutorizado}", Funciones.jsonContent(viewModel_ArticuloSalida.Items));
+			if (response.IsSuccessStatusCode)
 			{
-				sFolioSalida = r[0].ToString().Trim().PadLeft(6, '0');
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+				int i = 1;
+				foreach (DataRow r in dt.Rows)
+				{
+					sFolioSalida = r[0].ToString().Trim().PadLeft(6, '0');
+				}
 			}
+		}
+		catch (Exception ex)
+		{
+			UserDialogs.Instance.HideHud();
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 		}
 
 		//TODO : Guardar la firma del responsable de la salida
@@ -1070,14 +1029,33 @@ public partial class Almacen_Salidas : ContentPage
 		Lines.AddRange(signatureSample.Lines);
 		await using var stream = await DrawingViewService.GetImageStream(ImageLineOptions.JustLines(Lines, new Size(400, 280), Brush.White));
 
-		byte[] imageBytes;
-		using (BinaryReader reader = new BinaryReader(stream))
+		//byte[] imageBytes;
+		//using (BinaryReader reader = new BinaryReader(stream))
+		//{
+		//	imageBytes = reader.ReadBytes((int)stream.Length);
+		//}
+
+		try
 		{
-			imageBytes = reader.ReadBytes((int)stream.Length);
+			response = await SesionApi.PostAsync($"api/Firma?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}", Funciones.jsonContent(new FirmaEntity
+			{
+				Folio = sFolioSalida,
+				Firma = Funciones.ConvertToBase64String(stream), // Convert.ToBase64String(imageBytes),
+				tProyecto = ConfigAPI.TipoProyecto,
+				Metodo = "ws_fnSet_FirmaSalida"
+			}));
+			if (!response.IsSuccessStatusCode)
+			{
+				await DisplayAlertAsync("Alerta", "La firma no se pudo guardar correctamente.", "OK");
+				UserDialogs.Instance.HideHud();
+				return;
+			}
 		}
-		string Parametros = $"{sFolioSalida}";
-		HttpResponseMessage Response = APIService.PostAPI_Firma("api/Firma", new FirmaEntity { Folio = sFolioSalida, Firma = Convert.ToBase64String(imageBytes), tProyecto = ConfigAPI.TipoProyecto, Metodo = "ws_fnSet_FirmaSalida" }).Result;
-		if (Response.StatusCode != HttpStatusCode.OK) return;
+		catch (Exception ex)
+		{
+			UserDialogs.Instance.HideHud();
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
 
 		UserDialogs.Instance.HideHud();
 		await DisplayAlertAsync("Guardado Correcto", $"Salida {sFolioSalida}", "OK");
@@ -1102,5 +1080,30 @@ public partial class Almacen_Salidas : ContentPage
 	private void OnClearButtonClicked(object sender, EventArgs e)
 	{
 		signatureSample.Lines.Clear();
+	}
+
+	private void cbArea_Focused(object sender, FocusEventArgs e)
+	{
+		cArea = true;
+	}
+
+	private void cbNivel1_Focused(object sender, FocusEventArgs e)
+	{
+		ccn1 = true;
+	}
+
+	private void cbNivel2_Focused(object sender, FocusEventArgs e)
+	{
+		ccn2 = true;
+	}
+
+	private void cbNivel3_Focused(object sender, FocusEventArgs e)
+	{
+		ccn3 = true;
+	}
+
+	private void cbNivel4_Focused(object sender, FocusEventArgs e)
+	{
+		ccn4 = true;
 	}
 }

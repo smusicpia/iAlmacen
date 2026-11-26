@@ -7,6 +7,7 @@ using iAlmacen.WebApi;
 using Newtonsoft.Json;
 
 using System.Data;
+using System.Diagnostics;
 using System.Net;
 
 using ZXing.Net.Maui;
@@ -137,14 +138,28 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 			identrada = 0;
 		}
 
-		private void LlenarNivel3()
+		private async Task LlenarNivel3()
 		{
-			cbNivel3.ItemsSource = Funciones.LlenarCentroCostoN3();
+			lCentroCostoN3 = new List<String>();
+			lCentroCostoN3.Add("");
+			DataTable? dt = await Funciones.LlenarCentroCostoN3();
+			foreach (DataRow r in dt.Rows)
+			{
+				lCentroCostoN3.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+			}
+			cbNivel3.ItemsSource = lCentroCostoN3;
 		}
 
-		private void LlenarNivel4()
+		private async Task LlenarNivel4()
 		{
-			cbNivel4.ItemsSource = Funciones.LlenarCentroCostoN4();
+			lCentroCostoN4 = new List<String>();
+			lCentroCostoN4.Add("");
+			DataTable? dt = await Funciones.LlenarCentroCostoN4();
+			foreach (DataRow r in dt.Rows)
+			{
+				lCentroCostoN4.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+			}
+			cbNivel4.ItemsSource = lCentroCostoN4;
 		}
 
 		private async Task obtenerDatosArticulo(string codArticulo)
@@ -160,14 +175,94 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 			//string Codigo = "00391";
 
 			string Parametros = $"{Codigo}";
+			//try
+			//{
+			//	//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DatosArticulo").Result;
+			//	//using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			//	//{
+			//	//	if (response.StatusCode == HttpStatusCode.NotFound) return;
+			//	//	string resp = reader.ReadToEnd();
+			//	//	DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+			//	//	foreach (DataRow r in dt.Rows)
+			//	//	{
+			//	//		if (r[16].ToString() == "1")
+			//	//		{
+			//	//			await DisplayAlertAsync("Informacion", "Articulo ya se encuentran en proceso de inventario.", "OK");
+			//	//			break;
+			//	//		}
+
+			//	//		lblClave.Text = r[0].ToString().Trim();
+			//	//		lblDescripcion.Text = r[1].ToString().Trim();
+			//	//		lblMedida.Text = r[5].ToString().Trim();
+			//	//		lblMarca.Text = r[6].ToString().Trim();
+			//	//		lblParte.Text = r[7].ToString().Trim();
+			//	//		lblFamilia.Text = r[2].ToString().Trim();
+			//	//		lblLinea.Text = r[3].ToString().Trim();
+			//	//		lblGrupo.Text = r[4].ToString().Trim();
+
+			//	//		nUbicaciones = int.Parse(r[8].ToString().Trim());
+			//	//		switch (nUbicaciones)
+			//	//		{
+			//	//			case 0:
+			//	//				lblSeccion.Text = "No Disponible";
+			//	//				lblPasillo.Text = "**";
+			//	//				lblEstanteria.Text = "**";
+			//	//				lblNivel.Text = "**";
+			//	//				lblTarima.Text = "**";
+			//	//				lblContenedor.Text = "**";
+			//	//				lblExistenciaUbicacion.Text = "0.00";
+			//	//				bUbicacionCapturada = true;
+			//	//				break;
+
+			//	//			case 1:
+			//	//				lblSeccion.Text = r[9].ToString().Trim() + " - " + r[19].ToString().Trim();
+			//	//				lblPasillo.Text = r[10].ToString().Trim();
+			//	//				lblEstanteria.Text = r[11].ToString().Trim() + " - " + r[20].ToString().Trim();
+			//	//				lblNivel.Text = r[12].ToString().Trim();
+			//	//				lblTarima.Text = r[13].ToString().Trim();
+			//	//				lblContenedor.Text = r[14].ToString().Trim();
+			//	//				lblExistenciaUbicacion.Text = r[15].ToString().Trim();
+			//	//				bUbicacionCapturada = true;
+			//	//				break;
+
+			//	//			default:
+			//	//				lblSeccion.Text = "Escanear Ubicacion";
+			//	//				lblPasillo.Text = "**";
+			//	//				lblEstanteria.Text = "**";
+			//	//				lblNivel.Text = "**";
+			//	//				lblTarima.Text = "**";
+			//	//				lblContenedor.Text = "**";
+			//	//				lblExistenciaUbicacion.Text = "0.00";
+			//	//				bUbicacionCapturada = false;
+			//	//				break;
+			//	//		}
+
+			//	//		lblUnidad.Text = r[16].ToString().Trim();
+			//	//		lblExistenciaglobal.Text = string.IsNullOrEmpty(r[17].ToString().Trim()) ? "0.00" : r[17].ToString().Trim();
+			//	//		txtCantidad.Text = "1.00";
+			//	//		bControlArea = Boolean.Parse(r[21].ToString().Trim());
+			//	//		if (bControlArea)
+			//	//		{
+			//	//			await DisplayAlertAsync("Control por area", "Escanee el codigo del control por area asignado", "OK");
+			//	//			btnScanControl.IsVisible = true;
+			//	//		}
+			//	//	}
+			//	//}
+			//}
+			//catch (Exception ex)
+			//{
+			//	await DisplayAlertAsync("Error", $"Hubo un error y no fue posible agregar el Articulo. ({ex.Message})", "OK");
+			//}
+
+			HttpResponseMessage response;
 			try
 			{
-				HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DatosArticulo").Result;
-				using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+				response = await SesionApi.GetAsync($"api/InventarioAlmacen?tProyecto={ConfigAPI.TipoProyecto}&Metodo=wsp_DatosArticulo&parametros={Parametros}");
+				if (response.IsSuccessStatusCode)
 				{
-					if (response.StatusCode == HttpStatusCode.NotFound) return;
-					string resp = reader.ReadToEnd();
-					DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					int i = 1;
 					foreach (DataRow r in dt.Rows)
 					{
 						if (r[16].ToString() == "1")
@@ -233,15 +328,16 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 						}
 					}
 				}
-
-				if (nUbicaciones > 1)
-				{
-					await DisplayAlertAsync("Informacion", "El articulo cuenta con mas ubicaciones, por favor escanee el codigo de la ubicacion", "OK");
-				}
 			}
 			catch (Exception ex)
 			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 				await DisplayAlertAsync("Error", $"Hubo un error y no fue posible agregar el Articulo. ({ex.Message})", "OK");
+			}
+
+			if (nUbicaciones > 1)
+			{
+				await DisplayAlertAsync("Informacion", "El articulo cuenta con mas ubicaciones, por favor escanee el codigo de la ubicacion", "OK");
 			}
 		}
 
@@ -265,43 +361,79 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 
 			if (Ubicacion[0] == "0")
 			{
-				string Parametros = $"{Codigo},{Ubicacion[1]},{Ubicacion[2]},{Ubicacion[3]},{Ubicacion[4]}";
-				HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DatosUbicacion").Result;
-				using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+				//string Parametros = $"{Codigo},{Ubicacion[1]},{Ubicacion[2]},{Ubicacion[3]},{Ubicacion[4]}";
+				//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DatosUbicacion").Result;
+				//using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+				//{
+				//	if (response.StatusCode == HttpStatusCode.NotFound) return;
+				//	string resp = reader.ReadToEnd();
+				//	if (resp == "[]") return;
+				//	DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				//	foreach (DataRow r in dt.Rows)
+				//	{
+				//		switch (nUbicaciones)
+				//		{
+				//			case 0:
+				//				break;
+
+				//			case 1:
+				//				break;
+
+				//			default:
+				//				lblSeccion.Text = r[2].ToString().Trim();
+				//				lblPasillo.Text = r[3].ToString().Trim();
+				//				lblEstanteria.Text = r[5].ToString().Trim();
+				//				lblNivel.Text = r[6].ToString().Trim();
+				//				lblTarima.Text = r[7].ToString().Trim();
+				//				lblContenedor.Text = r[8].ToString().Trim();
+				//				lblExistenciaUbicacion.Text = r[10].ToString().Trim();
+				//				bUbicacionCapturada = true;
+				//				break;
+				//		}
+				//	}
+				//}
+
+				HttpResponseMessage response;
+				try
 				{
-					if (response.StatusCode == HttpStatusCode.NotFound) return;
-					string resp = reader.ReadToEnd();
-					if (resp == "[]") return;
-					DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-					foreach (DataRow r in dt.Rows)
+					response = await SesionApi.GetAsync($"api/Operacion/datosUbicacion?tProyecto={ConfigAPI.TipoProyecto}&articulo={Codigo}&estanteria={Ubicacion[1]}&nivel={Ubicacion[2]}&tarima={Ubicacion[3]}&contenedor={Ubicacion[4]}");
+					if (response.IsSuccessStatusCode)
 					{
-						switch (nUbicaciones)
+						string jsonResponse = await response.Content.ReadAsStringAsync();
+						DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+						int i = 1;
+						foreach (DataRow r in dt.Rows)
 						{
-							case 0:
-								break;
-
-							case 1:
-								break;
-
-							default:
-								lblSeccion.Text = r[2].ToString().Trim();
-								lblPasillo.Text = r[3].ToString().Trim();
-								lblEstanteria.Text = r[5].ToString().Trim();
-								lblNivel.Text = r[6].ToString().Trim();
-								lblTarima.Text = r[7].ToString().Trim();
-								lblContenedor.Text = r[8].ToString().Trim();
-								lblExistenciaUbicacion.Text = r[10].ToString().Trim();
-								bUbicacionCapturada = true;
-								break;
+							switch (nUbicaciones)
+							{
+								case 0:
+									break;
+								case 1:
+									break;
+								default:
+									lblSeccion.Text = r[2].ToString().Trim();
+									lblPasillo.Text = r[3].ToString().Trim();
+									lblEstanteria.Text = r[5].ToString().Trim();
+									lblNivel.Text = r[6].ToString().Trim();
+									lblTarima.Text = r[7].ToString().Trim();
+									lblContenedor.Text = r[8].ToString().Trim();
+									lblExistenciaUbicacion.Text = r[10].ToString().Trim();
+									bUbicacionCapturada = true;
+									break;
+							}
 						}
 					}
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 				}
 			}
 			if (Ubicacion[0] != "0")
 			{
 				await DisplayAlertAsync("Informacion", "La Ubicacion no existe, favor de verificar la información.", "OK");
 			}
-			else if (double.Parse(lblExistenciaUbicacion.Text) < 1)
+			else if (int.Parse(lblExistenciaUbicacion.Text) < 1)
 			{
 				await DisplayAlertAsync("Informacion", "El articulo no cuenta con existencia en la ubicacion seleccionada.", "OK");
 			}
@@ -327,22 +459,48 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 				frmControlArea.IsVisible = false;
 				bControlAreaValido = false;
 
-				string Parametros = "area, centro_costo, cast(cantidad as numeric(18,2)) cantidad, " +
-									"(select top(1) tmp.descripcion from catalogo_areas as tmp where tmp.clave_area=detalle_documentos_almacen.area and tmp.psucursal=detalle_documentos_almacen.psucursal) descarea, " +
-									"codigo_articulo, ControlAreaUsado";
-				string Condicion = $"id='{identrada}' and codigo_articulo='{lblClave.Text}' and ControlAreaUsado=0";
-				HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "detalle_documentos_almacen", Condicion, "SELECT", "").Result;
-				using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+				//string Parametros = "area, centro_costo, cast(cantidad as numeric(18,2)) cantidad, " +
+				//					"(select top(1) tmp.descripcion from catalogo_areas as tmp where tmp.clave_area=detalle_documentos_almacen.area and tmp.psucursal=detalle_documentos_almacen.psucursal) descarea, " +
+				//					"codigo_articulo, ControlAreaUsado";
+				//string Condicion = $"id='{identrada}' and codigo_articulo='{lblClave.Text}' and ControlAreaUsado=0";
+				//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "detalle_documentos_almacen", Condicion, "SELECT", "").Result;
+				//using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+				//{
+				//	if (response.StatusCode == HttpStatusCode.NotFound) return;
+				//	string resp = reader.ReadToEnd();
+				//	if (resp != "[]")
+				//	{
+				//		DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+				//		foreach (DataRow r in dt.Rows)
+				//		{
+				//			sAreaAsignado = r[0].ToString().Trim();
+				//			dCantidadAsignado = double.Parse(r[2].ToString().Trim());
+
+				//			swReasignar.IsToggled = false;
+				//			lblAreaAsignada.Text = r[3].ToString().Trim();
+				//			lblCantidadAsignada.Text = r[2].ToString().Trim();
+				//			txtObservacionReasignar.Text = "";
+				//			bControlAreaValido = true;
+				//			frmControlArea.IsVisible = true;
+
+				//			ControlEncontrado = true;
+				//		}
+				//	}
+				//}
+
+				HttpResponseMessage response;
+				try
 				{
-					if (response.StatusCode == HttpStatusCode.NotFound) return;
-					string resp = reader.ReadToEnd();
-					if (resp != "[]")
+					response = await SesionApi.GetAsync($"api/Operacion/detalleEntrada_almacen?tProyecto={ConfigAPI.TipoProyecto}&id={identrada}&articulo={Codigo}");
+					if (response.IsSuccessStatusCode)
 					{
-						DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+						string jsonResponse = await response.Content.ReadAsStringAsync();
+						DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+						int i = 1;
 						foreach (DataRow r in dt.Rows)
 						{
 							sAreaAsignado = r[0].ToString().Trim();
-							dCantidadAsignado = double.Parse(r[2].ToString().Trim());
+							dCantidadAsignado = int.Parse(r[2].ToString().Trim());
 
 							swReasignar.IsToggled = false;
 							lblAreaAsignada.Text = r[3].ToString().Trim();
@@ -354,6 +512,10 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 							ControlEncontrado = true;
 						}
 					}
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 				}
 
 				if (!ControlEncontrado)
@@ -534,12 +696,12 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 			{
 				Global.Editando = false;
 				Global.validar = true;
-				Global.ArticuloSalidaEditando.cantidad = double.Parse(txtCantidad.Text);
+				Global.ArticuloSalidaEditando.cantidad = int.Parse(txtCantidad.Text);
 				foreach (clsArticuloSalida item_ in Global.regArticulosSalida)
 				{
 					if (item_.ID == Global.ArticuloSalidaEditando.ID)
 					{
-						item_.cantidad = double.Parse(txtCantidad.Text);
+						item_.cantidad = int.Parse(txtCantidad.Text);
 					}
 				}
 				await Navigation.PopAsync();
@@ -566,7 +728,7 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 						return;
 					}
 
-					if (dCantidadAsignado < double.Parse(txtCantidad.Text) && !swReasignar.IsToggled)
+					if (dCantidadAsignado < int.Parse(txtCantidad.Text) && !swReasignar.IsToggled)
 					{
 						await DisplayAlertAsync("Control Area", "la cantidad es superior a lo asignado, es necesario autorizar esta salida", "OK");
 						return;
@@ -588,7 +750,7 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 				double dCantidad = 0;
 				try
 				{
-					dCantidad = double.Parse(txtCantidad.Text.Trim());
+					dCantidad = int.Parse(txtCantidad.Text.Trim());
 				}
 				catch (Exception ex)
 				{
@@ -604,7 +766,7 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 				switch (nUbicaciones)
 				{
 					case 0:
-						if (dCantidad > double.Parse(lblExistenciaglobal.Text))
+						if (dCantidad > int.Parse(lblExistenciaglobal.Text))
 						{
 							await DisplayAlertAsync("Informacion", "Articulo no cuenta con la existencia suficiente", "OK");
 							return;
@@ -612,7 +774,7 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 						break;
 
 					case 1:
-						if (dCantidad > double.Parse(lblExistenciaUbicacion.Text))
+						if (dCantidad > int.Parse(lblExistenciaUbicacion.Text))
 						{
 							await DisplayAlertAsync("Informacion", "Articulo no cuenta con la existencia suficiente en la ubicacion", "OK");
 							return;
@@ -620,7 +782,7 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 						break;
 
 					default:
-						if (dCantidad > double.Parse(lblExistenciaUbicacion.Text))
+						if (dCantidad > int.Parse(lblExistenciaUbicacion.Text))
 						{
 							await DisplayAlertAsync("Informacion", "Articulo no cuenta con la existencia suficiente en la ubicacion", "OK");
 							return;
@@ -631,8 +793,12 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 				string[] stmp;
 				try
 				{
-					stmp = cbNivel3.SelectedItem.ToString().Split('-');
-					Global.strCCnivel3 = stmp[0].ToString().Trim();
+					if (cbNivel3.SelectedItem != null)
+					{
+						stmp = cbNivel3.SelectedItem.ToString().Split('-');
+						Global.strCCnivel3 = stmp[0].ToString().Trim();
+					}
+					else Global.strCCnivel3 = "";
 				}
 				catch (Exception ex)
 				{
@@ -641,8 +807,12 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 
 				try
 				{
-					stmp = cbNivel4.SelectedItem.ToString().Split('-');
-					Global.strCCnivel4 = stmp[0].ToString().Trim();
+					if (cbNivel4.SelectedItem != null)
+					{
+						stmp = cbNivel4.SelectedItem.ToString().Split('-');
+						Global.strCCnivel4 = stmp[0].ToString().Trim();
+					}
+					else Global.strCCnivel4 = "";
 				}
 				catch (Exception ex)
 				{
@@ -690,28 +860,28 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 					desc_medida = lblMedida.Text.Trim(),
 					desc_marca = lblMarca.Text.Trim(),
 					desc_parte = lblParte.Text.Trim(),
-					noubicaciones = double.Parse(nUbicaciones.ToString()),
+					noubicaciones = int.Parse(nUbicaciones.ToString()),
 					Seccion = tmpSeccion,
-					Pasillo = double.Parse(tmpPasillo),
+					Pasillo = int.Parse(tmpPasillo),
 					Estanteria = tmpEstanteria,
-					Nivel = double.Parse(tmpNivel),
-					Tarima = double.Parse(tmpTarima),
-					Contenedor = double.Parse(tmpContenedor),
-					ExistenciaUbicacion = double.Parse(lblExistenciaUbicacion.Text.Trim()),
+					Nivel = int.Parse(tmpNivel),
+					Tarima = int.Parse(tmpTarima),
+					Contenedor = int.Parse(tmpContenedor),
+					ExistenciaUbicacion = int.Parse(lblExistenciaUbicacion.Text.Trim()),
 					UnidadControlUbicacion = lblUnidad.Text.Trim(),
-					ExistenciaKardex = double.Parse(lblExistenciaglobal.Text.Trim()),
+					ExistenciaKardex = int.Parse(lblExistenciaglobal.Text.Trim()),
 					cantidad = dCantidad,
 					desc_seccion = tmpDescSeccion,
 					desc_estanteria = tmpDescEstanteria,
-					ccsucursal = Global.strSucursal,
-					ccarea = Global.strArea,
+					sucursal = Global.strSucursal,
+					area = Global.strArea,
 					ccnivel1 = Global.strCCnivel1,
 					ccnivel2 = Global.strCCnivel2,
 					ccnivel3 = Global.strCCnivel3,
 					ccnivel4 = Global.strCCnivel4,
 					ControlArea = bControlArea,
 					Reasignado = swReasignar.IsToggled,
-					AreaAsignado = sAreaAsignado,
+					AreaAsignado = bool.Parse(sAreaAsignado),
 					CantidadAsignado = dCantidadAsignado,
 					ObservacionAsignado = txtObservacionReasignar.Text,
 					identrada = identrada
@@ -746,79 +916,162 @@ namespace iAlmacen.Almacen_Refacciones.Salida_Almacen
 				Codigo = result;
 				try
 				{
-					HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Codigo, "wsp_DatosArticulo").Result;
-					using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+					//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen/Datos_Articulo", Codigo, "wsp_DatosArticulo").Result;
+					//using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+					//{
+					//	if (response.StatusCode == HttpStatusCode.NotFound) return;
+					//	string resp = reader.ReadToEnd();
+					//	DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+					//	if (dt.Rows.Count == 0)
+					//	{
+					//		await DisplayAlertAsync("Informacion", $"La clave del Articulo {result} no existe, Favor de Validar", "OK");
+					//	}
+					//	foreach (DataRow r in dt.Rows)
+					//	{
+					//		if (r[16].ToString() == "1")
+					//		{
+					//			await DisplayAlertAsync("Informacion", "Articulo ya se encuentran en proceso de inventario", "OK");
+					//			break;
+					//		}
+
+					//		lblClave.Text = r[0].ToString().Trim();
+					//		lblDescripcion.Text = r[1].ToString().Trim();
+					//		lblMedida.Text = r[5].ToString().Trim();
+					//		lblMarca.Text = r[6].ToString().Trim();
+					//		lblParte.Text = r[7].ToString().Trim();
+					//		lblFamilia.Text = r[2].ToString().Trim();
+					//		lblLinea.Text = r[3].ToString().Trim();
+					//		lblGrupo.Text = r[4].ToString().Trim();
+					//		nUbicaciones = int.Parse(r[8].ToString().Trim());
+					//		switch (nUbicaciones)
+					//		{
+					//			case 0:
+					//				lblSeccion.Text = "No Disponible";
+					//				lblPasillo.Text = "**";
+					//				lblEstanteria.Text = "**";
+					//				lblNivel.Text = "**";
+					//				lblTarima.Text = "**";
+					//				lblContenedor.Text = "**";
+					//				lblExistenciaUbicacion.Text = "0.00";
+					//				bUbicacionCapturada = true;
+					//				break;
+
+					//			case 1:
+					//				lblSeccion.Text = r[9].ToString().Trim() + " - " + r[19].ToString().Trim();
+					//				lblPasillo.Text = r[10].ToString().Trim();
+					//				lblEstanteria.Text = r[11].ToString().Trim() + " - " + r[20].ToString().Trim();
+					//				lblNivel.Text = r[12].ToString().Trim();
+					//				lblTarima.Text = r[13].ToString().Trim();
+					//				lblContenedor.Text = r[14].ToString().Trim();
+					//				lblExistenciaUbicacion.Text = r[15].ToString().Trim();
+					//				bUbicacionCapturada = true;
+					//				break;
+
+					//			default:
+					//				lblSeccion.Text = "Escanear Ubicacion";
+					//				lblPasillo.Text = "**";
+					//				lblEstanteria.Text = "**";
+					//				lblNivel.Text = "**";
+					//				lblTarima.Text = "**";
+					//				lblContenedor.Text = "**";
+					//				lblExistenciaUbicacion.Text = "0.00";
+					//				bUbicacionCapturada = false;
+					//				break;
+					//		}
+
+					//		lblUnidad.Text = r[16].ToString().Trim();
+					//		lblExistenciaglobal.Text = string.IsNullOrEmpty(r[17].ToString().Trim()) ? "0.00" : r[17].ToString().Trim();
+					//		txtCantidad.Text = "1.00";
+					//		bControlArea = Boolean.Parse(r[21].ToString().Trim());
+					//		if (bControlArea)
+					//		{
+					//			await DisplayAlertAsync("Control por area", "Escanee el codigo del control por area asignado", "OK");
+					//			btnScanControl.IsVisible = true;
+					//		}
+					//	}
+					//}
+
+					HttpResponseMessage response;
+					try
 					{
-						if (response.StatusCode == HttpStatusCode.NotFound) return;
-						string resp = reader.ReadToEnd();
-						DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-						if (dt.Rows.Count == 0)
+						response = await SesionApi.GetAsync($"api/InventarioAlmacen/Datos_Articulo?tProyecto={ConfigAPI.TipoProyecto}&articulo={Codigo}");
+						if (response.IsSuccessStatusCode)
 						{
-							await DisplayAlertAsync("Informacion", $"La clave del Articulo {result} no existe, Favor de Validar", "OK");
+							string jsonResponse = await response.Content.ReadAsStringAsync();
+							DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+							if (dt.Rows.Count == 0)
+							{
+								await DisplayAlertAsync("Informacion", $"La clave del Articulo {result} no existe, Favor de Validar", "OK");
+							}
+							int i = 1;
+							foreach (DataRow r in dt.Rows)
+							{
+								if (r[16].ToString() == "1")
+								{
+									await DisplayAlertAsync("Informacion", "Articulo ya se encuentran en proceso de inventario", "OK");
+									break;
+								}
+
+								lblClave.Text = r[0].ToString().Trim();
+								lblDescripcion.Text = r[1].ToString().Trim();
+								lblMedida.Text = r[5].ToString().Trim();
+								lblMarca.Text = r[6].ToString().Trim();
+								lblParte.Text = r[7].ToString().Trim();
+								lblFamilia.Text = r[2].ToString().Trim();
+								lblLinea.Text = r[3].ToString().Trim();
+								lblGrupo.Text = r[4].ToString().Trim();
+								nUbicaciones = int.Parse(r[8].ToString().Trim());
+								switch (nUbicaciones)
+								{
+									case 0:
+										lblSeccion.Text = "No Disponible";
+										lblPasillo.Text = "**";
+										lblEstanteria.Text = "**";
+										lblNivel.Text = "**";
+										lblTarima.Text = "**";
+										lblContenedor.Text = "**";
+										lblExistenciaUbicacion.Text = "0.00";
+										bUbicacionCapturada = true;
+										break;
+
+									case 1:
+										lblSeccion.Text = r[9].ToString().Trim() + " - " + r[19].ToString().Trim();
+										lblPasillo.Text = r[10].ToString().Trim();
+										lblEstanteria.Text = r[11].ToString().Trim() + " - " + r[20].ToString().Trim();
+										lblNivel.Text = r[12].ToString().Trim();
+										lblTarima.Text = r[13].ToString().Trim();
+										lblContenedor.Text = r[14].ToString().Trim();
+										lblExistenciaUbicacion.Text = r[15].ToString().Trim();
+										bUbicacionCapturada = true;
+										break;
+
+									default:
+										lblSeccion.Text = "Escanear Ubicacion";
+										lblPasillo.Text = "**";
+										lblEstanteria.Text = "**";
+										lblNivel.Text = "**";
+										lblTarima.Text = "**";
+										lblContenedor.Text = "**";
+										lblExistenciaUbicacion.Text = "0.00";
+										bUbicacionCapturada = false;
+										break;
+								}
+
+								lblUnidad.Text = r[16].ToString().Trim();
+								lblExistenciaglobal.Text = string.IsNullOrEmpty(r[17].ToString().Trim()) ? "0.00" : r[17].ToString().Trim();
+								txtCantidad.Text = "1.00";
+								bControlArea = Boolean.Parse(r[21].ToString().Trim());
+								if (bControlArea)
+								{
+									await DisplayAlertAsync("Control por area", "Escanee el codigo del control por area asignado", "OK");
+									btnScanControl.IsVisible = true;
+								}
+							}
 						}
-						foreach (DataRow r in dt.Rows)
-						{
-							if (r[16].ToString() == "1")
-							{
-								await DisplayAlertAsync("Informacion", "Articulo ya se encuentran en proceso de inventario", "OK");
-								break;
-							}
-
-							lblClave.Text = r[0].ToString().Trim();
-							lblDescripcion.Text = r[1].ToString().Trim();
-							lblMedida.Text = r[5].ToString().Trim();
-							lblMarca.Text = r[6].ToString().Trim();
-							lblParte.Text = r[7].ToString().Trim();
-							lblFamilia.Text = r[2].ToString().Trim();
-							lblLinea.Text = r[3].ToString().Trim();
-							lblGrupo.Text = r[4].ToString().Trim();
-							nUbicaciones = int.Parse(r[8].ToString().Trim());
-							switch (nUbicaciones)
-							{
-								case 0:
-									lblSeccion.Text = "No Disponible";
-									lblPasillo.Text = "**";
-									lblEstanteria.Text = "**";
-									lblNivel.Text = "**";
-									lblTarima.Text = "**";
-									lblContenedor.Text = "**";
-									lblExistenciaUbicacion.Text = "0.00";
-									bUbicacionCapturada = true;
-									break;
-
-								case 1:
-									lblSeccion.Text = r[9].ToString().Trim() + " - " + r[19].ToString().Trim();
-									lblPasillo.Text = r[10].ToString().Trim();
-									lblEstanteria.Text = r[11].ToString().Trim() + " - " + r[20].ToString().Trim();
-									lblNivel.Text = r[12].ToString().Trim();
-									lblTarima.Text = r[13].ToString().Trim();
-									lblContenedor.Text = r[14].ToString().Trim();
-									lblExistenciaUbicacion.Text = r[15].ToString().Trim();
-									bUbicacionCapturada = true;
-									break;
-
-								default:
-									lblSeccion.Text = "Escanear Ubicacion";
-									lblPasillo.Text = "**";
-									lblEstanteria.Text = "**";
-									lblNivel.Text = "**";
-									lblTarima.Text = "**";
-									lblContenedor.Text = "**";
-									lblExistenciaUbicacion.Text = "0.00";
-									bUbicacionCapturada = false;
-									break;
-							}
-
-							lblUnidad.Text = r[16].ToString().Trim();
-							lblExistenciaglobal.Text = string.IsNullOrEmpty(r[17].ToString().Trim()) ? "0.00" : r[17].ToString().Trim();
-							txtCantidad.Text = "1.00";
-							bControlArea = Boolean.Parse(r[21].ToString().Trim());
-							if (bControlArea)
-							{
-								await DisplayAlertAsync("Control por area", "Escanee el codigo del control por area asignado", "OK");
-								btnScanControl.IsVisible = true;
-							}
-						}
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 					}
 
 					if (nUbicaciones > 1)
