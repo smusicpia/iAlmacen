@@ -1,671 +1,457 @@
-﻿using iAlmacen.Views;
+﻿using iAlmacen.Models;
 using iAlmacen.WebApi;
 
 using Newtonsoft.Json;
 
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
 using System.Net;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace iAlmacen.Clases;
 
 public class Funciones
 {
-    private static List<string> lAreas { get; set; }
-    private static List<string> lCentroCostoN1 { get; set; }
-    private static List<string> lCentroCostoN2 { get; set; }
-    private static List<string> lCentroCostoN3 { get; set; }
-    private static List<string> lCentroCostoN4 { get; set; }
-    private static List<string> Responsable { get; set; }
-    private static List<string> Autorizado { get; set; }
-    private static List<string> Almacenistas { get; set; }
-    private static List<string> CatFamilias { get; set; }
-    private static List<string> CatLineas { get; set; }
-    private static List<string> CatGrupo { get; set; }
-    private static List<string> lSeries { get; set; }
-    private static ObservableCollection<Clases.clsSeccion> Secciones { get; set; }
-    private static ObservableCollection<clsEstanteria> Estanterias { get; set; }
-
-    public static HttpStatusCode Login(string user, string pass)
-    {
-        using (var myAes = Aes.Create())
-        {
-            Global.Key = myAes.Key;
-            Global.IV = myAes.IV;
-        }
-
-        Global.pass = pass;
-
-        string Parametros = $"{Convert.ToBase64String(SecurityManager.Encrypt(user, Global.Key, Global.IV))}," +
-                            $"{Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV))}";
-
-        //TODO: Authorization y Authentication tokenAPI
-        HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/login/Authenticate", Parametros, "LoginWebserver").Result;
-        //HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "LoginWebserver");
-        if (response.StatusCode == HttpStatusCode.OK)
-        {
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound) return response.StatusCode;
-                string resp = reader.ReadToEnd();
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    Global.clave_usuario = user;
-                    Global.nombre_usuario = r["usuario"].ToString();
-                    Global.privilegio_usuario = dt.Rows[0]["privilegio"].ToString();
-                    Global.pass = Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV));
-
-                    Global.Mitem_almacen = Boolean.Parse(r["almacen"].ToString());
-                    Global.Mitem_proterm = Boolean.Parse(r["producto_terminado"].ToString());
-                    Global.Mitem_bascula = Boolean.Parse(r["bascula"].ToString());
-
-                    Global.mensaje_sistema = r["mensaje"].ToString();
-                    Global.cierra_modulo = Boolean.Parse(r["cierra_modulo"].ToString());
-                    Global.modulo_afectado = r["modulo_afectado"].ToString();
-                    Global.cierra_sistema = Boolean.Parse(r["cierra_sistema"].ToString());
-
-                    Global.tasa_super = double.Parse(r["porcentaje_supervisor"].ToString());
-                    Global.tasa_admin = double.Parse(r["porcentaje_administrador"].ToString());
-                    Global.tasa_oper = double.Parse(r["porcentaje_operador"].ToString());
-                    //TODO: Authorization y Authentication tokenAPI
-                    Global.tokenAPI = r["TokenApi"].ToString();
-                    //TODO: Refresh tokenAPI
-                    Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
-                    //TODO Agregar Guid
-                    Global.guid = r["Guid"].ToString();
-                    Preferences.Default.Set("tokenAPI", Global.tokenAPI);
-                    Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
-					//TODO Agregar Guid
-					Preferences.Default.Set("Guid", Global.guid);
-					Preferences.Default.Set("clave_usuario", Global.clave_usuario);
-                    Preferences.Default.Set("Password", Global.pass);
-                    if (Global.tokenAPI != "")
-                        break;
-                }
-            }
-        }
-
-        return response.StatusCode;
+	public static HttpContent jsonContent<T>(T obj)
+	{
+		var json = System.Text.Json.JsonSerializer.Serialize(obj, System.Text.Json.JsonSerializerOptions.Default);
+		return new StringContent(json, Encoding.UTF8, "application/json");
 	}
 
-    public static bool ChkConnected()
-    {
-        IEnumerable<ConnectionProfile> profiles = Connectivity.Current.ConnectionProfiles;
-        if (profiles.Contains(ConnectionProfile.WiFi))
+	//public static string streamToByteArray(Stream input)
+	//{
+	//	byte[] byteArray;
+	//	using (var memoryStream = new MemoryStream())
+	//	{
+	//		input.CopyTo(memoryStream);
+	//		byteArray = memoryStream.ToArray();
+	//	}
+	//	return Convert.ToBase64String(byteArray, Base64FormattingOptions.InsertLineBreaks);
+	//}
+
+	public static string ConvertToBase64String(Stream stream)
+	{
+		byte[] imageBytes;
+		using (BinaryReader reader = new BinaryReader(stream))
 		{
-			return true;
+			imageBytes = reader.ReadBytes((int)stream.Length);
 		}
-   //     else
-   //     {
-   //         return false;
-   //     }
+		return Convert.ToBase64String(imageBytes);
+	}
 
-			//foreach (var item in Connectivity.Current.ConnectionProfiles)
-   //     {
-   //         if (item == ConnectionProfile.WiFi || item == ConnectionProfile.Cellular)
-   //         {
-   //             return true;
-   //         }
-   //     }
-        return false;
-    }
+	public async static Task<HttpStatusCode> Login(string user, string pass)
+	{
+		HttpClient client = HttpClienteInstancia.ClientLogin;
+		UserLogin usuario = new UserLogin();
+		usuario.Username = user;
+		usuario.Password = pass;
 
-	public static List<string> LlenarArea()
-    {
-        lAreas = new List<String>();
-        lAreas.Add("");
+		using (var myAes = Aes.Create())
+		{
+			Global.Key = myAes.Key;
+			Global.IV = myAes.IV;
+		}
+
+		HttpResponseMessage response;
 		try
 		{
-			string Parametros = "rtrim(clave_area) clave_area, rtrim(descripcion) descripcion";
-		string Condicion = $"psucursal='{Global.strSucursal}' order by descripcion";
-		HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_areas", Condicion, "SELECT").Result;
-		using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			response = await client.PostAsync($"api/login/Authenticate?tProyecto={ConfigAPI.TipoProyecto}", jsonContent(usuario));
+		}
+		catch (Exception ex)
 		{
-			if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
-			string resp = reader.ReadToEnd();
+			Debug.WriteLine($"Login fallo ({client.BaseAddress}): {ex}");
+			return HttpStatusCode.ServiceUnavailable;
+		}
+		if (response.IsSuccessStatusCode)
+		{
+			string resp = await response.Content.ReadAsStringAsync();
 			DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
 			foreach (DataRow r in dt.Rows)
 			{
-				lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+				Global.clave_usuario = user;
+				Global.nombre_usuario = ConfigAPI.TipoProyecto == "D" && string.IsNullOrEmpty(r["usuario"].ToString()) ? "Servando Hernandez" : r["usuario"].ToString();
+				Global.privilegio_usuario = dt.Rows[0]["privilegio"].ToString();
+				Global.pass = Convert.ToBase64String(SecurityManager.Encrypt(pass, Global.Key, Global.IV));
+
+				Global.Mitem_almacen = Boolean.Parse(r["almacen"].ToString());
+				Global.Mitem_proterm = Boolean.Parse(r["producto_terminado"].ToString());
+				Global.Mitem_bascula = Boolean.Parse(r["bascula"].ToString());
+
+				Global.mensaje_sistema = r["mensaje"].ToString();
+				Global.cierra_modulo = Boolean.Parse(r["cierra_modulo"].ToString());
+				Global.modulo_afectado = r["modulo_afectado"].ToString();
+				Global.cierra_sistema = Boolean.Parse(r["cierra_sistema"].ToString());
+
+				Global.tasa_super = double.Parse(r["porcentaje_supervisor"].ToString());
+				Global.tasa_admin = double.Parse(r["porcentaje_administrador"].ToString());
+				Global.tasa_oper = double.Parse(r["porcentaje_operador"].ToString());
+				//TODO: Authorization y Authentication tokenAPI
+				Global.tokenAPI = r["TokenApi"].ToString();
+				//TODO: Refresh tokenAPI
+				Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
+				//TODO Agregar Guid
+				Global.guid = r["Guid"].ToString();
+				Preferences.Default.Set("tokenAPI", Global.tokenAPI);
+				Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
+				//TODO Agregar Guid
+				Preferences.Default.Set("Guid", Global.guid);
+				Preferences.Default.Set("clave_usuario", Global.clave_usuario);
+				Preferences.Default.Set("Password", Global.pass);
+				if (Global.tokenAPI != "")
+					break;
 			}
 		}
 
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-		return lAreas;
+		return response.StatusCode;
 	}
 
-    public static List<string> LlenarAreaH()
-    {
-        lAreas = new List<String>();
-        lAreas.Add("");
-        try
-        {
-			string Parametros = "distinct rtrim(salida.codigo_area)codigo_area,rtrim(area.descripcion) descripcion";
-			string From = "salidas_resguardo_herramientas as salida inner join catalogo_areas as area on area.clave_area=salida.codigo_area";
-			string Condicion = "not (select count(tmp.status_herramienta) from detalle_salidas_resguardo_herramientas as tmp where tmp.folio_resguardo=salida.folio_resguardo and tmp.status_herramienta='AR') = 0 " +
-							   "order by codigo_area";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return lAreas;
-				string resp = reader.ReadToEnd();
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
+	public static bool ChkConnected()
+	{
+		IEnumerable<ConnectionProfile> profiles = Connectivity.Current.ConnectionProfiles;
+		if (profiles.Contains(ConnectionProfile.WiFi))
 		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
+			return true;
 		}
+		return false;
+	}
 
-		return lAreas;
-    }
-
-    public static List<string> LlenarCentroCostoN1()
-    {
-        lCentroCostoN1 = new List<string>();
-        lCentroCostoN1.Add("");
-        try
-        {
-			string Parametros = "codigo_nivel1, descripcion";
-			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and status_centro_n1 = 1 order by descripcion";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl1", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN1;
-				string resp = reader.ReadToEnd();
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					lCentroCostoN1.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return lCentroCostoN1;
-    }
-
-    public static List<string> LlenarCentroCostoN2()
-    {
-        lCentroCostoN2 = new List<string>();
-        lCentroCostoN2.Add("");
-        try
-        {
-			string Parametros = "codigo_nivel2,descripcion";
-			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and status_centro_n2 = 1 order by descripcion";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl2", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN2;
-				string resp = reader.ReadToEnd();
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					lCentroCostoN2.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return lCentroCostoN2;
-    }
-
-    public static List<string> LlenarCentroCostoN3()
-    {
-        lCentroCostoN3 = new List<string>();
-        lCentroCostoN3.Add("");
-        try
-        {
-			string Parametros = "codigo_nivel3, descripcion";
-			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and status_centro_n3 = 1 order by descripcion";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl3", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN3;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return lCentroCostoN3;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					lCentroCostoN3.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return lCentroCostoN3;
-    }
-
-    public static List<string> LlenarCentroCostoN4()
-    {
-        lCentroCostoN4 = new List<string>();
-        lCentroCostoN4.Add("");
-        try
-        {
-			string Parametros = "codigo_nivel4, descripcion";
-			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' and codigo_nivel1='{Global.strCCnivel1}' and codigo_nivel2='{Global.strCCnivel2}' and codigo_nivel3='{Global.strCCnivel3}' and status_centro_n4 = 1 order by descripcion";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "centro_costos_lvl4", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return lCentroCostoN4;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return lCentroCostoN4;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					lCentroCostoN4.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return lCentroCostoN4;
-    }
-
-    public static List<string> LlenarResponsables()
-    {
-        Responsable = new List<string>();
-        Responsable.Add("");
-        try
-        {
-			string Parametros = "rtrim(clave_solicitante)clave_solicitante, rtrim(nombre_solicitante)nombre_solicitante";
-			string Condicion = $"psucursal='{Global.strSucursal}' order by nombre_solicitante";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "solicitantes", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return Responsable;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return Responsable;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					Responsable.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return Responsable;
-    }
-
-    public static List<string> LlenarAutorizado()
-    {
-        Autorizado = new List<string>();
-        Autorizado.Add("");
-        try
-        {
-			string Parametros = "rtrim(codigo_autorizado)codigo_autorizado, rtrim(nombre_autorizado)nombre_autorizado";
-			string Condicion = $"psucursal='{Global.strSucursal}' and clave_area='{Global.strArea}' order by nombre_autorizado";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_autorizados", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return Autorizado;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return Autorizado;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					Autorizado.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return Autorizado;
-    }
-
-    public static List<string> LlenarAlmacenistas()
-    {
-        Almacenistas = new List<string>();
-        Almacenistas.Add("");
-        try
-        {
-			string Parametros = "ClaveIpad,usuario,nombre";
-			string Condicion = "ClaveIpad is not null";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "usuarios", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return Almacenistas;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return Almacenistas;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					Almacenistas.Add(r[0].ToString().Trim() + " - " + r[2].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return Almacenistas;
-    }
-
-    public static List<string> LlenarCategoriaFamilias(bool EsHerramienta = false)
-    {
-        string Condicion = string.Empty;
-        string From = string.Empty;
-        string Parametros = string.Empty;
-        CatFamilias = new List<string>();
-        CatFamilias.Add("");
-
-        if (EsHerramienta)
-        {
-            Parametros = "distinct cf.codigo_familia, cf.descripcion";
-            From = "catalogo_familia cf inner join catalogo_articulo as ca on ca.codigo_familia=cf.codigo_familia";
-            Condicion = "ca.uso_herramienta = 1";
-        }
-        else
-        {
-            Parametros = "cf.codigo_familia, cf.descripcion";
-            From = "catalogo_familia cf";
-            Condicion = "Almacen = 1 and status_familia = 1";
-        }
-
-        try
-        {
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", From, Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return CatFamilias;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return CatFamilias;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					CatFamilias.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return CatFamilias;
-    }
-
-    public static List<string> LlenarCategoriaLineas(string familia)
-    {
-        CatLineas = new List<string>();
-        CatLineas.Add("");
-        try
-        {
-			string Parametros = "codigo_linea, descripcion";
-			string Condicion = $"codigo_familia = '{familia}' and status_linea = 1";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_linea", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return CatLineas;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return CatLineas;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					CatLineas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return CatLineas;
-    }
-
-    public static List<string> LlenarCategoriaGrupo(string familia, string linea)
-    {
-        CatGrupo = new List<string>();
-        CatGrupo.Add("");
-        try
-        {
-			string Parametros = "codigo_grupo, descripcion";
-			string Condicion = $"codigo_familia = '{familia}' and codigo_linea = '{linea}' and status_grupo = 1";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "catalogo_grupo", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return CatGrupo;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return CatGrupo;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					CatGrupo.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return CatGrupo;
-    }
-
-    public static ObservableCollection<Clases.clsSeccion> LlenarSecciones(string Sucursal = "", string Encontrado = "", bool EsHerramienta = false)
-    {
-        Secciones = new ObservableCollection<clsSeccion>();
-        string Parametros = "id,Clave,Descripcion,Pasillos,NumeroPasillos,Estanterias,Sucursal";
-        string Condicion = "1=1";
-
-        if (!EsHerramienta)
-        {
-            if (Encontrado != "") Condicion = $"Clave in ({Encontrado}) and Sucursal='{Sucursal}'";
-        }
-
-        try
-        {
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoSecciones", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return Secciones;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return Secciones;
-
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					Secciones.Add(new Clases.clsSeccion
-					{
-						ID = int.Parse(r[0].ToString().Trim()),
-						Clave = r[1].ToString().Trim(),
-						Descripcion = r[2].ToString().Trim(),
-						Pasillos = Boolean.Parse(r[3].ToString().Trim()),
-						NumeroPasillos = int.Parse(r[4].ToString().Trim()),
-						Estanterias = Boolean.Parse(r[5].ToString().Trim()),
-						Sucursal = r[6].ToString().Trim()
-					});
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
-		}
-
-		return Secciones;
-    }
-
-    public static ObservableCollection<Clases.clsEstanteria> LlenarEstanterias(string Sucursal, string Seccion, string? Pasillo = "")
-    {
-        Estanterias = new ObservableCollection<clsEstanteria>();
-        string Parametros = "id,Clave,Tipo,Descripcion,Seccion,Pasillo,NumeroNiveles,Tarimas,NumeroTarimas,Contenedores,ReiniciarNumeracionContenedores,NumeroContenedores,NumeroContenedoresTarima,Sucursal";
-        string Condicion = $"Seccion='{Seccion}' and Sucursal='{Sucursal}'";
-        if (!string.IsNullOrEmpty(Pasillo))
-            Condicion += $" and Pasillo = '{Pasillo}'";
-
+	public async static Task<DataTable?> LlenarArea()
+	{
+		DataTable? dtArea = new();
+		HttpResponseMessage response;
 		try
 		{
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoEstanterias", Condicion, "SELECT").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			response = await SesionApi.GetAsync($"api/catalogo/Areas?tProyecto={ConfigAPI.TipoProyecto}&Sucursal={(string.IsNullOrEmpty(Global.strSucursal) ? "M" : Global.strSucursal)}");
+			if (response.IsSuccessStatusCode)
 			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return Estanterias;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return Estanterias;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					Estanterias.Add(new Clases.clsEstanteria
-					{
-						ID = int.Parse(r[0].ToString().Trim()),
-						Clave = r[1].ToString().Trim(),
-						Tipo = r[2].ToString().Trim(),
-						Descripcion = r[3].ToString().Trim(),
-						Seccion = r[4].ToString().Trim(),
-						Pasillo = int.Parse(r[5].ToString().Trim()),
-						NumeroNiveles = int.Parse(r[6].ToString().Trim()),
-						Tarimas = Boolean.Parse(r[7].ToString().Trim()),
-						NumeroTarimas = int.Parse(r[8].ToString().Trim()),
-						Cajas = Boolean.Parse(r[9].ToString().Trim()),
-						ReiniciarNumeracionCajas = Boolean.Parse(r[10].ToString().Trim()),
-						NumeroCajas = int.Parse(r[11].ToString().Trim()),
-						NumeroCajasTarima = int.Parse(r[12].ToString().Trim()),
-						Sucursal = r[13].ToString().Trim(),
-					});
-				}
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtArea = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
 			}
 		}
 		catch (Exception ex)
 		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 		}
 
-		return Estanterias;
-    }
+		return dtArea;
+	}
 
-    public static List<string> LlenarSeries(string CodigoArticulo)
-    {
-        lSeries = new List<string>();
-        lSeries.Add("");
-
+	public async static Task<DataTable?> LlenarAreaH()
+	{
+		DataTable? dtAreaH = new DataTable();
+		HttpResponseMessage response;
 		try
 		{
-			string Parametros = $"{CodigoArticulo}";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "wsp_NumerosSeriexArticulo").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			response = await SesionApi.GetAsync($"api/catalogo/AreasH?tProyecto={ConfigAPI.TipoProyecto}");
+			if (response.IsSuccessStatusCode)
 			{
-				if (response.StatusCode == HttpStatusCode.NotFound) return lSeries;
-				string resp = reader.ReadToEnd();
-				if (resp == "[]") return lSeries;
-				DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					lSeries.Add(r[0].ToString().Trim());
-				}
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtAreaH = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
 			}
 		}
 		catch (Exception ex)
 		{
-			Debug.WriteLine(ex);
-			// Redirige directamente al LoginView en caso de error
-			if (!Global.isAutoRefreshToken)
-			{
-				App.Current.MainPage = new LoginView();
-			}
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 		}
 
-		return lSeries;
-    }
+		return dtAreaH;
+	}
+
+	public async static Task<DataTable?> LlenarCentroCostoN1()
+	{
+		DataTable? dtccN1 = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/centroscostoN1?tProyecto={ConfigAPI.TipoProyecto}&Sucursal={Global.strSucursal}&Area={Global.strArea}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtccN1 = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtccN1;
+	}
+
+	public async static Task<DataTable?> LlenarCentroCostoN2()
+	{
+		DataTable? dtccN2 = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/centroscostoN2?tProyecto={ConfigAPI.TipoProyecto}&Sucursal={Global.strSucursal}&Area={Global.strArea}&ccN1={Global.strCCnivel1}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtccN2 = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtccN2;
+	}
+
+	public async static Task<DataTable?> LlenarCentroCostoN3()
+	{
+		DataTable? dtccN3 = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/centroscostoN3?tProyecto={ConfigAPI.TipoProyecto}&Sucursal={Global.strSucursal}&Area={Global.strArea}&ccN1={Global.strCCnivel1}&ccN2={Global.strCCnivel2}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtccN3 = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtccN3;
+	}
+
+	public async static Task<DataTable?> LlenarCentroCostoN4()
+	{
+		DataTable? dtccN4 = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/centroscostoN4?tProyecto={ConfigAPI.TipoProyecto}&Sucursal={Global.strSucursal}&Area={Global.strArea}&ccN1={Global.strCCnivel1}&ccN2={Global.strCCnivel2}&ccN3={Global.strCCnivel3}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtccN4 = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtccN4;
+	}
+
+	public async static Task<DataTable?> LlenarResponsables()
+	{
+		DataTable? dtResponsable = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/responsable?tProyecto={ConfigAPI.TipoProyecto}&Sucursal={Global.strSucursal}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtResponsable = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtResponsable;
+	}
+
+	public async static Task<DataTable?> LlenarAutorizado()
+	{
+		DataTable? dtAutorizado = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/autorizador?tProyecto={ConfigAPI.TipoProyecto}&Sucursal={Global.strSucursal}&Area={Global.strArea}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtAutorizado = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtAutorizado;
+	}
+
+	public async static Task<DataTable?> LlenarAlmacenistas()
+	{
+		DataTable? dtAlmacenistas = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/almacenistas?tProyecto={ConfigAPI.TipoProyecto}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtAlmacenistas = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtAlmacenistas;
+	}
+
+	public async static Task<DataTable?> LlenarCategoriaFamilias(bool EsHerramienta = false)
+	{
+		DataTable? dtfamilias = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/familias?tProyecto={ConfigAPI.TipoProyecto}&esHerramienta={EsHerramienta}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtfamilias = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtfamilias;
+	}
+
+	public async static Task<DataTable?> LlenarCategoriaLineas(string familia)
+	{
+		DataTable? dtLineas = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/lineas?tProyecto={ConfigAPI.TipoProyecto}&familia={familia}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtLineas = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtLineas;
+	}
+
+	public async static Task<DataTable?> LlenarCategoriaGrupo(string familia, string linea)
+	{
+		DataTable? dtGrupos = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/grupos?tProyecto={ConfigAPI.TipoProyecto}&familia={familia}&linea={linea}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtGrupos = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtGrupos;
+	}
+
+	public async static Task<DataTable?> ObtenerFirma(int folio)
+	{
+		DataTable? dtfirma = new();
+
+		string firma = string.Empty;
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/Operacion/firma?tProyecto={ConfigAPI.TipoProyecto}&folio_={folio}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtfirma = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtfirma;
+	}
+
+	public async static Task<DataTable?> LlenarSecciones(string Sucursal = "M", string Encontrado = "")
+	{
+		DataTable? dtSecciones = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/secciones?tProyecto={ConfigAPI.TipoProyecto}{(!string.IsNullOrEmpty(Sucursal) ? $"&Sucursal={Sucursal}" : "&Sucursal=M")}{(!string.IsNullOrEmpty(Encontrado) ? $"&encontrado={Encontrado}" : "")}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtSecciones = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtSecciones;
+	}
+
+	public async static Task<DataTable?> LlenarEstanterias(string Sucursal, string Seccion, string? Pasillo = "")
+	{
+		DataTable? dtEstanterias = new();
+
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/estanterias?tProyecto={ConfigAPI.TipoProyecto}&Sucursal={Sucursal}&Seccion={Seccion}{(!string.IsNullOrEmpty(Pasillo) ? $"&Pasillo={Pasillo}" : "")}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtEstanterias = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtEstanterias;
+	}
+
+	public async static Task<DataTable?> LlenarSeries(string CodigoArticulo)
+	{
+		DataTable? dtSeries = new();
+		HttpResponseMessage response;
+		try
+		{
+			response = await SesionApi.GetAsync($"api/catalogo/series?tProyecto={ConfigAPI.TipoProyecto}&CodigoArticulo={CodigoArticulo}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				dtSeries = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		return dtSeries;
+	}
 }
