@@ -2,9 +2,12 @@
 using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Net;
 
 namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
@@ -15,7 +18,9 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
         public Command LoadItemsCommand_ResgEmpleado { get; set; }
         private ItemsViewModel_ResgEmpleado viewModel_ResgEmpleado;
 
-        private async Task cargar()
+		public List<string> lAreas { get; set; }
+
+		private async Task cargar()
         { }
 
         public frmResguardosEmpleados()
@@ -30,9 +35,17 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             CargarAreas();
         }
 
-        private void CargarAreas()
+        private async Task CargarAreas()
         {
-            cbArea.ItemsSource = Funciones.LlenarAreaH();
+			lAreas = new List<String>();
+			lAreas.Add("");
+			DataTable? dt = await Funciones.LlenarAreaH();
+			foreach (DataRow r in dt.Rows)
+			{
+				lAreas.Add(r[0].ToString().Trim() + " - " + r[1].ToString().Trim());
+			}
+			cbArea.ItemsSource = lAreas;
+
         }
 
         private void btnCancelar_Clicked(Object sender, EventArgs e)
@@ -74,20 +87,44 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             { return; }
 
             string sResponce = "";
-            string Parametros = $"{Item_.clave}";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_CerrarResguardo").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                if (resp == "[]") return;
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    sResponce = r[1].ToString();
-                }
-            }
-            Buscar();
+            //string Parametros = $"{Item_.clave}";
+            //HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_CerrarResguardo").Result;
+            //using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+            //{
+            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
+            //    string resp = reader.ReadToEnd();
+            //    if (resp == "[]") return;
+            //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+            //    foreach (DataRow r in dt.Rows)
+            //    {
+            //        sResponce = r[1].ToString();
+            //    }
+            //}
+
+			HttpResponseMessage response;
+			try
+			{
+				string json = $"{{\"codigo\":\"{Item_.clave}\"}}";
+				response = await SesionApi.PutAsync($"api/operacion/CerrarResguardo?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}", Funciones.jsonContent(json));
+				if (!response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows.Count > 0)
+					{
+						if (dt.Rows[0]["Code"].ToString() == "200 OK")
+						{
+							sResponce = dt.Rows[0][1].ToString();
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+
+			Buscar();
         }
 
         private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)

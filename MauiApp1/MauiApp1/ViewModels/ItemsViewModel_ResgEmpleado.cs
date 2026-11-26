@@ -1,6 +1,5 @@
 using iAlmacen.Clases;
 using iAlmacen.Models;
-using iAlmacen.Views;
 using iAlmacen.WebApi;
 
 using Newtonsoft.Json;
@@ -8,7 +7,6 @@ using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
-using System.Net;
 using System.Windows.Input;
 
 namespace iAlmacen.ViewModels;
@@ -43,39 +41,62 @@ public class ItemsViewModel_ResgEmpleado : BaseViewModel_Herramienta
 
     private async Task ExecuteLoadItemsCommand()
     {
+        Items.Clear();
+        //HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_ResguardosEmpleados").Result;
+        //using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+        //{
+        //    if (response.StatusCode == HttpStatusCode.NotFound) return;
+        //    string resp = reader.ReadToEnd();
+        //    if (resp == "[]") return;
+        //    int i = 1;
+        //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+        //    foreach (DataRow r in dt.Rows)
+        //    {
+        //        Items.Add(new Item_ResgEmpleado
+        //        {
+        //            id = i++,
+        //            area = r[0].ToString(),
+        //            clave = r[1].ToString(),
+        //            empleado = r[2].ToString(),
+        //            fecha = ValidarFecha(r[3].ToString()),
+        //            articulos = int.Parse(r[4].ToString())
+        //        });
+        //    }
+        //}
+
+		HttpResponseMessage response;
         try
         {
-            Items.Clear();
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_ResguardosEmpleados").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+			response = await SesionApi.GetAsync($"api/Operacion/Resguardos_Empleados?tProyecto={ConfigAPI.TipoProyecto}{(string.IsNullOrEmpty(Parametros) ? "" : $"&codigoArea={Parametros}")}");
+			if (response.IsSuccessStatusCode)
             {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                if (resp == "[]") return;
-                int i = 1;
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    Items.Add(new Item_ResgEmpleado
-                    {
-                        id = i++,
-                        area = r[0].ToString(),
-                        clave = r[1].ToString(),
-                        empleado = r[2].ToString(),
-                        fecha = ValidarFecha(r[3].ToString()),
-                        articulos = int.Parse(r[4].ToString())
-                    });
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+				if (dt.Rows.Count > 0)
+				{
+					int i = 1;
+					foreach (DataRow r in dt.Rows)
+					{
+						Items.Add(new Item_ResgEmpleado
+						{
+							id = i++,
+							area = r[0].ToString(),
+							clave = r[1].ToString(),
+							empleado = r[2].ToString(),
+							fecha = ValidarFecha(r[3].ToString()),
+							articulos = int.Parse(r[4].ToString())
+						});
+					}
+				}
+			}
 		}
-        finally
-        {
-            IsBusy = false;
-        }
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+		finally
+		{
+			IsBusy = false;
+		}
     }
 }
