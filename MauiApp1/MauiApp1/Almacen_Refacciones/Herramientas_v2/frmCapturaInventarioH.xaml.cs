@@ -2,761 +2,959 @@
 using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
+
+using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
 {
-    public partial class frmCapturaInventarioH : ContentPage
-    {
-        private ObservableCollection<clsSeccion> RegSecciones = new ObservableCollection<clsSeccion>();
-        private ObservableCollection<clsEstanteria> RegEstanterias = new ObservableCollection<clsEstanteria>();
-        //private ObservableCollection<clsInventarioDetalle> RegInventariosDetalle = new ObservableCollection<clsInventarioDetalle>();
-        private ObservableCollection<CatalogoArticuloNumeroSeries> GenNumerosSeries = new ObservableCollection<CatalogoArticuloNumeroSeries>();
-        private List<string> listaSeries = new List<string>();
-        private string SeccionEncontrado = "";
-        private int PasilloEncontrado = 0;
-        private string EstanteriaEncontrado = "";
-        private int NivelEncontrado = 0;
-        private int TarimaEncontrado = 0;
-        private int CajaEncontrado = 0;
-        private bool capturando = false;
-        private bool inventariado = false;
-        private bool consulta = false;
-        private string _tInventario = "H";
+	public partial class frmCapturaInventarioH : ContentPage
+	{
+		private ObservableCollection<clsSeccion> RegSecciones = new ObservableCollection<clsSeccion>();
+		private ObservableCollection<clsEstanteria> RegEstanterias = new ObservableCollection<clsEstanteria>();
+		//private ObservableCollection<clsInventarioDetalle> RegInventariosDetalle = new ObservableCollection<clsInventarioDetalle>();
+		private static ObservableCollection<clsSeccion> Secciones { get; set; }
+		private ObservableCollection<NumeroSeriesArticulo> GenNumerosSeries = new ObservableCollection<NumeroSeriesArticulo>();
+		public List<string> lSecciones { get; set; }
+		private List<string> listaSeries = new List<string>();
+		private string SeccionEncontrado = "";
+		private int PasilloEncontrado = 0;
+		private string EstanteriaEncontrado = "";
+		private int NivelEncontrado = 0;
+		private int TarimaEncontrado = 0;
+		private int CajaEncontrado = 0;
+		private bool capturando = false;
+		private bool inventariado = false;
+		private bool consulta = false;
+		private string _tInventario = "H";
 
-        public ObservableCollection<Item_InventarioDetalle> Items { get; set; }
-        public Command LoadItemsCommand_InventarioDetalle { get; set; }
+		public ObservableCollection<Item_InventarioDetalle> Items { get; set; }
+		public Command LoadItemsCommand_InventarioDetalle { get; set; }
 
-        private ItemsViewModel_InventarioDetalle viewModel_InventarioDetalle;
+		private ItemsViewModel_InventarioDetalle viewModel_InventarioDetalle;
 
-        public frmCapturaInventarioH()
-        {
-            InitializeComponent();
-            NavigationPage.SetBackButtonTitle(this, "Atras");
-            Items = new ObservableCollection<Item_InventarioDetalle>();
+		public frmCapturaInventarioH()
+		{
+			InitializeComponent();
+			NavigationPage.SetBackButtonTitle(this, "Atras");
+			Items = new ObservableCollection<Item_InventarioDetalle>();
 
-            LoadItemsCommand_InventarioDetalle = new Command(async () => await cargar());
-            string Parametros = string.Empty;
-            if (consulta)
-                Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
-            else
-                Parametros = $"{Global.ArticuloEnInventario.id},null";
-            BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);
-            LeerArticuloEnInventario();
-        }
+			LoadItemsCommand_InventarioDetalle = new Command(async () => await cargar());
+			string Parametros = string.Empty;
+			if (consulta)
+				Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
+			else
+				Parametros = $"{Global.ArticuloEnInventario.id},null";
+			BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Capturado"></param>
-        /// <param name="tInventario">H=Herramienta, R=Refacciones</param>
-        public frmCapturaInventarioH(bool Capturado, string tInventario = "H")
-        {
-            InitializeComponent();
-            NavigationPage.SetBackButtonTitle(this, "Atras");
-            consulta = Capturado;
-            inventariado = Capturado;
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="Capturado"></param>
+		/// <param name="tInventario">H=Herramienta, R=Refacciones</param>
+		public frmCapturaInventarioH(bool Capturado, string tInventario = "H")
+		{
+			InitializeComponent();
+			NavigationPage.SetBackButtonTitle(this, "Atras");
+			consulta = Capturado;
+			inventariado = Capturado;
 
-            Items = new ObservableCollection<Item_InventarioDetalle>();
-            LoadItemsCommand_InventarioDetalle = new Command(async () => await cargar());
-            string Parametros = string.Empty;
-            if (consulta)
-                Parametros = $"{Global.ArticuloEnInventario.id},{Global.ArticuloEnInventario.CodigoActual}";
-            else
-                Parametros = $"{Global.ArticuloEnInventario.id},null";
-            BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);
-            _tInventario = tInventario;
-        }
+			Items = new ObservableCollection<Item_InventarioDetalle>();
+			LoadItemsCommand_InventarioDetalle = new Command(async () => await cargar());
+			string Parametros = string.Empty;
+			if (consulta)
+				Parametros = $"{Global.ArticuloEnInventario.id},{Global.ArticuloEnInventario.CodigoActual}";
+			else
+				Parametros = $"{Global.ArticuloEnInventario.id},null";
+			BindingContext = viewModel_InventarioDetalle = new ItemsViewModel_InventarioDetalle(Parametros);
+			_tInventario = tInventario;
+			capturando = true;
+			LeerArticuloEnInventario();
+		}
 
-        private async Task cargar()
-        { }
+		private async Task cargar()
+		{ }
 
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
 
-            viewModel_InventarioDetalle.LoadItemsCommand_inventariodetalle.Execute($"{Global.FolioInventario}");
+			viewModel_InventarioDetalle.LoadItemsCommand_inventariodetalle.Execute($"{Global.FolioInventario}");
 
-            switch (_tInventario)
-            {
-                case "H":
-                    LeerArticuloEnInventario(true);
-                    this.Title = "Consulta Inventario de Herramienta: " + Global.FolioInventario;
-                    break;
-                case "R":
-                    LeerArticuloEnInventario(true);
-                    this.Title = "Consulta Inventario de Refacciones: " + Global.FolioInventario;
-                    break;
-                default:
-                    break;
-            }
-        }
+			switch (_tInventario)
+			{
+				case "H":
+					//LeerArticuloEnInventario(true);
+					this.Title = "Consulta Inventario de Herramienta: " + Global.FolioInventario;
+					break;
+				case "R":
+					//LeerArticuloEnInventario(true);
+					this.Title = "Consulta Inventario de Refacciones: " + Global.FolioInventario;
+					break;
+				default:
+					break;
+			}
+		}
 
-        private void CargarSeccion()
-        {
-            if (SeccionEncontrado == "")
-            {
-                RegSecciones = Funciones.LlenarSecciones();
-            }
-            else
-            {
-                RegSecciones = Funciones.LlenarSecciones("M", SeccionEncontrado);
-            }
-            cbSeccion.ItemsSource = RegSecciones;
+		private async Task CargarSeccion()
+		{
+			DataTable? dtSecciones = await Funciones.LlenarSecciones("M", SeccionEncontrado);
+			foreach (DataRow r in dtSecciones.Rows)
+			{
+				RegSecciones.Add(new clsSeccion
+				{
+					ID = int.Parse(r[0].ToString().Trim()),
+					Clave = r[1].ToString().Trim(),
+					Descripcion = r[2].ToString().Trim(),
+					Pasillos = Boolean.Parse(r[3].ToString().Trim()),
+					NumeroPasillos = int.Parse(r[4].ToString().Trim()),
+					Estanterias = Boolean.Parse(r[5].ToString().Trim()),
+					Sucursal = r[6].ToString().Trim()
+				});
+			}
+			cbSeccion.ItemsSource = RegSecciones;
 
-            if (SeccionEncontrado != "")
-            {
-                cbSeccion.SelectedIndex = 0;
-            }
-        }
+			if (SeccionEncontrado != "")
+			{
+				cbSeccion.SelectedIndex = 0;
+			}
+		}
 
-        private void CargarPasillos()
-        {
-            clsSeccion iSeccion;
-            iSeccion = (clsSeccion)cbSeccion.SelectedItem;
+		private void CargarPasillos()
+		{
+			clsSeccion iSeccion;
+			iSeccion = (clsSeccion)cbSeccion.SelectedItem;
 
-            if (!iSeccion.Pasillos)
-            {
-                cbPasillo.IsEnabled = false;
-            }
-            else
-            {
-                for (int i = 1; i <= iSeccion.NumeroPasillos; i++)
-                {
-                    cbPasillo.Items.Add(i.ToString());
-                }
+			if (!iSeccion.Pasillos)
+			{
+				cbPasillo.IsEnabled = false;
+			}
+			else
+			{
+				for (int i = 1; i <= iSeccion.NumeroPasillos; i++)
+				{
+					cbPasillo.Items.Add(i.ToString());
+				}
 
-                if (PasilloEncontrado != 0)
-                {
-                    cbPasillo.SelectedIndex = PasilloEncontrado + 1;
-                    cbPasillo.IsEnabled = false;
-                }
-            }
-        }
+				if (PasilloEncontrado != 0)
+				{
+					cbPasillo.SelectedIndex = PasilloEncontrado + 1;
+					cbPasillo.IsEnabled = false;
+				}
+			}
+		}
 
-        private void CargarEstanterias()
-        {
-            clsSeccion iSeccion;
-            iSeccion = (clsSeccion)cbSeccion.SelectedItem;
-            RegEstanterias.Clear();
-            if (!iSeccion.Estanterias)
-            {
-            }
-            else
-            {
-                RegEstanterias = Funciones.LlenarEstanterias("M", iSeccion.Clave, cbPasillo.SelectedItem.ToString());
-                cbEstanteria.ItemsSource = RegEstanterias;
-                if (EstanteriaEncontrado != "")
-                {
-                    int valor = 0;
-                    foreach (clsEstanteria item in cbEstanteria.ItemsSource)
-                    {
-                        if (item.Clave == EstanteriaEncontrado)
-                        {
-                            cbEstanteria.SelectedIndex = valor;
-                            break;
-                        }
-                        valor = valor + 1;
-                    }
-                }
-            }
-        }
+		private async Task CargarEstanterias()
+		{
+			clsSeccion iSeccion;
+			iSeccion = (clsSeccion)cbSeccion.SelectedItem;
+			//RegEstanterias.Clear();
+			if (!iSeccion.Estanterias)
+			{
+			}
+			else
+			{
+				DataTable? dtEstanterias = await Funciones.LlenarEstanterias("M", iSeccion.Clave, cbPasillo.SelectedItem.ToString());
+				foreach (DataRow r in dtEstanterias.Rows)
+				{
+					RegEstanterias.Add(new clsEstanteria
+					{
+						ID = int.Parse(r[0].ToString().Trim()),
+						Clave = r[1].ToString().Trim(),
+						Tipo = r[2].ToString().Trim(),
+						Descripcion = r[3].ToString().Trim(),
+						Seccion = r[4].ToString().Trim(),
+						Pasillo = int.Parse(r[5].ToString().Trim()),
+						NumeroNiveles = int.Parse(r[6].ToString().Trim()),
+						Tarimas = Boolean.Parse(r[7].ToString().Trim()),
+						NumeroTarimas = int.Parse(r[8].ToString().Trim()),
+						Cajas = Boolean.Parse(r[9].ToString().Trim()),
+						ReiniciarNumeracionCajas = Boolean.Parse(r[10].ToString().Trim()),
+						NumeroCajas = int.Parse(r[11].ToString().Trim()),
+						NumeroCajasTarima = int.Parse(r[12].ToString().Trim()),
+						Sucursal = r[13].ToString().Trim(),
+					});
+				}
+				cbEstanteria.ItemsSource = RegEstanterias;
+			}
+		}
 
-        private void CargarNieveles()
-        {
-            clsEstanteria iEstanteria;
-            iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
-            cbNivel.Items.Clear();
+		private void CargarNieveles()
+		{
+			clsEstanteria iEstanteria;
+			iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
+			cbNivel.Items.Clear();
 
-            for (int i = 0; i < iEstanteria.NumeroNiveles; i++)
-            {
-                cbNivel.Items.Add((i + 1).ToString());
-            }
+			for (int i = 0; i < iEstanteria.NumeroNiveles; i++)
+			{
+				cbNivel.Items.Add((i + 1).ToString());
+			}
 
-            if (NivelEncontrado != 0)
-            {
-                cbNivel.SelectedIndex = NivelEncontrado - 1;
-            }
-        }
+			if (NivelEncontrado != 0)
+			{
+				cbNivel.SelectedIndex = NivelEncontrado - 1;
+			}
+		}
 
-        private void CargarTarimas()
-        {
-            clsEstanteria iEstanteria;
-            iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
-            cbTarima.Items.Clear();
+		private void CargarTarimas()
+		{
+			clsEstanteria iEstanteria;
+			iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
+			cbTarima.Items.Clear();
 
-            if (iEstanteria.Tarimas)
-            {
-                cbTarima.IsVisible = true;
-                lblTarima.IsVisible = true;
-                for (int i = 0; i < iEstanteria.NumeroTarimas; i++)
-                {
-                    cbTarima.Items.Add((i + 1).ToString());
-                }
+			if (iEstanteria.Tarimas)
+			{
+				cbTarima.IsVisible = true;
+				lblTarima.IsVisible = true;
+				for (int i = 0; i < iEstanteria.NumeroTarimas; i++)
+				{
+					cbTarima.Items.Add((i + 1).ToString());
+				}
 
-                if (TarimaEncontrado != 0)
-                {
-                    cbTarima.SelectedIndex = TarimaEncontrado - 1;
-                }
-            }
-            else
-            {
-                cbTarima.IsVisible = false;
-                lblTarima.IsVisible = false;
-            }
-        }
+				if (TarimaEncontrado != 0)
+				{
+					cbTarima.SelectedIndex = TarimaEncontrado - 1;
+				}
+			}
+			else
+			{
+				cbTarima.IsVisible = false;
+				lblTarima.IsVisible = false;
+			}
+		}
 
-        private void CargarCajas()
-        {
-            clsEstanteria iEstanteria;
-            iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
-            cbCaja.Items.Clear();
+		private void CargarCajas()
+		{
+			clsEstanteria iEstanteria;
+			iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
+			cbCaja.Items.Clear();
 
-            int Cajas = 0;
+			int Cajas = 0;
 
-            if (iEstanteria.Cajas)
-            {
-                cbCaja.IsVisible = true;
-                lblCaja.IsVisible = true;
-                if (iEstanteria.ReiniciarNumeracionCajas)
-                {
-                    Cajas = iEstanteria.NumeroCajasTarima;
-                }
-                else
-                {
-                    Cajas = iEstanteria.NumeroCajas;
-                }
+			if (iEstanteria.Cajas)
+			{
+				cbCaja.IsVisible = true;
+				lblCaja.IsVisible = true;
+				if (iEstanteria.ReiniciarNumeracionCajas)
+				{
+					Cajas = iEstanteria.NumeroCajasTarima;
+				}
+				else
+				{
+					Cajas = iEstanteria.NumeroCajas;
+				}
 
-                for (int i = 0; i < Cajas; i++)
-                {
-                    cbCaja.Items.Add((i + 1).ToString());
-                }
+				for (int i = 0; i < Cajas; i++)
+				{
+					cbCaja.Items.Add((i + 1).ToString());
+				}
 
-                if (CajaEncontrado != 0)
-                {
-                    cbCaja.SelectedIndex = CajaEncontrado - 1;
-                }
-            }
-            else
-            {
-                cbCaja.IsVisible = false;
-                lblCaja.IsVisible = false;
-            }
-        }
+				if (CajaEncontrado != 0)
+				{
+					cbCaja.SelectedIndex = CajaEncontrado - 1;
+				}
+			}
+			else
+			{
+				cbCaja.IsVisible = false;
+				lblCaja.IsVisible = false;
+			}
+		}
 
-        //private void BuscarCapturas()
-        //{
-        //    string Parametros = string.Empty;
-        //    if (consulta)
-        //        Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
-        //    else
-        //        Parametros = $"{Global.ArticuloEnInventario.id},null";
-        //    HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_DetalleInventarioAlmacenxArticulo");
-        //    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-        //    {
-        //        if (response.StatusCode == HttpStatusCode.NotFound) return;
-        //        string resp = reader.ReadToEnd();
-        //        if (resp != "[]")
-        //        {
-        //            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-        //            foreach (DataRow r in dt.Rows)
-        //            {
-        //                RegInventariosDetalle.Add(new clsInventarioDetalle
-        //                {
-        //                    ID = int.Parse(r[0].ToString()),
-        //                    folioInventario = r[1].ToString(),
-        //                    idReferencia = r[2].ToString(),
-        //                    Seccion = r[3].ToString(),
-        //                    DescripcionSeccion = r[18].ToString(),
-        //                    Pasillo = int.Parse(r[4].ToString()),
-        //                    Estanteria = r[5].ToString(),
-        //                    DescripcionEstanteria = r[19].ToString(),
-        //                    Nivel = int.Parse(r[6].ToString()),
-        //                    Tarima = int.Parse(r[7].ToString()),
-        //                    Caja = int.Parse(r[8].ToString()),
-        //                    Familia = r[9].ToString(),
-        //                    Linea = r[10].ToString(),
-        //                    Grupo = r[11].ToString(),
-        //                    CodigoArticulo = r[12].ToString(),
-        //                    Existencia = double.Parse(r[13].ToString()),
-        //                    UnidadControl = r[14].ToString(),
-        //                    Sucursal = r[15].ToString(),
-        //                    nserie = r[16].ToString(),
-        //                    Clasificacion = r[17].ToString()
-        //                });
-        //                inventariado = true;
-        //            }
-        //        }
-        //    }
-        //    //ItemsListView.ItemsSource = RegInventariosDetalle;
-        //}
+		//private void BuscarCapturas()
+		//{
+		//    string Parametros = string.Empty;
+		//    if (consulta)
+		//        Parametros = $"0,{Global.ArticuloEnInventario.CodigoActual}";
+		//    else
+		//        Parametros = $"{Global.ArticuloEnInventario.id},null";
+		//    HttpWebResponse response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacenH", Parametros, "wsp_DetalleInventarioAlmacenxArticulo");
+		//    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+		//    {
+		//        if (response.StatusCode == HttpStatusCode.NotFound) return;
+		//        string resp = reader.ReadToEnd();
+		//        if (resp != "[]")
+		//        {
+		//            DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+		//            foreach (DataRow r in dt.Rows)
+		//            {
+		//                RegInventariosDetalle.Add(new clsInventarioDetalle
+		//                {
+		//                    ID = int.Parse(r[0].ToString()),
+		//                    folioInventario = r[1].ToString(),
+		//                    idReferencia = r[2].ToString(),
+		//                    Seccion = r[3].ToString(),
+		//                    DescripcionSeccion = r[18].ToString(),
+		//                    Pasillo = int.Parse(r[4].ToString()),
+		//                    Estanteria = r[5].ToString(),
+		//                    DescripcionEstanteria = r[19].ToString(),
+		//                    Nivel = int.Parse(r[6].ToString()),
+		//                    Tarima = int.Parse(r[7].ToString()),
+		//                    Caja = int.Parse(r[8].ToString()),
+		//                    Familia = r[9].ToString(),
+		//                    Linea = r[10].ToString(),
+		//                    Grupo = r[11].ToString(),
+		//                    CodigoArticulo = r[12].ToString(),
+		//                    Existencia = double.Parse(r[13].ToString()),
+		//                    UnidadControl = r[14].ToString(),
+		//                    Sucursal = r[15].ToString(),
+		//                    nserie = r[16].ToString(),
+		//                    Clasificacion = r[17].ToString()
+		//                });
+		//                inventariado = true;
+		//            }
+		//        }
+		//    }
+		//    //ItemsListView.ItemsSource = RegInventariosDetalle;
+		//}
 
-        private void BuscarNumeroSerie()
-        {
-            listaSeries.Clear();
-            cbSeries.ItemsSource = null;
-            List<string> lst = new List<string>();
-            lst = Funciones.LlenarSeries(Global.ArticuloEnInventario.CodigoActual);
-            foreach (string item in lst)
-            {
-                bool existe = false;
-                if (viewModel_InventarioDetalle.Items.Count > 0)
-                {
-                    foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
-                    {
-                        if (item == tmp.nserie)
-                        {
-                            existe = true;
-                            break;
-                        }
-                    }
-                }
-                if (!existe)
-                    listaSeries.Add(item);
-            }
+		private async Task BuscarNumeroSerie()
+		{
+			listaSeries.Clear();
+			cbSeries.ItemsSource = null;
+			List<string> lst = new List<string>();
+			DataTable? dt = await Funciones.LlenarSeries(Global.ArticuloEnInventario.CodigoActual);
+			foreach (DataRow item in dt.Rows)
+			{
+				bool existe = false;
+				if (viewModel_InventarioDetalle.Items.Count > 0)
+				{
+					foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
+					{
+						if (item[0].ToString() == tmp.nserie)
+						{
+							existe = true;
+							break;
+						}
+					}
+				}
+				if (!existe)
+					listaSeries.Add(item[0].ToString());
+			}
 
-            cbSeries.ItemsSource = listaSeries;
-        }
+			cbSeries.ItemsSource = listaSeries;
+		}
 
-        private void LeerArticuloEnInventario(bool Articulo = false)
-        {
-            lblFamilia.Text = Global.ArticuloEnInventario.desc_familia;
-            lblLinea.Text = Global.ArticuloEnInventario.desc_linea;
-            lblGrupo.Text = Global.ArticuloEnInventario.desc_grupo;
-            lblCodigo.Text = Global.ArticuloEnInventario.CodigoActual;
-            lblDescripcion.Text = Global.ArticuloEnInventario.Descripcion;
-            lblMedida.Text = Global.ArticuloEnInventario.DescMedida;
-            lblMarca.Text = Global.ArticuloEnInventario.DescMarca;
-            lblParte.Text = Global.ArticuloEnInventario.DescParte;
-            CargarSeccion();
-            //BuscarCapturas();
-            BuscarNumeroSerie();
-            if (Global.ArticuloEnInventario.ExisUbi == 1)
-            {
-                if (Global.ArticuloEnInventario.Seccion != "")
-                {
-                    cbSeccion.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Seccion) - 1;
-                    cbPasillo.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Pasillo) - 1;
+		private async void LeerArticuloEnInventario(bool Articulo = false)
+		{
+			lblFamilia.Text = Global.ArticuloEnInventario.desc_familia;
+			lblLinea.Text = Global.ArticuloEnInventario.desc_linea;
+			lblGrupo.Text = Global.ArticuloEnInventario.desc_grupo;
+			lblCodigo.Text = Global.ArticuloEnInventario.CodigoActual;
+			lblDescripcion.Text = Global.ArticuloEnInventario.Descripcion;
+			lblMedida.Text = Global.ArticuloEnInventario.DescMedida;
+			lblMarca.Text = Global.ArticuloEnInventario.DescMarca;
+			lblParte.Text = Global.ArticuloEnInventario.DescParte;
 
-                    int valor = 0;
-                    foreach (clsEstanteria item in cbEstanteria.ItemsSource)
-                    {
-                        if (item.Clave == Global.ArticuloEnInventario.Estanteria)
-                        {
-                            cbEstanteria.SelectedIndex = valor;
-                            break;
-                        }
-                        valor = valor + 1;
-                    }
-                    cbNivel.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Nivel) - 1;
-                    if (cbTarima.IsVisible)
-                        cbTarima.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Tarima) - 1;
-                    if (cbCaja.IsVisible)
-                        cbCaja.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Contenedor) - 1;
-                }
-            }
-            if (inventariado)
-            {
-                cbSeccion.IsEnabled = !inventariado;
-                cbPasillo.IsEnabled = !inventariado;
-                cbEstanteria.IsEnabled = !inventariado;
-                cbNivel.IsEnabled = !inventariado;
-                cbTarima.IsEnabled = !inventariado;
-                cbCaja.IsEnabled = !inventariado;
-                cbSeries.IsEnabled = !inventariado;
-                txtCantidad.IsEnabled = !inventariado;
-                cbClasificacion.IsEnabled = !inventariado;
-                btnAgregar.IsEnabled = !inventariado;
-                btnGuardar.IsEnabled = !inventariado;
-                //fvalidacion.IsEnabled = !inventariado;
-                if (consulta)
-                    btnGuardar.IsEnabled = !inventariado;
-            }
-        }
+			await CargarSeccion();
+			//BuscarCapturas();
+			await BuscarNumeroSerie();
+			if (Global.ArticuloEnInventario.ExisUbi == 1)
+			{
+				if (Global.ArticuloEnInventario.Seccion != "")
+				{
+					int index = 0;
+					foreach (clsSeccion item in cbSeccion.ItemsSource)
+					{
+						if (item.Clave == Global.ArticuloEnInventario.Seccion)
+						{
+							cbSeccion.SelectedIndex = index;
+							break;
+						}
+						index++;
+					}
 
-        private void cbSeccion_SelectedIndexChanged(Object sender, EventArgs e)
-        {
-            capturando = true;
-            cbEstanteria.SelectedIndex = -1;
-            cbNivel.Items.Clear();
-            cbTarima.Items.Clear();
-            cbCaja.Items.Clear();
-            CargarPasillos();
-            capturando = false;
-        }
+					cbPasillo.SelectedItem = Global.ArticuloEnInventario.Pasillo;
+					if (cbEstanteria.ItemsSource == null)
+					{
+						await CargarEstanterias();
+					}
+					//cbEstanteria.SelectedItem = Global.ArticuloEnInventario.Estanteria;
 
-        private void cbPasillo_SelectedIndexChanged(Object sender, EventArgs e)
-        {
-            if (capturando) return;
-            capturando = true;
-            cbNivel.Items.Clear();
-            cbTarima.Items.Clear();
-            cbCaja.Items.Clear();
-            CargarEstanterias();
-            capturando = false;
-        }
+					int valor = 0;
+					foreach (clsEstanteria item in cbEstanteria.ItemsSource)
+					{
+						if (item.Clave == Global.ArticuloEnInventario.Estanteria)
+						{
+							cbEstanteria.SelectedIndex = valor;
+							break;
+						}
+						valor++;
+					}
+					if (cbNivel.ItemsSource == null)
+					{
+						CargarNieveles();
+					}
 
-        private void cbEstanteria_SelectedIndexChanged(Object sender, EventArgs e)
-        {
-            if (capturando) return;
-            capturando = true;
-            cbNivel.Items.Clear();
-            cbTarima.Items.Clear();
-            cbCaja.Items.Clear();
-            CargarNieveles();
-            CargarTarimas();
-            CargarCajas();
-            capturando = false;
-        }
+					int nivel = 0;
+					foreach (var item in cbNivel.Items)
+					{
+						if (item == Global.ArticuloEnInventario.Nivel)
+						{
+							cbNivel.SelectedIndex = nivel;
+							break;
+						}
+						nivel++;
+					}
 
-        private void cbSeries_SelectedIndexChanged(Object sender, EventArgs e)
-        {
-            if (cbClasificacion.SelectedItem != null)
-            {
-                if (cbSeries.SelectedItem == null && cbClasificacion.SelectedItem.ToString() == "USADO")
-                {
-                    txtCantidad.IsEnabled = true;
-                    txtCantidad.Text = "1";
-                    return;
-                }
-                txtCantidad.IsEnabled = false;
-                txtCantidad.Text = "1";
-                return;
-            }
-            if (cbSeries.SelectedItem != null)
-            {
-                txtCantidad.IsEnabled = false;
-                txtCantidad.Text = "1";
-                return;
-            }
-            else
-            {
-                txtCantidad.IsEnabled = true;
-                txtCantidad.Text = "1";
-                return;
-            }
-        }
+					int tarima = 0;
+					if (cbTarima.IsVisible)
+					{
+						if (cbTarima.ItemsSource == null)
+						{
+							CargarTarimas();
+						}
 
-        private void cbClasificacion_SelectedIndexChanged(Object sender, EventArgs e)
-        {
-            //TODO: Se Desactiva validacion para Generar Series solo para Herramientas Usadas.
-            //if (cbClasificacion.SelectedItem.ToString() == "NUEVO")
-            //{
-            //    txtCantidad.IsEnabled = false;
-            //    txtCantidad.Text = "1";
-            //}
-            //else
-            //{
-            if (cbSeries.SelectedItem == null || string.IsNullOrEmpty(cbSeries.SelectedItem.ToString()))
-            {
-                txtCantidad.IsEnabled = true;
-                txtCantidad.Text = "1";
-                return;
-            }
-            //txtCantidad.IsEnabled = false;
-            //txtCantidad.Text = "1";
-            //}
-        }
+						foreach (var item in cbTarima.Items)
+						{
+							if (item == Global.ArticuloEnInventario.Tarima)
+							{
+								cbTarima.SelectedIndex = tarima;
+								break;
+							}
+							tarima++;
+						}
+					}
 
-        private void btnAgregar_Clicked(Object sender, EventArgs e)
-        {
-            clsSeccion iSeccion;
-            clsEstanteria iEstanteria;
-            DataTable NumerosSerieGenerados = new DataTable();
+					int contenedor = 0;
+					if (cbCaja.IsVisible)
+					{
+						if (cbCaja.ItemsSource == null)
+						{
+							CargarCajas();
+						}
 
-            string sSeccion = "";
-            string sDescSeccion = "";
-            int sPasillo = 0;
-            string sEstanteria = "";
-            string sDescEstanteria = "";
-            string sNivel = "";
-            string sClasificacion = "";
+						foreach (var item in cbCaja.Items)
+						{
+							if (item == Global.ArticuloEnInventario.Contenedor)
+							{
+								cbCaja.SelectedIndex = contenedor;
+								break;
+							}
+							contenedor++;
+						}
+					}
 
-            try
-            {
-                iSeccion = (clsSeccion)cbSeccion.SelectedItem;
-                sDescSeccion = iSeccion.Descripcion;
-                sSeccion = int.Parse(iSeccion.Clave).ToString("D2");
-            }
-            catch (Exception)
-            {
-                sSeccion = "";
-            }
+					//cbNivel.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Nivel) - 1;
+					//if (cbTarima.IsVisible)
+					//	cbTarima.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Tarima) - 1;
+					//if (cbCaja.IsVisible)
+					//	cbCaja.SelectedIndex = int.Parse(Global.ArticuloEnInventario.Contenedor) - 1;
+				}
+			}
 
-            try
-            {
-                iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
-                sDescEstanteria = iEstanteria.Descripcion;
-                sPasillo = iEstanteria.Pasillo;
-                sEstanteria = int.Parse(iEstanteria.Clave).ToString("D2");
-            }
-            catch (Exception)
-            {
-                sPasillo = 0;
-                sEstanteria = "";
-            }
+			if (inventariado)
+			{
+				cbSeccion.IsEnabled = !inventariado;
+				cbPasillo.IsEnabled = !inventariado;
+				cbEstanteria.IsEnabled = !inventariado;
+				cbNivel.IsEnabled = !inventariado;
+				cbTarima.IsEnabled = !inventariado;
+				cbCaja.IsEnabled = !inventariado;
+				cbSeries.IsEnabled = !inventariado;
+				txtCantidad.IsEnabled = !inventariado;
+				cbClasificacion.IsEnabled = !inventariado;
+				btnAgregar.IsEnabled = !inventariado;
+				btnGuardar.IsEnabled = !inventariado;
+				//fvalidacion.IsEnabled = !inventariado;
+				if (consulta)
+					btnGuardar.IsEnabled = !inventariado;
+			}
+		}
 
-            try
-            {
-                sNivel = cbNivel.SelectedItem.ToString();
-            }
-            catch (Exception)
-            {
-                sNivel = "0";
-            }
+		private void cbSeccion_SelectedIndexChanged(Object sender, EventArgs e)
+		{
+			capturando = true;
+			cbEstanteria.SelectedIndex = -1;
+			cbNivel.Items.Clear();
+			cbTarima.Items.Clear();
+			cbCaja.Items.Clear();
+			CargarPasillos();
+			capturando = false;
+		}
 
-            double dCantidad = 0;
-            int iTarima = 0;
-            int iCaja = 0;
-            string sSerie = "";
+		private async void cbPasillo_SelectedIndexChanged(Object sender, EventArgs e)
+		{
+			if (capturando) return;
+			capturando = true;
+			cbNivel.Items.Clear();
+			cbTarima.Items.Clear();
+			cbCaja.Items.Clear();
+			await CargarEstanterias();
+			capturando = false;
+		}
 
-            if (cbTarima.IsVisible)
-            {
-                try
-                {
-                    iTarima = int.Parse(cbTarima.SelectedItem.ToString());
-                }
-                catch (Exception)
-                {
-                    iTarima = 0;
-                }
-            }
-            else { iTarima = 0; }
+		private void cbEstanteria_SelectedIndexChanged(Object sender, EventArgs e)
+		{
+			if (capturando) return;
+			capturando = true;
+			cbNivel.Items.Clear();
+			cbTarima.Items.Clear();
+			cbCaja.Items.Clear();
+			CargarNieveles();
+			CargarTarimas();
+			CargarCajas();
+			capturando = false;
+		}
 
-            if (cbCaja.IsVisible)
-            {
-                try
-                {
-                    iCaja = int.Parse(cbCaja.SelectedItem.ToString());
-                }
-                catch (Exception)
-                {
-                    iCaja = 0;
-                }
-            }
-            else { iCaja = 0; }
+		private void cbSeries_SelectedIndexChanged(Object sender, EventArgs e)
+		{
+			if (cbClasificacion.SelectedItem != null)
+			{
+				if (cbSeries.SelectedItem == null && cbClasificacion.SelectedItem.ToString() == "USADO")
+				{
+					txtCantidad.IsEnabled = true;
+					txtCantidad.Text = "1";
+					return;
+				}
+				txtCantidad.IsEnabled = false;
+				txtCantidad.Text = "1";
+				return;
+			}
+			if (cbSeries.SelectedItem != null)
+			{
+				txtCantidad.IsEnabled = false;
+				txtCantidad.Text = "1";
+				return;
+			}
+			else
+			{
+				txtCantidad.IsEnabled = true;
+				txtCantidad.Text = "1";
+				return;
+			}
+		}
 
-            try
-            {
-                dCantidad = double.Parse(txtCantidad.Text);
-            }
-            catch (Exception)
-            {
-                dCantidad = 0;
-            }
+		private void cbClasificacion_SelectedIndexChanged(Object sender, EventArgs e)
+		{
+			//TODO: Se Desactiva validacion para Generar Series solo para Herramientas Usadas.
+			//if (cbClasificacion.SelectedItem.ToString() == "NUEVO")
+			//{
+			//    txtCantidad.IsEnabled = false;
+			//    txtCantidad.Text = "1";
+			//}
+			//else
+			//{
+			if (cbSeries.SelectedItem == null || string.IsNullOrEmpty(cbSeries.SelectedItem.ToString()))
+			{
+				txtCantidad.IsEnabled = true;
+				txtCantidad.Text = "1";
+				return;
+			}
+			//txtCantidad.IsEnabled = false;
+			//txtCantidad.Text = "1";
+			//}
+		}
 
-            if (string.IsNullOrEmpty(sSeccion) || sPasillo == 0 || string.IsNullOrEmpty(sEstanteria))
-            {
-                DisplayAlertAsync("Informacion", "La ubicacion debe se llenado correctamente (Seccion, Pasillo, Estanteria)", "OK");
-                return;
-            }
+		private async void btnAgregar_Clicked(Object sender, EventArgs e)
+		{
+			clsSeccion iSeccion;
+			clsEstanteria iEstanteria;
+			//DataTable NumerosSerieGenerados = new DataTable();
 
-            if (dCantidad == 0)
-            {
-                DisplayAlertAsync("Informacion", "La cantidad no puede ser 0 (cero)", "OK");
-                return;
-            }
+			string sSeccion = "";
+			string sDescSeccion = "";
+			int sPasillo = 0;
+			string sEstanteria = "";
+			string sDescEstanteria = "";
+			string sNivel = "";
+			string sClasificacion = "";
 
-            try
-            {
-                if (cbSeries.SelectedIndex >= 0)
-                {
+			try
+			{
+				iSeccion = (clsSeccion)cbSeccion.SelectedItem;
+				sDescSeccion = iSeccion.Descripcion;
+				sSeccion = int.Parse(iSeccion.Clave).ToString("D2");
+			}
+			catch (Exception)
+			{
+				sSeccion = "";
+			}
+
+			try
+			{
+				iEstanteria = (clsEstanteria)cbEstanteria.SelectedItem;
+				sDescEstanteria = iEstanteria.Descripcion;
+				sPasillo = iEstanteria.Pasillo;
+				sEstanteria = int.Parse(iEstanteria.Clave).ToString("D2");
+			}
+			catch (Exception)
+			{
+				sPasillo = 0;
+				sEstanteria = "";
+			}
+
+			try
+			{
+				sNivel = cbNivel.SelectedItem.ToString();
+			}
+			catch (Exception)
+			{
+				sNivel = "0";
+			}
+
+			double dCantidad = 0;
+			int iTarima = 0;
+			int iCaja = 0;
+			string sSerie = "";
+
+			if (cbTarima.IsVisible)
+			{
+				try
+				{
+					iTarima = int.Parse(cbTarima.SelectedItem.ToString());
+				}
+				catch (Exception)
+				{
+					iTarima = 0;
+				}
+			}
+			else { iTarima = 0; }
+
+			if (cbCaja.IsVisible)
+			{
+				try
+				{
+					iCaja = int.Parse(cbCaja.SelectedItem.ToString());
+				}
+				catch (Exception)
+				{
+					iCaja = 0;
+				}
+			}
+			else { iCaja = 0; }
+
+			try
+			{
+				dCantidad = double.Parse(txtCantidad.Text);
+			}
+			catch (Exception)
+			{
+				dCantidad = 0;
+			}
+
+			if (string.IsNullOrEmpty(sSeccion) || sPasillo == 0 || string.IsNullOrEmpty(sEstanteria))
+			{
+				await DisplayAlertAsync("Informacion", "La ubicacion debe se llenado correctamente (Seccion, Pasillo, Estanteria)", "OK");
+				return;
+			}
+
+			if (dCantidad == 0)
+			{
+				await DisplayAlertAsync("Informacion", "La cantidad no puede ser 0 (cero)", "OK");
+				return;
+			}
+
+			try
+			{
+				if (cbSeries.SelectedIndex >= 0)
+				{
 					sSerie = cbSeries.SelectedItem.ToString();
 					listaSeries.Remove(sSerie);
 				}
-            }
-            catch (Exception)
-            {
-                sSerie = "";
-            }
+			}
+			catch (Exception)
+			{
+				sSerie = "";
+			}
 
-            try
-            {
-                if (cbClasificacion.SelectedIndex >= 0)
-                {
+			try
+			{
+				if (cbClasificacion.SelectedIndex >= 0)
+				{
 					sClasificacion = cbClasificacion.SelectedItem.ToString();
 				}
-            }
-            catch
-            {
-                sClasificacion = "";
-            }
+			}
+			catch
+			{
+				sClasificacion = "";
+			}
 
-            if (sClasificacion == "")
-            {
-                DisplayAlertAsync("Informacion", "Debe seleccionar la Clasificacion del Articulo a ingresar", "OK");
-                return;
-            }
+			if (sClasificacion == "")
+			{
+				await DisplayAlertAsync("Informacion", "Debe seleccionar la Clasificacion del Articulo a ingresar", "OK");
+				return;
+			}
 
-            // Si no tiene una serie asignada y es herramienta Usada, se generan nuevas series para el articulo
-            // para no tener que generar una entrada
-            if (string.IsNullOrEmpty(sSerie))
-            {
-                //TODO: Se Desactiva validacion para Generar Series solo para Herramientas Usadas.
-                //if (sClasificacion == "NUEVO")
-                //{
-                //    DisplayAlert("Informacion", "Debe seleccionar una Serie para la Herramienta a registrar", "OK");
-                //    return;
-                //}
+			// Si no tiene una serie asignada y es herramienta Usada, se generan nuevas series para el articulo
+			// para no tener que generar una entrada
+			if (string.IsNullOrEmpty(sSerie))
+			{
+				//TODO: Se Desactiva validacion para Generar Series solo para Herramientas Usadas.
+				//if (sClasificacion == "NUEVO")
+				//{
+				//    DisplayAlert("Informacion", "Debe seleccionar una Serie para la Herramienta a registrar", "OK");
+				//    return;
+				//}
 
-                // Se Generan las nuevas Series para el Articulo
-                GenNumerosSeries.Add(new CatalogoArticuloNumeroSeries
-                {
-                    Codigo_Articulo = Global.ArticuloEnInventario.CodigoActual,
-                    Cantidad = int.Parse(dCantidad.ToString()),
-                    Status_Herramienta = "AA",
-                    Aplica = true,
-                    Psucursal = "M",
-                    Seccion = sSeccion,
-                    Pasillo = sPasillo,
-                    Estanteria = sEstanteria,
-                    Nivel = int.Parse(sNivel),
-                    Tarima = iTarima,
-                    Contenedor = iCaja,
-                    FolioInventario = Global.FolioInventario
-                });
+				// Se Generan las nuevas Series para el Articulo
+				GenNumerosSeries.Add(new NumeroSeriesArticulo
+				{
+					Codigo_Articulo = Global.ArticuloEnInventario.CodigoActual,
+					Cantidad = int.Parse(dCantidad.ToString()),
+					Status_Herramienta = "AA",
+					Aplica = true,
+					Psucursal = "M",
+					Seccion = sSeccion,
+					Pasillo = sPasillo,
+					Estanteria = sEstanteria,
+					Nivel = int.Parse(sNivel),
+					Tarima = iTarima,
+					Contenedor = iCaja,
+					FolioInventario = Global.FolioInventario
+				});
 
-                //NumerosSerieGenerados = APIService.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries);
-                NumerosSerieGenerados = APIService.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries).Result;
-				foreach (DataRow r in NumerosSerieGenerados.Rows)
-                {
-                    bool existe = false;
-                    foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
-                    {
-                        if (r[1].ToString() == tmp.nserie)
-                        {
-                            existe = true;
-                        }
-                    }
+				HttpResponseMessage response;
+				try
+				{
+					response = await SesionApi.PostAsync($"api/InventarioAlmacen/GenerarNumerosSerie?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}", Funciones.jsonContent(GenNumerosSeries));
+					if (response.IsSuccessStatusCode)
+					{
+						string jsonResponse = await response.Content.ReadAsStringAsync();
+						//DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+						var series = System.Text.Json.JsonSerializer.Deserialize<List<NumeroSeriesArticulo>>(jsonResponse, JsonSerializerOptions.Default) ?? new List<NumeroSeriesArticulo>();
+						foreach (var r in series)
+						{
+							bool existe = false;
+							foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
+							{
+								if (r.Numero_Serie.ToString() == tmp.nserie)
+								{
+									existe = true;
+								}
+							}
 
-                    if (!existe)
-                    {
-                        viewModel_InventarioDetalle.AgregarCommand.Execute(new Item_InventarioDetalle
-                        {
-                            folioInventario = r[11].ToString(),
-                            idReferencia = Global.ArticuloEnInventario.id.ToString(),
-                            CodigoArticulo = r[0].ToString(),
-                            Sucursal = r[4].ToString(),
-                            Seccion = r[5].ToString(),
-                            Pasillo = int.Parse(r[6].ToString()),
-                            Estanteria = r[7].ToString(),
-                            Nivel = int.Parse(r[8].ToString()),
-                            Familia = Global.ArticuloEnInventario.ClaveFamilia,
-                            Linea = Global.ArticuloEnInventario.ClaveLinea,
-                            Grupo = Global.ArticuloEnInventario.ClaveGrupo,
-                            Tarima = int.Parse(r[9].ToString()),
-                            Caja = int.Parse(r[10].ToString()),
-                            UnidadControl = Global.ArticuloEnInventario.UnidadControl,
-                            Existencia = 1,
-                            DescFamilia = Global.ArticuloEnInventario.desc_familia,
-                            nserie = r[1].ToString(),
-                            Clasificacion = sClasificacion,
-                            Usuario = Global.clave_usuario
-                        });
-                    }
-                }
-                GenNumerosSeries.Clear();
-                NavigationPage.SetHasBackButton(this, false);
-            }
-            else
-            {
-                foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
-                {
-                    if (sSerie == tmp.nserie)
-                    {
-                        DisplayAlertAsync("Informacion", "Serie ya esta capturada", "OK");
-                        cbSeries.SelectedIndex = 0;
-                        return;
-                    }
-                }
+							if (!existe)
+							{
+								viewModel_InventarioDetalle.AgregarCommand.Execute(new Item_InventarioDetalle
+								{
+									folioInventario = r.FolioInventario.ToString(),
+									idReferencia = Global.ArticuloEnInventario.id.ToString(),
+									CodigoArticulo = r.Codigo_Articulo.ToString(),
+									Sucursal = r.Psucursal.ToString(),
+									Seccion = r.Seccion.ToString(),
+									Pasillo = r.Pasillo != null ? int.Parse(r.Pasillo.ToString()) : 0,
+									Estanteria = r.Estanteria.ToString(),
+									Nivel = int.Parse(r.Nivel.ToString()),
+									Familia = Global.ArticuloEnInventario.ClaveFamilia,
+									Linea = Global.ArticuloEnInventario.ClaveLinea,
+									Grupo = Global.ArticuloEnInventario.ClaveGrupo,
+									Tarima = int.Parse(r.Tarima.ToString()),
+									Caja = int.Parse(r.Contenedor.ToString()),
+									UnidadControl = Global.ArticuloEnInventario.UnidadControl,
+									Existencia = 1,
+									DescFamilia = Global.ArticuloEnInventario.desc_familia,
+									nserie = r.Numero_Serie.ToString(),
+									Clasificacion = sClasificacion,
+									Usuario = Global.clave_usuario
+								});
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+				}
 
-                viewModel_InventarioDetalle.AgregarCommand.Execute(new Item_InventarioDetalle
-                {
-                    folioInventario = Global.FolioInventario,
-                    idReferencia = Global.ArticuloEnInventario.id.ToString(),
-                    CodigoArticulo = Global.ArticuloEnInventario.CodigoActual,
-                    Sucursal = "M",
-                    Seccion = sSeccion,
-                    DescripcionSeccion = sDescSeccion,
-                    Pasillo = sPasillo,
-                    Estanteria = sEstanteria,
-                    DescripcionEstanteria = sDescEstanteria,
-                    Nivel = int.Parse(sNivel),
-                    Familia = Global.ArticuloEnInventario.ClaveFamilia,
-                    Linea = Global.ArticuloEnInventario.ClaveLinea,
-                    Grupo = Global.ArticuloEnInventario.ClaveGrupo,
-                    Tarima = iTarima,
-                    Caja = iCaja,
-                    UnidadControl = Global.ArticuloEnInventario.UnidadControl,
-                    Existencia = double.Parse(txtCantidad.Text),
-                    DescFamilia = Global.ArticuloEnInventario.desc_familia,
-                    nserie = sSerie,
-                    Clasificacion = sClasificacion,
-                    Usuario = Global.clave_usuario,
-                    EsActivo = true // Nuevo campo para indicar si el artículo es Refaccion (false) o Herramienta (true)
-                });
-            }
+				//NumerosSerieGenerados = APIService.PostAPI_GenerarNumerosSeries("api/InventarioAlmacen", "GenerarNumerosSerie", GenNumerosSeries).Result;
+				//foreach (DataRow r in NumerosSerieGenerados.Rows)
+				//            {
+				//                bool existe = false;
+				//                foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
+				//                {
+				//                    if (r[1].ToString() == tmp.nserie)
+				//                    {
+				//                        existe = true;
+				//                    }
+				//                }
 
-            BuscarNumeroSerie();
-            txtCantidad.Text = "1";
-            cbSeries.SelectedIndex = 0;
-            cbClasificacion.SelectedIndex = 0;
+				//                if (!existe)
+				//                {
+				//                    viewModel_InventarioDetalle.AgregarCommand.Execute(new Item_InventarioDetalle
+				//                    {
+				//                        folioInventario = r[11].ToString(),
+				//                        idReferencia = Global.ArticuloEnInventario.id.ToString(),
+				//                        CodigoArticulo = r[0].ToString(),
+				//                        Sucursal = r[4].ToString(),
+				//                        Seccion = r[5].ToString(),
+				//                        Pasillo = int.Parse(r[6].ToString()),
+				//                        Estanteria = r[7].ToString(),
+				//                        Nivel = int.Parse(r[8].ToString()),
+				//                        Familia = Global.ArticuloEnInventario.ClaveFamilia,
+				//                        Linea = Global.ArticuloEnInventario.ClaveLinea,
+				//                        Grupo = Global.ArticuloEnInventario.ClaveGrupo,
+				//                        Tarima = int.Parse(r[9].ToString()),
+				//                        Caja = int.Parse(r[10].ToString()),
+				//                        UnidadControl = Global.ArticuloEnInventario.UnidadControl,
+				//                        Existencia = 1,
+				//                        DescFamilia = Global.ArticuloEnInventario.desc_familia,
+				//                        nserie = r[1].ToString(),
+				//                        Clasificacion = sClasificacion,
+				//                        Usuario = Global.clave_usuario
+				//                    });
+				//                }
+				//            }
+				GenNumerosSeries.Clear();
+				NavigationPage.SetHasBackButton(this, false);
+			}
+			else
+			{
+				foreach (Item_InventarioDetalle tmp in viewModel_InventarioDetalle.Items)
+				{
+					if (sSerie == tmp.nserie)
+					{
+						await DisplayAlertAsync("Informacion", "Serie ya esta capturada", "OK");
+						cbSeries.SelectedIndex = 0;
+						return;
+					}
+				}
 
-            //ItemsListView.ItemsSource = Items;
-        }
+				viewModel_InventarioDetalle.AgregarCommand.Execute(new Item_InventarioDetalle
+				{
+					folioInventario = Global.FolioInventario,
+					idReferencia = Global.ArticuloEnInventario.id.ToString(),
+					CodigoArticulo = Global.ArticuloEnInventario.CodigoActual,
+					Sucursal = "M",
+					Seccion = sSeccion,
+					DescripcionSeccion = sDescSeccion,
+					Pasillo = sPasillo,
+					Estanteria = sEstanteria,
+					DescripcionEstanteria = sDescEstanteria,
+					Nivel = int.Parse(sNivel),
+					Familia = Global.ArticuloEnInventario.ClaveFamilia,
+					Linea = Global.ArticuloEnInventario.ClaveLinea,
+					Grupo = Global.ArticuloEnInventario.ClaveGrupo,
+					Tarima = iTarima,
+					Caja = iCaja,
+					UnidadControl = Global.ArticuloEnInventario.UnidadControl,
+					Existencia = double.Parse(txtCantidad.Text),
+					DescFamilia = Global.ArticuloEnInventario.desc_familia,
+					nserie = sSerie,
+					Clasificacion = sClasificacion,
+					Usuario = Global.clave_usuario,
+					EsActivo = true // Nuevo campo para indicar si el artículo es Refaccion (false) o Herramienta (true)
+				});
+			}
 
-        private async void btnEliminarLista_Clicked(Object sender, EventArgs e)
-        {
-            Item_InventarioDetalle Item_;
-            Item_ = (sender as MenuItem).BindingContext as Item_InventarioDetalle;
-            if (Item_.ID! > 0)
-            {
-                await DisplayAlertAsync("Alerta", "Ya no es posible Modificar el Inventario", "OK");
-                return;
-            }
-            cbSeries.ItemsSource = null;
-            listaSeries.Add(Item_.nserie);
-            listaSeries.Sort();
-            cbSeries.ItemsSource = listaSeries;
-            viewModel_InventarioDetalle.Items.Remove(Item_);
-        }
+			BuscarNumeroSerie();
+			txtCantidad.Text = "1";
+			cbSeries.SelectedIndex = 0;
+			cbClasificacion.SelectedIndex = 0;
 
-        private async void btnGuardar_Clicked(Object sender, EventArgs e)
-        {
-            if (inventariado)
-            {
-                await DisplayAlertAsync("Alerta", "Ya no es posible Modificar el Inventario", "OK");
-                return;
-            }
-            if (viewModel_InventarioDetalle.Items.Count == 0)
-            {
-                await DisplayAlertAsync("Error", "No es posible guardar, no se ha capturado ningun inventario.", "OK");
-                return;
-            }
+			//ItemsListView.ItemsSource = Items;
+		}
 
-            bool resp_Ok = false;
-            var answer = await DisplayAlertAsync("Informaciòn", "Se guardará el inventario capturado y ya no podrá ser Modificado. ¿Desea Continuar?", "Si", "No");
-            if (answer == false)
-            { return; }
-            foreach (Item_InventarioDetalle item in viewModel_InventarioDetalle.Items)
-            {
-                item.Fecha = DateTime.Now.ToString("yyyy-MM-dd");
-                item.Hora = DateTime.Now.ToString("HH:mm:ss");
-                item.Usuario = Global.clave_usuario;
-            }
+		private async void btnEliminarLista_Clicked(Object sender, EventArgs e)
+		{
+			Item_InventarioDetalle Item_;
+			Item_ = (sender as MenuItem).BindingContext as Item_InventarioDetalle;
+			if (Item_.ID! > 0)
+			{
+				await DisplayAlertAsync("Alerta", "Ya no es posible Modificar el Inventario", "OK");
+				return;
+			}
+			cbSeries.ItemsSource = null;
+			listaSeries.Add(Item_.nserie);
+			listaSeries.Sort();
+			cbSeries.ItemsSource = listaSeries;
+			viewModel_InventarioDetalle.Items.Remove(Item_);
+		}
 
-            HttpResponseMessage Response = APIService.PostAPI_GuardarInventario("api/InventarioAlmacen", viewModel_InventarioDetalle.Items).Result;
-            if (Response.IsSuccessStatusCode)
-            {
-                resp_Ok = true;
-            }
+		private async void btnGuardar_Clicked(Object sender, EventArgs e)
+		{
+			if (inventariado)
+			{
+				await DisplayAlertAsync("Alerta", "Ya no es posible Modificar el Inventario", "OK");
+				return;
+			}
+			if (viewModel_InventarioDetalle.Items.Count == 0)
+			{
+				await DisplayAlertAsync("Error", "No es posible guardar, no se ha capturado ningun inventario.", "OK");
+				return;
+			}
 
-            if (resp_Ok)
-            {
-                await DisplayAlertAsync("Informacion", "Inventario capturado correctamente", "OK");
-                await Navigation.PopAsync();
-            }
-        }
-    }
+			bool resp_Ok = false;
+			var answer = await DisplayAlertAsync("Informaciòn", "Se guardará el inventario capturado y ya no podrá ser Modificado. ¿Desea Continuar?", "Si", "No");
+			if (answer == false)
+			{ return; }
+			foreach (Item_InventarioDetalle item in viewModel_InventarioDetalle.Items)
+			{
+				item.Fecha = DateTime.Now.ToString("yyyy-MM-dd");
+				item.Hora = DateTime.Now.ToString("HH:mm:ss");
+				item.Usuario = Global.clave_usuario;
+			}
+
+			//HttpResponseMessage Response = APIService.PostAPI_GuardarInventario("api/InventarioAlmacen", viewModel_InventarioDetalle.Items).Result;
+			//if (Response.IsSuccessStatusCode)
+			//{
+			//    resp_Ok = true;
+			//}
+			ObservableCollection<InventarioAlmacenDetalle> Items = new();
+
+			foreach (Item_InventarioDetalle item in viewModel_InventarioDetalle.Items)
+			{
+				Items.Add( new InventarioAlmacenDetalle
+				{
+					ID = item.ID,
+					folioInventario = item.folioInventario,
+					idReferencia = int.Parse(item.idReferencia),
+					Seccion = item.Seccion,
+					DescripcionSeccion = item.DescripcionSeccion,
+					Pasillo = item.Pasillo,
+					Estanteria = item.Estanteria,
+					DescripcionEstanteria = item.DescripcionEstanteria,
+					Nivel = item.Nivel,
+					Tarima = item.Tarima,
+					Caja = item.Caja,
+					Familia = item.Familia,
+					DescFamilia = item.DescFamilia,
+					Linea = item.Linea,
+					Grupo = item.Grupo,
+					CodigoArticulo = item.CodigoArticulo,
+					Existencia = item.Existencia,
+					UnidadControl = item.UnidadControl,
+					Fecha = item.Fecha,
+					Hora = item.Hora,
+					Usuario = item.Usuario,
+					Sucursal = item.Sucursal,
+					nserie = item.nserie,
+					Clasificacion = item.Clasificacion
+				});
+			}
+
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.PostAsync($"api/InventarioAlmacen/GuardarInventario?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}", Funciones.jsonContent(Items));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					foreach (DataRow r in dt.Rows)
+					{
+						if (dt.Rows[0][1].ToString() == "200 OK")
+						{
+							resp_Ok = true;
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+
+			if (resp_Ok)
+			{
+				await DisplayAlertAsync("Informacion", "Inventario capturado correctamente", "OK");
+				await Navigation.PopAsync();
+			}
+		}
+	}
 }

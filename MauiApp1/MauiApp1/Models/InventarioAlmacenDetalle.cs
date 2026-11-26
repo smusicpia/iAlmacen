@@ -2,29 +2,28 @@ namespace iAlmacen.Models;
 
 public class InventarioAlmacenDetalle
 {
-    public int id { get; set; }
-    public string FolioInventario { get; set; }
-    public string CodigoArticulo { get; set; }
-    public string FechaInventario { get; set; }
-    public string HoraInventario { get; set; }
-    public string UnidadControl { get; set; }
-    public double ExistenciaSistema { get; set; }
-    public double InventarioAlmacen_ { get; set; }
-    public double InventarioContabilidad { get; set; }
-    public double EntradasContabilidad { get; set; }
-    public double SalidasContabilidad { get; set; }
-    public bool Aplicado { get; set; }
-    public string FechaAplicacion { get; set; }
-    public string HoraAplicacion { get; set; }
-    public bool Cancelado { get; set; }
-    public bool Capturado { get; set; }
-    public double Costo { get; set; }
-    public double CostoCapturado { get; set; }
-    public double Importe { get; set; }
-    public string UsuarioResponsable { get; set; }
-    public string ClaveResponsable { get; set; }
-    public bool Cerrado { get; set; }
-    public bool Duplicado { get; set; }
-    public bool Muestreo { get; set; }
-    public bool uso_herramienta { get; set; }
+	public int ID { get; set; }
+	public string folioInventario { get; set; }
+	public int idReferencia { get; set; }
+	public string Seccion { get; set; }
+	public string DescripcionSeccion { get; set; }
+	public int Pasillo { get; set; }
+	public string Estanteria { get; set; }
+	public string DescripcionEstanteria { get; set; }
+	public int Nivel { get; set; }
+	public int Tarima { get; set; }
+	public int Caja { get; set; }           //Contenedor
+	public string Familia { get; set; }
+	public string DescFamilia { get; set; }
+	public string Linea { get; set; }
+	public string Grupo { get; set; }
+	public string CodigoArticulo { get; set; }
+	public double Existencia { get; set; }
+	public string UnidadControl { get; set; }
+	public string Fecha { get; set; }
+	public string Hora { get; set; }
+	public string Usuario { get; set; }
+	public string Sucursal { get; set; }
+	public string nserie { get; set; }
+	public string Clasificacion { get; set; }
 }
