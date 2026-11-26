@@ -1,6 +1,15 @@
+using iAlmacen.Almacen_Refacciones.Salida_Almacen;
 using iAlmacen.Clases;
+using iAlmacen.Models;
 using iAlmacen.WebApi;
+
+using Newtonsoft.Json;
+
+using System.Data;
+using System.Diagnostics;
 using System.Net;
+
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace iAlmacen.Almacen_Refacciones.Inventario_Reposicion;
 
@@ -49,27 +58,78 @@ public partial class Item_inventario_reposicion : ContentPage
 
         //Cambiar a HttpClient
         Stream memoryStream = new MemoryStream(byteData);
-        string Parametros = $"{Global.item_select.codigo_articulo}";
-        HttpWebResponse response = ConfigAPI.PostAPI_Imagen("api/Firma", Parametros, "spset_foto_reposicion", memoryStream);
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            await DisplayAlertAsync("Advertencia", "Error al cargar la Imagen", "OK");
-            return;
-        }
 
-    no_imagen:
-        Parametros = $"I,{Global.item_select.codigo_articulo},{float.Parse(cantidad_inventario.Text)},";
-        HttpResponseMessage responseM = await ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_template_reposiciones");
-        using (StreamReader reader = new StreamReader(await responseM.Content.ReadAsStreamAsync()))
-        {
-            if (responseM.StatusCode != HttpStatusCode.OK)
-            {
-                await DisplayAlertAsync("Advertencia", "Error Al Actualizar", "OK");
-                return;
-            }
-        }
+        //string Parametros = $"{Global.item_select.codigo_articulo}";
+        //HttpWebResponse response = await ConfigAPI.PostAPI_Imagen("api/Firma", Parametros, "spset_foto_reposicion", memoryStream);
+        //if (response.StatusCode == HttpStatusCode.NotFound)
+        //{
+        //    await DisplayAlertAsync("Advertencia", "Error al cargar la Imagen", "OK");
+        //    return;
+        //}
 
-        Global.item_return = true;
+		HttpResponseMessage response;
+		try
+		{
+			//string json = $"{{" +
+   //                         $"\"tProyecto\":\"{ConfigAPI.TipoProyecto}\"," +
+   //                         $"\"Metodo\":\"spset_foto_reposicion\"," +
+   //                         $"\"folio\":\"{Global.item_select.codigo_articulo}\"," +
+   //                         $"\"firma\":\"{Funciones.ConvertToBase64String(memoryStream)}\"" +
+   //                       $"}}";
+			response = await SesionApi.PostAsync($"api/Firma?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}", Funciones.jsonContent(new FirmaEntity
+			{
+				Folio = Global.item_select.codigo_articulo,
+				Firma = Funciones.ConvertToBase64String(memoryStream), // Convert.ToBase64String(imageBytes),
+				tProyecto = ConfigAPI.TipoProyecto,
+				Metodo = "spset_foto_reposicion"
+			}));
+			if (!response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+				int i = 1;
+				foreach (DataRow r in dt.Rows)
+				{
+					if (dt.Rows[0][1].ToString() == "200 OK")
+					{
+                        await DisplayAlertAsync("Advertencia", "Error al cargar la Imagen", "OK");
+                        return;
+                    }
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+	no_imagen:
+        //Parametros = $"I,{Global.item_select.codigo_articulo},{float.Parse(cantidad_inventario.Text)},";
+        //HttpResponseMessage responseM = await ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_template_reposiciones");
+        //using (StreamReader reader = new StreamReader(await responseM.Content.ReadAsStreamAsync()))
+        //{
+        //    if (responseM.StatusCode != HttpStatusCode.OK)
+        //    {
+        //        await DisplayAlertAsync("Advertencia", "Error Al Actualizar", "OK");
+        //        return;
+        //    }
+        //}
+
+		try
+		{
+			response = await SesionApi.GetAsync($"api/Operacion/Template_Reposiciones?tProyecto={ConfigAPI.TipoProyecto}&tipo=I&articulo={Global.item_select.codigo_articulo}&cantidad={cantidad_inventario.Text}&filtro={string.Empty}");
+			if (!response.IsSuccessStatusCode)
+			{
+				await DisplayAlertAsync("Advertencia", "Error al Actualizar", "OK");
+				return;
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+
+		Global.item_return = true;
         Global.item_select.Color_ = "Teal";
         Global.item_select.cantidad_inventario = float.Parse(cantidad_inventario.Text);
         Global.item_select.texto_2 = "Cantidad Sistema: " + Global.item_select.cantidad + "   /   " + "Cantidad Inventario: " + cantidad_inventario.Text;
