@@ -1,4 +1,5 @@
-﻿using iAlmacen.Models;
+﻿using iAlmacen.Clases;
+using iAlmacen.Models;
 using iAlmacen.Views;
 using iAlmacen.WebApi;
 
@@ -25,61 +26,100 @@ public class ItemsViewModel_Proterm : BaseViewModel_Proterm
 
     private async Task ExecuteLoadItemsCommand_proterm()
     {
-        //if (IsBusy)
-        //    return;
-        //IsBusy = true;
-        try
+		//if (IsBusy)
+		//    return;
+		//IsBusy = true;
+		Items.Clear();
+		HttpResponseMessage response;
+		try
         {
-            Items.Clear();
+            //string Parametros = $"L,0,0";
+            //HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/ProductoTerminado", Parametros, "spget_inventario").Result;
+            //using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+            //{
+            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
+            //    string resp = reader.ReadToEnd();
+            //    if (resp == "[]") return;
+            //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+            //    foreach (DataRow r in dt.Rows)
+            //    {
+            //        Item_proterm _item = new Item_proterm();
+            //        _item.id = float.Parse(r[0].ToString().Trim());
+            //        _item.codigo_articulo = r[1].ToString().Trim();
+            //        _item.descripcion_general = r[2].ToString().Trim();
+            //        _item.desc_marca = r[3].ToString().Trim();
+            //        _item.desc_medida = r[4].ToString().Trim();
+            //        _item.desc_parte = r[5].ToString().Trim();
 
-            string Parametros = $"L,0,0";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/ProductoTerminado", Parametros, "spget_inventario").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                if (resp == "[]") return;
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    Item_proterm _item = new Item_proterm();
-                    _item.id = float.Parse(r[0].ToString().Trim());
-                    _item.codigo_articulo = r[1].ToString().Trim();
-                    _item.descripcion_general = r[2].ToString().Trim();
-                    _item.desc_marca = r[3].ToString().Trim();
-                    _item.desc_medida = r[4].ToString().Trim();
-                    _item.desc_parte = r[5].ToString().Trim();
+            //        Clases.Global.fecha_inventario = r[6].ToString().Trim();
+            //        Clases.Global.hora_inventario = r[7].ToString().Trim();
 
-                    Clases.Global.fecha_inventario = r[6].ToString().Trim();
-                    Clases.Global.hora_inventario = r[7].ToString().Trim();
+            //        _item.existencia = float.Parse(r[8].ToString().Trim());
+            //        _item.unidad_existencia = r[9].ToString().Trim();
+            //        _item.inventario_cantidad = float.Parse(r[11].ToString().Trim());
 
-                    _item.existencia = float.Parse(r[8].ToString().Trim());
-                    _item.unidad_existencia = r[9].ToString().Trim();
-                    _item.inventario_cantidad = float.Parse(r[11].ToString().Trim());
+            //        _item.ifecha = r[10].ToString().Trim();
+            //        _item.ihora = r[12].ToString().Trim();
 
-                    _item.ifecha = r[10].ToString().Trim();
-                    _item.ihora = r[12].ToString().Trim();
+            //        if (float.Parse(r[11].ToString().Trim()) > 0)
+            //            _item.Color_ = "Teal";
+            //        else
+            //            _item.Color_ = "White";
 
-                    if (float.Parse(r[11].ToString().Trim()) > 0)
-                        _item.Color_ = "Teal";
-                    else
-                        _item.Color_ = "White";
+            //        _item.texto_1 = r[1].ToString().Trim() + " - " + r[2].ToString().Trim() + " - " + r[4].ToString().Trim();
+            //        _item.texto_2 = "Existencia Sistema: " + r[8].ToString().Trim() + "   /   " + "Cantidad Inventario: " + r[11].ToString().Trim();
 
-                    _item.texto_1 = r[1].ToString().Trim() + " - " + r[2].ToString().Trim() + " - " + r[4].ToString().Trim();
-                    _item.texto_2 = "Existencia Sistema: " + r[8].ToString().Trim() + "   /   " + "Cantidad Inventario: " + r[11].ToString().Trim();
+            //        Items.Add(_item);
+            //    }
+            //}
 
-                    Items.Add(_item);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-			Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+			response = await SesionApi.GetAsync($"api/ProductoTerminado/Inventario?tProyecto={ConfigAPI.TipoProyecto}&tipo=L");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+				if (dt.Rows.Count > 0)
+				{
+					foreach (DataRow r in dt.Rows)
+					{
+						Item_proterm _item = new Item_proterm();
+						_item.id = float.Parse(r[0].ToString().Trim());
+						_item.codigo_articulo = r[1].ToString().Trim();
+						_item.descripcion_general = r[2].ToString().Trim();
+						_item.desc_marca = r[3].ToString().Trim();
+						_item.desc_medida = r[4].ToString().Trim();
+						_item.desc_parte = r[5].ToString().Trim();
+
+						Global.fecha_inventario = r[6].ToString().Trim();
+						Global.hora_inventario = r[7].ToString().Trim();
+
+						_item.existencia = float.Parse(r[8].ToString().Trim());
+						_item.unidad_existencia = r[9].ToString().Trim();
+						_item.inventario_cantidad = float.Parse(r[11].ToString().Trim());
+
+						_item.ifecha = r[10].ToString().Trim();
+						_item.ihora = r[12].ToString().Trim();
+
+						if (float.Parse(r[11].ToString().Trim()) > 0)
+							_item.Color_ = "Teal";
+						else
+							_item.Color_ = "White";
+
+						_item.texto_1 = r[1].ToString().Trim() + " - " + r[2].ToString().Trim() + " - " + r[4].ToString().Trim();
+						_item.texto_2 = "Existencia Sistema: " + r[8].ToString().Trim() + "   /   " + "Cantidad Inventario: " + r[11].ToString().Trim();
+
+						Items.Add(_item);
+					}
+				}
+			}
 		}
-        finally
-        {
-            IsBusy = false;
-        }
-    }
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+		}
+		finally
+		{
+			IsBusy = false;
+		}
+	}
 }
