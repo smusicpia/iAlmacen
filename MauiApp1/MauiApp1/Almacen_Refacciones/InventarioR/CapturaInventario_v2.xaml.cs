@@ -3,7 +3,11 @@ using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
 
+using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
+using System.Data;
+using System.Diagnostics;
 
 namespace iAlmacen.Almacen_Refacciones.InventarioR
 {
@@ -11,6 +15,8 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 	{
 		//private ObservableCollection<clsInventarioDetalle> RegInventariosDetalle = new ObservableCollection<clsInventarioDetalle>();
 		private ObservableCollection<string> SeccionesEncontrados = new ObservableCollection<string>();
+		private ObservableCollection<clsSeccion> RegSecciones = new ObservableCollection<clsSeccion>();
+		private ObservableCollection<clsEstanteria> RegEstanterias = new ObservableCollection<clsEstanteria>();
 		private string SeccionEncontrado = "";
 		private int PasilloEncontrado = 0;
 		private string EstanteriaEncontrado = "";
@@ -84,7 +90,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 			_tInventario = tInventario;
 		}
 
-		private void CargarSeccion()
+		private async Task CargarSeccion()
 		{
 			foreach (var item in SeccionesEncontrados)
 			{
@@ -94,7 +100,23 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 					SeccionEncontrado += ",'" + item + "'";
 			}
 
-			cbSeccion.ItemsSource = Funciones.LlenarSecciones("M", SeccionEncontrado);
+			RegSecciones = new ObservableCollection<clsSeccion>();
+			DataTable? dtSecciones = await Funciones.LlenarSecciones("M", SeccionEncontrado);
+			foreach (DataRow r in dtSecciones.Rows)
+			{
+				RegSecciones.Add(new clsSeccion
+				{
+					ID = int.Parse(r[0].ToString().Trim()),
+					Clave = r[1].ToString().Trim(),
+					Descripcion = r[2].ToString().Trim(),
+					Pasillos = Boolean.Parse(r[3].ToString().Trim()),
+					NumeroPasillos = int.Parse(r[4].ToString().Trim()),
+					Estanterias = Boolean.Parse(r[5].ToString().Trim()),
+					Sucursal = r[6].ToString().Trim()
+				});
+			}
+			cbSeccion.ItemsSource = RegSecciones;
+			cbSeccion.SelectedIndex = -1;
 
 			if (SeccionesEncontrados.Count == 1)
 				cbSeccion.SelectedIndex = 0;
@@ -126,7 +148,7 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 			}
 		}
 
-		private void CargarEstanterias()
+		private async void CargarEstanterias()
 		{
 			clsSeccion iSeccion;
 			iSeccion = (clsSeccion)cbSeccion.SelectedItem;
@@ -137,7 +159,28 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 			}
 			else
 			{
-				cbEstanteria.ItemsSource = Funciones.LlenarEstanterias("M", iSeccion.Clave);
+				DataTable? dtEstanterias = await Funciones.LlenarEstanterias("M", iSeccion.Clave);
+				foreach (DataRow r in dtEstanterias.Rows)
+				{
+					RegEstanterias.Add(new Clases.clsEstanteria
+					{
+						ID = int.Parse(r[0].ToString().Trim()),
+						Clave = r[1].ToString().Trim(),
+						Tipo = r[2].ToString().Trim(),
+						Descripcion = r[3].ToString().Trim(),
+						Seccion = r[4].ToString().Trim(),
+						Pasillo = int.Parse(r[5].ToString().Trim()),
+						NumeroNiveles = int.Parse(r[6].ToString().Trim()),
+						Tarimas = Boolean.Parse(r[7].ToString().Trim()),
+						NumeroTarimas = int.Parse(r[8].ToString().Trim()),
+						Cajas = Boolean.Parse(r[9].ToString().Trim()),
+						ReiniciarNumeracionCajas = Boolean.Parse(r[10].ToString().Trim()),
+						NumeroCajas = int.Parse(r[11].ToString().Trim()),
+						NumeroCajasTarima = int.Parse(r[12].ToString().Trim()),
+						Sucursal = r[13].ToString().Trim(),
+					});
+				}
+				cbEstanteria.ItemsSource = RegEstanterias;
 
 				if (EstanteriaEncontrado != "")
 				{
@@ -411,7 +454,6 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 			}
 			else { iCaja = 0; }
 
-
 			try
 			{
 				dCantidad = double.Parse(txtCantidad.Text);
@@ -492,10 +534,32 @@ namespace iAlmacen.Almacen_Refacciones.InventarioR
 				item.Usuario = Global.clave_usuario;
 			}
 
-			HttpResponseMessage Response = APIService.PostAPI_GuardarInventario("api/InventarioAlmacen", viewModel_InventarioDetalle.Items).Result;
-			if (Response.IsSuccessStatusCode)
+			//HttpResponseMessage Response = APIService.PostAPI_GuardarInventario("api/InventarioAlmacen", viewModel_InventarioDetalle.Items).Result;
+			//if (Response.IsSuccessStatusCode)
+			//{
+			//	resp_Ok = true;
+			//}
+
+			HttpResponseMessage response;
+			try
 			{
-				resp_Ok = true;
+				response = await SesionApi.PostAsync($"api/InventarioAlmacen/GuardarInventario?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}", Funciones.jsonContent(viewModel_InventarioDetalle.Items));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					foreach (DataRow r in dt.Rows)
+					{
+						if (dt.Rows[0][1].ToString() == "200 OK")
+						{
+							resp_Ok = true;
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 			}
 
 			if (resp_Ok)
