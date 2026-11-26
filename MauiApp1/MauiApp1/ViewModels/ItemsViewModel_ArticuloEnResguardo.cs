@@ -43,51 +43,85 @@ public class ItemsViewModel_ArticuloEnResguardo : BaseViewModel_Herramienta
 
     private async Task ExecuteLoadItemsCommand()
     {
-        try
+		Items.Clear();
+        HttpResponseMessage response;
+		try
         {
-            Items.Clear();
-            string Parametros = $"{Global.ResgEmpleado.clave}";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DetalleResguardoEmpleado").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                if (resp == "[]") return;
-                int i = 0;
-                DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    Items.Add(new Item_ArticuloEnResguardo
-                    {
-                        index = i++,
-                        folio = r[0].ToString(),
-                        codigo = r[1].ToString(),
-                        descripcion = r[2].ToString(),
-                        marca = r[3].ToString(),
-                        medida = r[4].ToString(),
-                        parte = r[5].ToString(),
-                        unidadmedida = "PZA",
-                        cantidad = 1,
-                        serie = r[8].ToString(),
-                        inventario = bool.Parse(r[9].ToString()),
-                        id = int.Parse(r[10].ToString()),
-                        fechainventario = ValidarFecha(r[11].ToString()),
-                        condicion = r[12].ToString(),
-                        aplicado = bool.Parse(r[13].ToString()),
-                        cerrado = bool.Parse(r[14].ToString()),
-                        fechaentregado = r[15].ToString().Substring(1, 10)
-                    });
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-			App.Current.MainPage = new LoginView();
+            //string Parametros = $"{Global.ResgEmpleado.clave}";
+            //response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_DetalleResguardoEmpleado").Result;
+            //using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+            //{
+            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
+            //    string resp = reader.ReadToEnd();
+            //    if (resp == "[]") return;
+            //    int i = 0;
+            //    DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
+            //    foreach (DataRow r in dt.Rows)
+            //    {
+            //        Items.Add(new Item_ArticuloEnResguardo
+            //        {
+            //            index = i++,
+            //            folio = r[0].ToString(),
+            //            codigo = r[1].ToString(),
+            //            descripcion = r[2].ToString(),
+            //            marca = r[3].ToString(),
+            //            medida = r[4].ToString(),
+            //            parte = r[5].ToString(),
+            //            unidadmedida = "PZA",
+            //            cantidad = 1,
+            //            serie = r[8].ToString(),
+            //            inventario = bool.Parse(r[9].ToString()),
+            //            id = int.Parse(r[10].ToString()),
+            //            fechainventario = ValidarFecha(r[11].ToString()),
+            //            condicion = r[12].ToString(),
+            //            aplicado = bool.Parse(r[13].ToString()),
+            //            cerrado = bool.Parse(r[14].ToString()),
+            //            fechaentregado = r[15].ToString().Substring(1, 10)
+            //        });
+            //    }
+            //}
+
+			response = await SesionApi.GetAsync($"api/operacion/Detalle_Resguardos_Empleados?tProyecto={ConfigAPI.TipoProyecto}&codigoAutorizado={Global.ResgEmpleado.clave}");
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+				if (dt.Rows.Count > 0)
+				{
+					int i = 1;
+					foreach (DataRow r in dt.Rows)
+					{
+						Items.Add(new Item_ArticuloEnResguardo
+						{
+							index = i++,
+							folio = r[0].ToString(),
+							codigo = r[1].ToString(),
+							descripcion = r[2].ToString(),
+							marca = r[3].ToString(),
+							medida = r[4].ToString(),
+							parte = r[5].ToString(),
+							unidadmedida = "PZA",
+							cantidad = 1,
+							serie = r[8].ToString(),
+							inventario = bool.Parse(r[9].ToString()),
+							id = int.Parse(r[10].ToString()),
+							fechainventario = ValidarFecha(r[11].ToString()),
+							condicion = r[12].ToString(),
+							aplicado = bool.Parse(r[13].ToString()),
+							cerrado = bool.Parse(r[14].ToString()),
+							fechaentregado = r[15].ToString().Substring(1, 10)
+						});
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
 		}
 		finally
-        {
-            IsBusy = false;
-        }
-    }
+		{
+			IsBusy = false;
+		}
+	}
 }

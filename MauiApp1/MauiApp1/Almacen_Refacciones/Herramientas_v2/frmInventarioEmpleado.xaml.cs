@@ -1,10 +1,14 @@
-﻿using iAlmacen.Clases;
+﻿using iAlmacen.Almacen_Refacciones.Salida_Almacen;
+using iAlmacen.Clases;
 using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Net;
 
 namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
@@ -44,22 +48,50 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             if (Item_ == null)
                 return;
 
-            var answer = await DisplayAlertAsync("Informaciòn", "¿Desea marcar como EXTRAVIADO la herramienta seleccionada?", "Si", "No");
+            var answer = await DisplayAlertAsync("Información", "¿Desea marcar como EXTRAVIADO la herramienta seleccionada?", "Si", "No");
             if (answer == false)
             { return; }
 
-            string sResponce = "";
-            string Parametros = "fechainventario=getdate(),inventario=1,condicion='Extraviado',aplicado=0,cerrado=0";
-            string Condicion = $"id='{Item_.id}'";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    sResponce = "OK";
-                }
-            }
-            viewModel_ArticuloEnResguardo.LoadItemsCommand_articuloenresguardo.Execute(null);
+			//string sResponce = "";
+			//string Parametros = "fechainventario=getdate(),inventario=1,condicion='Extraviado',aplicado=0,cerrado=0";
+			//string Condicion = $"id='{Item_.id}'";
+			//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE").Result;
+			//using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+			//{
+			//    if (response.StatusCode == HttpStatusCode.OK)
+			//    {
+			//        sResponce = "OK";
+			//    }
+			//}
+
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.PostAsync($"api/Operacion/MarcarExtraviado?tProyecto={ConfigAPI.TipoProyecto}&Usuario={Global.clave_usuario}&id={Item_.id}&condicion=Extraviado", new StringContent(string.Empty));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+                    if (dt.Rows.Count > 0)
+					{
+
+						if (dt.Rows[0]["Code"].ToString() == "200 OK")
+						{
+							await DisplayAlertAsync("Informacion", "Articulo marcado como EXTRAVIADO correctamente", "OK");
+						}
+						else
+						{
+							await DisplayAlertAsync("Informacion", "Error al marcar el articulo como EXTRAVIADO", "OK");
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+
+			viewModel_ArticuloEnResguardo.LoadItemsCommand_articuloenresguardo.Execute(null);
         }
 
         private async void btnDevolucion_Clicked(Object sender, EventArgs e)
@@ -73,18 +105,46 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             if (answer == false)
             { return; }
 
-            string sResponce = "";
-            string Parametros = "fechainventario=getdate(),inventario=1,condicion='Devolucion',aplicado=0,cerrado=0";
-            string Condicion = $"id='{Item_.id}'";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    sResponce = "OK";
-                }
-            }
-            viewModel_ArticuloEnResguardo.LoadItemsCommand_articuloenresguardo.Execute(null);
+			//string sResponce = "";
+			//string Parametros = "fechainventario=getdate(),inventario=1,condicion='Devolucion',aplicado=0,cerrado=0";
+			//string Condicion = $"id='{Item_.id}'";
+			//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE").Result;
+			//using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+			//{
+			//    if (response.StatusCode == HttpStatusCode.OK)
+			//    {
+			//        sResponce = "OK";
+			//    }
+			//}
+
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.PostAsync($"api/Operacion/MarcarExtraviado?tProyecto={ConfigAPI.TipoProyecto}&Usuario={Global.clave_usuario}&id={Item_.id}&condicion=Devolucion", new StringContent(string.Empty));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows.Count > 0)
+					{
+
+						if (dt.Rows[0]["Code"].ToString() == "200 OK")
+						{
+							await DisplayAlertAsync("Informacion", "Articulo marcado como EXTRAVIADO correctamente", "OK");
+						}
+						else
+						{
+							await DisplayAlertAsync("Informacion", "Error al marcar el articulo como EXTRAVIADO", "OK");
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+			
+			viewModel_ArticuloEnResguardo.LoadItemsCommand_articuloenresguardo.Execute(null);
         }
 
         private async void btnResguardo_Clicked(Object sender, EventArgs e)
@@ -98,18 +158,44 @@ namespace iAlmacen.Almacen_Refacciones.Herramientas_v2
             if (answer == false)
             { return; }
 
-            string sResponce = "";
-            string Parametros = "fechainventario=getdate(),inventario=1,condicion='Resguardo',aplicado=0,cerrado=0 ";
-            string Condicion = $"id='{Item_.id}'";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    sResponce = "OK";
-                }
-            }
-            viewModel_ArticuloEnResguardo.LoadItemsCommand_articuloenresguardo.Execute(null);
+            //string sResponce = "";
+            //string Parametros = "fechainventario=getdate(),inventario=1,condicion='Resguardo',aplicado=0,cerrado=0 ";
+            //string Condicion = $"id='{Item_.id}'";
+            //HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "ws_fn_EjecutarQuerySQL", "detalle_salidas_resguardo_herramientas", Condicion, "UPDATE").Result;
+            //using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+            //{
+            //    if (response.StatusCode == HttpStatusCode.OK)
+            //    {
+            //        sResponce = "OK";
+            //    }
+            //}
+
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.PostAsync($"api/Operacion/MarcarExtraviado?tProyecto={ConfigAPI.TipoProyecto}&Usuario={Global.clave_usuario}&id={Item_.id}&condicion=Resguardo", new StringContent(string.Empty));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows.Count > 0)
+					{
+						if (dt.Rows[0]["Code"].ToString() == "200 OK")
+						{
+							await DisplayAlertAsync("Informacion", "Articulo marcado como EXTRAVIADO correctamente", "OK");
+						}
+						else
+						{
+							await DisplayAlertAsync("Informacion", "Error al marcar el articulo como EXTRAVIADO", "OK");
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+			viewModel_ArticuloEnResguardo.LoadItemsCommand_articuloenresguardo.Execute(null);
         }
     }
 }
