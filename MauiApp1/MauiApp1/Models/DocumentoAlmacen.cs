@@ -11,7 +11,6 @@ public class DocumentoAlmacen
     public string codigo_proveedor { get; set; }
     public string tipo_documento { get; set; }
     public decimal taza_iva { get; set; }
-
     //public decimal iva_extranjero { get; set; }
     //public decimal iva_peso { get; set; }
     //public decimal subtotal_extranjero { get; set; }
@@ -25,7 +24,6 @@ public class DocumentoAlmacen
     //public decimal total_extranjero { get; set; }
     //public decimal total_peso { get; set; }
     public decimal iva { get; set; }
-
     public decimal subtotal { get; set; }
     public decimal flete { get; set; }
     public decimal ret_flete { get; set; }
@@ -54,11 +52,9 @@ public class DocumentoAlmacen
     public bool pagado { get; set; }
     public string tipo_descuento { get; set; }
     public decimal descuento { get; set; }
-
     //public decimal importe_descuento_general_pesos { get; set; }
     //public decimal importe_descuento_general_ext { get; set; }
     public decimal importe_descuento_general { get; set; }
-
     public TimeSpan hora_entrada { get; set; }
     public string usuario { get; set; }
     public bool nota_credito { get; set; }

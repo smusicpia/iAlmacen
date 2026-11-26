@@ -30,7 +30,6 @@ public class DocumentoAlmacenDetalle
     //public decimal importe_extranjero { get; set; }
     //public decimal importe_peso { get; set; }
     public decimal precio { get; set; }
-
     public decimal porcentaje_descuento { get; set; }
     public decimal importe_descuento { get; set; }
     public decimal iva { get; set; }

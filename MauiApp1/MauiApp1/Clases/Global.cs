@@ -15,7 +15,7 @@ public class Global
     public static byte[] IV;
     public static string clave_usuario = "";
     public static string clave_autotizacion = "";
-    public static string tokenAPI = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNoZXJuYW4iLCJuYmYiOjE3NDE5ODQ1ODcsImV4cCI6MTc0MTk4NjM4NywiaWF0IjoxNzQxOTg0NTg3LCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo0NDM5OC8iLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo0NDM5OC8ifQ.yKDxWEi2SCk_uXzmO2m7GcQex92naBkKebUbmtV_o0M";
+    public static string tokenAPI = "";
     public static string refreshTokenAPI = "";
 	public static string guid = "";
     public static bool isAutoRefreshToken = false;

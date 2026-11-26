@@ -29,28 +29,15 @@ namespace iAlmacen
                 })
                 .UseBarcodeReader();
 
-			//// Registrar el interceptor de autorización para manejar respuestas 401
-			//builder.Services.AddTransient<UnauthorizeInterceptorHandler>();
+			//// 1. Registrar el DelegatingHandler como Transitorio
+			//builder.Services.AddTransient<RefreshTokenHandler>();
 
-			////         builder.Services.AddSingleton(new HttpClient
-			////         {
-			////             BaseAddress = new Uri(ConfigAPI.Servidor) // Cambia esto por la URL de tu API
-			////});
+			//// 2. Registrar el HttpClient y asociarle el Handler
 			//builder.Services.AddHttpClient("api", client =>
 			//{
-			//    client.BaseAddress = new Uri(ConfigAPI.Servidor); // Cambia esto por la URL de tu API
+			//	client.BaseAddress = new Uri(ConfigAPI.Servidor);
 			//})
-			//  .AddHttpMessageHandler<UnauthorizeInterceptorHandler>();
-
-			// 1. Registrar el DelegatingHandler como Transitorio
-			builder.Services.AddTransient<RefreshTokenHandler>();
-
-			// 2. Registrar el HttpClient y asociarle el Handler
-			builder.Services.AddHttpClient("api", client =>
-			{
-				client.BaseAddress = new Uri(ConfigAPI.Servidor);
-			})
-			.AddHttpMessageHandler<RefreshTokenHandler>();
+			//.AddHttpMessageHandler<RefreshTokenHandler>();
 
 			// Registrar tus servicios o páginas que usen el cliente
 			builder.Services.AddTransient<ConfigAPI>();

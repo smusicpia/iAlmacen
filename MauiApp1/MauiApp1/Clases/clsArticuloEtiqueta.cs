@@ -6,7 +6,6 @@ public class clsArticuloEtiqueta
 {
     [PrimaryKey, AutoIncrement]
     public int ID { get; set; }
-
     public string codigo_articulo { get; set; }
     public string descripcion_general { get; set; }
     public string desc_marca { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace iAlmacen.Clases;
 
-public class CatalogoArticuloNumeroSeries
+public class NumeroSeriesArticulo
 {
     public int id { get; set; }
     public string Codigo_Articulo { get; set; }

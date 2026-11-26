@@ -131,6 +131,24 @@ namespace iAlmacen.Clases
 				try
 				{
 					response = await client.PostAsync($"api/login/Authenticate?tProyecto={ConfigAPI.TipoProyecto}", Funciones.jsonContent(usuario));
+					if (response.IsSuccessStatusCode)
+					{
+						string jsonResponse = await response.Content.ReadAsStringAsync();
+						DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+						foreach (DataRow r in dt.Rows)
+						{
+							Global.tokenAPI = r["TokenApi"].ToString();
+							Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
+							Global.guid = r["Guid"].ToString();
+							Preferences.Default.Set("tokenAPI", Global.tokenAPI);
+							Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
+							Preferences.Default.Set("Guid", Global.guid);
+							Preferences.Default.Set("clave_usuario", Global.clave_usuario);
+							Preferences.Default.Set("Password", Global.pass);
+							if (Global.tokenAPI != "")
+								break;
+						}
+					}
 				}
 				catch (Exception ex)
 				{
@@ -140,21 +158,6 @@ namespace iAlmacen.Clases
 
 				if (!response.IsSuccessStatusCode) return false;
 
-				string resp = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-				DataTable dt = JsonConvert.DeserializeObject<DataTable>(resp);
-				foreach (DataRow r in dt.Rows)
-				{
-					Global.tokenAPI = r["TokenApi"].ToString();
-					Global.refreshTokenAPI = r["RefreshTokenApi"].ToString();
-					Global.guid = r["Guid"].ToString();
-					Preferences.Default.Set("tokenAPI", Global.tokenAPI);
-					Preferences.Default.Set("refreshTokenAPI", Global.refreshTokenAPI);
-					Preferences.Default.Set("Guid", Global.guid);
-					Preferences.Default.Set("clave_usuario", Global.clave_usuario);
-					Preferences.Default.Set("Password", Global.pass);
-					if (Global.tokenAPI != "")
-						break;
-				}
 				return !string.IsNullOrEmpty(Global.tokenAPI);
 			}
 			catch (Exception ex)

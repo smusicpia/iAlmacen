@@ -6,7 +6,6 @@ public class clsArticuloSalida
 {
     [PrimaryKey, AutoIncrement]
     public int ID { get; set; }
-
     public string codigo_articulo { get; set; }
     public string descripcion_general { get; set; }
     public string desc_familia { get; set; }
@@ -42,8 +41,9 @@ public class clsArticuloSalida
     public int identrada { get; set; }
     public int consecutivo { get; set; }
     public string Empleado { get; set; }
+    public int index { get; set; }
 
-    public override string ToString()
+	public override string ToString()
     {
         return string.Format("[clsArticuloSalida: ID={0}, codigo_articulo={1}, descripcion_general={2}, desc_familia={3}, desc_linea={4}, desc_grupo={5}, desc_medida={6}, " +
                              "desc_marca={7}, desc_parte={8}, noubicaciones={9}, Seccion={10}, Pasillo={11}, Estanteria={12}, Nivel={13}, Tarima={14}, " +
