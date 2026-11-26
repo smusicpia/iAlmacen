@@ -2,9 +2,12 @@
 using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Net;
 
 namespace iAlmacen.Almacen_Refacciones.InventarioH
@@ -80,45 +83,92 @@ namespace iAlmacen.Almacen_Refacciones.InventarioH
             double cnivel_autorizacion_ = 0;
             string cautorizador_ = "";
 
-            string Parametros = $"{clave_aut_}";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                if (resp == "[]")
-                {
-                    await DisplayAlertAsync("Advertencia", "Clave Ingresada Incorrecta", "OK");
-                    return;
-                }
+            //string Parametros = $"{clave_aut_}";
+            //HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion").Result;
+            //using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+            //{
+            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
+            //    string resp = reader.ReadToEnd();
+            //    if (resp == "[]")
+            //    {
+            //        await DisplayAlertAsync("Advertencia", "Clave Ingresada Incorrecta", "OK");
+            //        return;
+            //    }
 
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
-                    cautorizador_ = dt.Rows[0][0].ToString();
-                }
-            }
+            //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+            //    foreach (DataRow r in dt.Rows)
+            //    {
+            //        cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
+            //        cautorizador_ = dt.Rows[0][0].ToString();
+            //    }
+            //}
 
-            if (cnivel_autorizacion_ < cnivel_limite)
+			HttpResponseMessage response;
+            try
             {
-                await DisplayAlertAsync("Advertencia", "Nivel de Autorizacion Insuficiente", "OK");
-                return;
-            }
+				response = await SesionApi.GetAsync($"api/Operacion/NivelAutorizacion?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}&clave_autorizacion={clave_aut_}");
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows.Count > 0)
+					{
+						foreach (DataRow r in dt.Rows)
+						{
+							cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
+							cautorizador_ = dt.Rows[0][0].ToString();
+						}
+					}
+					else
+					{
+						await DisplayAlertAsync("Advertencia", "Clave Ingresada Incorrecta", "OK");
+						return;
+					}
+				}
 
-            Parametros = $"{Global.FolioInventario}";
-            response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "ws_fnSetAplicarInventario").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+				if (cnivel_autorizacion_ < cnivel_limite)
+				{
+					await DisplayAlertAsync("Advertencia", "Nivel de Autorizacion Insuficiente", "OK");
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+
+            try
             {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                if (resp == "[]") return;
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    await DisplayAlertAsync("Informacion", "Inventario aplicado correctamente", "OK");
-                    await Navigation.PopAsync();
-                }
-            }
-        }
+				response = await SesionApi.PutAsync($"api/InventarioAlmacen/AplicarInventario?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}&FolioInventario={Global.FolioInventario}", Funciones.jsonContent(string.Empty));
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows[0][1].ToString() == "200 OK")
+					{
+						await DisplayAlertAsync("Informacion", "Inventario aplicado correctamente", "OK");
+						await Navigation.PopAsync();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+
+			//Parametros = $"{Global.FolioInventario}";
+			//response = ConfigAPI.GetAPI("GET", "api/InventarioAlmacen", Parametros, "ws_fnSetAplicarInventario").Result;
+			//using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+			//{
+			//    if (response.StatusCode == HttpStatusCode.NotFound) return;
+			//    string resp = reader.ReadToEnd();
+			//    if (resp == "[]") return;
+			//    if (response.StatusCode == HttpStatusCode.OK)
+			//    {
+			//        await DisplayAlertAsync("Informacion", "Inventario aplicado correctamente", "OK");
+			//        await Navigation.PopAsync();
+			//    }
+			//}
+		}
     }
 }
