@@ -2,24 +2,29 @@
 using iAlmacen.Models;
 using iAlmacen.ViewModels;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Net;
 
 namespace iAlmacen
 {
     public partial class cv_Almacen_Entradas_OCompra : ContentPage
     {
-        private Item_entrada_vigilancia item_rechazar_;
+		private Item_entrada_vigilancia item_rechazar_;
         public ObservableCollection<Item_entrada_vigilancia> Items { get; set; }
         public Command LoadItemsCommand_Vigilancia { get; set; }
         private ItemsViewModel_Vigilancia viewModel_Vigilancia;
+		//private readonly HttpClient client;
 
-        public cv_Almacen_Entradas_OCompra()
+		public cv_Almacen_Entradas_OCompra()
         {
             InitializeComponent();
-            NavigationPage.SetBackButtonTitle(this, "Atras");
+			//client = HttpClienteInstancia.Client;
+			NavigationPage.SetBackButtonTitle(this, "Atras");
             Global.cfiltro_ = "V";
 
             Items = new ObservableCollection<Item_entrada_vigilancia>();
@@ -30,54 +35,67 @@ namespace iAlmacen
         protected override void OnAppearing()
         {
             base.OnAppearing();
-
             viewModel_Vigilancia.LoadItemsCommand_vigilancia.Execute(null);
             //ItemsListView.SelectedItem = null;
-            buscar_folio_entrada();
+            //buscar_folio_entrada();
         }
 
-        private bool ValidarFolio(string folio_orden)
+        private async Task<bool> ValidarFolio(string folio_orden)
         {
-            bool existe = true;
+			bool existe = true;
 
             string Parametros = $"{folio_orden},V";
-			HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_compra").Result;
-			using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+			//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_orden_compra").Result;
+			HttpResponseMessage response;
+            try
             {
-                if (response.StatusCode == HttpStatusCode.NotFound) existe = false;
-                string resp = reader.ReadToEnd();
-                DataTable? dt = JsonConvert.DeserializeObject<DataTable>(resp);
+				response = await SesionApi.GetAsync($"api/Operacion/ordenCompra?tProyecto={ConfigAPI.TipoProyecto}&folio={folio_orden}&tipo=V");
+				if (response.IsSuccessStatusCode)
+					if (response.IsSuccessStatusCode)
+					{
+						string jsonResponse = await response.Content.ReadAsStringAsync();
+						//Console.WriteLine("Respuesta GET recibida: " + jsonResponse);
+						DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+						foreach (DataRow r in dt.Rows)
+						{
+							if (r[1].ToString() == "0")
+							{
+								await DisplayAlertAsync("Advertencia", "Folio Incorrecto", "OK");
+								existe = false;
+								break;
+							}
 
-                foreach (DataRow r in dt.Rows)
-                {
-                    if (r[1].ToString() == "0")
-                    {
-                        DisplayAlertAsync("Advertencia", "Folio Incorrecto", "OK");
-                        existe = false;
-                        break;
-                    }
+							if (r[2].ToString() == "1")
+							{
+								await DisplayAlertAsync("Advertencia", "Folio Cancelado", "OK");
+								existe = false;
+								break;
+							}
 
-                    if (r[2].ToString() == "1")
-                    {
-                        DisplayAlertAsync("Advertencia", "Folio Cancelado", "OK");
-                        existe = false;
-                        break;
-                    }
-
-                    if (r[1].ToString() == "OC")
-                    {
-                        DisplayAlertAsync("Advertencia", "Folio Cancelado", "OK");
-                        existe = false;
-                        break;
-                    }
-                    if (Boolean.TryParse(r[3]?.ToString(), out bool val) == true)
-                    {
-                        DisplayAlertAsync("Advertencia", "Folio ya se encuentra Surtido en su totalidad", "OK");
-                        existe = false;
-                        break;
-                    }
-                }
-            }
+							if (r[1].ToString() == "OC")
+							{
+								await DisplayAlertAsync("Advertencia", "Folio Cancelado", "OK");
+								existe = false;
+								break;
+							}
+							if (System.Boolean.TryParse(r[3]?.ToString(), out bool val) == true)
+							{
+								await DisplayAlertAsync("Advertencia", "Folio ya se encuentra Surtido en su totalidad", "OK");
+								existe = false;
+								break;
+							}
+						}
+					}
+					else
+					{
+						await DisplayAlertAsync("Advertencia", "Error al validar el folio", "OK");
+						return false;
+					}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
 
             return existe;
         }
@@ -88,7 +106,7 @@ namespace iAlmacen
             if (!string.IsNullOrEmpty(result))
             {
                 string folio_orden = result.PadLeft(7, '0');
-                if (ValidarFolio(folio_orden))
+                if (await ValidarFolio(folio_orden))
                 {
                     Global.folio_orden_ = folio_orden;
                     await Navigation.PushAsync(new Page_Head_OrdenCompra());
@@ -99,35 +117,59 @@ namespace iAlmacen
         private async Task cargar()
         { }
 
-        private void buscar_folio_entrada()
+        private async void buscar_folio_entrada()
         {
-            string Parametros = $"0,F";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_orden_compra").Result;
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
-                {
-                    if (response.StatusCode == HttpStatusCode.NotFound) return;
-                    string resp = reader.ReadToEnd();
-                    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                    foreach (DataRow r in dt.Rows)
-                    {
-                        Global.folio_entrada_ = int.Parse(r[0].ToString());
-                    }
-                }
+            //string Parametros = $"0,F";
+            //HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_orden_compra").Result;
+            //if (response.StatusCode == HttpStatusCode.OK)
+            //{
+            //    using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+            //    {
+            //        if (response.StatusCode == HttpStatusCode.NotFound) return;
+            //        string resp = reader.ReadToEnd();
+            //        DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+            //        foreach (DataRow r in dt.Rows)
+            //        {
+            //            Global.folio_entrada_ = int.Parse(r[0].ToString());
+            //        }
+            //    }
 
-                if (Global.folio_entrada_ == 0)
-                {
-                    DisplayAlertAsync("Advertencia", "Error al buscar el folio entrada", "OK");
-                    return;
-                }
-            }
-        }
+            //    if (Global.folio_entrada_ == 0)
+            //    {
+            //        DisplayAlertAsync("Advertencia", "Error al buscar el folio entrada", "OK");
+            //        return;
+            //    }
+            //}
+
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.GetAsync($"api/Operacion/ordenCompra?tProyecto={ConfigAPI.TipoProyecto}&folio=0&tipo=F");
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					foreach (DataRow r in dt.Rows)
+					{
+						Global.folio_entrada_ = int.Parse(r[0].ToString());
+					}
+
+					if (Global.folio_entrada_ == 0)
+					{
+						await DisplayAlertAsync("Advertencia", "Error al buscar el folio entrada", "OK");
+						return;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+		}
 
         private void Actualizar_lista_event(object sender, EventArgs e)
         {
             viewModel_Vigilancia.LoadItemsCommand_vigilancia.Execute(null);
-            //ItemsListView.SelectedItem = null;
         }
 
         private async void OnCancel_entrada(object sender, EventArgs e)
@@ -146,19 +188,42 @@ namespace iAlmacen
             if (!string.IsNullOrEmpty(result))
             {
                 string concepto_ = result;
-                string Parametros = $"{item_rechazar_?.folio_orden_},{Global.nombre_usuario},C,{int.Parse(item_rechazar_.id_.ToString())},{concepto_}";
-                HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "wsp_cancelar_vigilancia").Result;
-                using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
-                {
-                    if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        //TODO UIAlertView
-                        await DisplayAlertAsync("Advertencia", "Error al cancelar la recepción", "OK");
-                        return;
-                    }
-                }
-                viewModel_Vigilancia.LoadItemsCommand_vigilancia.Execute(null);
-                //ItemsListView.SelectedItem = null;
+                //string Parametros = $"{item_rechazar_?.folio_orden_},{Global.nombre_usuario},C,{int.Parse(item_rechazar_.id_.ToString())},{concepto_}";
+				HttpResponseMessage response;
+				try
+				{
+					Item_Vigilancia Item = new Item_Vigilancia
+					{
+						folio = item_rechazar_?.folio_orden_,
+						usuario = Global.nombre_usuario,
+						tipo = "C",
+						id = int.Parse(item_rechazar_.id_.ToString()),
+						concepto = concepto_
+					};
+
+					response = await SesionApi.PutAsync($"api/operacion/CancelarVigilancia?tProyecto={ConfigAPI.TipoProyecto}&usuario{Global.clave_usuario}", Funciones.jsonContent(Item));
+					if (!response.IsSuccessStatusCode)
+					{
+						await DisplayAlertAsync("Advertencia", "Error al cancelar la recepción", "OK");
+						return;
+					}
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+				}
+
+				//HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion", Parametros, "wsp_cancelar_vigilancia").Result;
+				//using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+				//            {
+				//                if (response.StatusCode == HttpStatusCode.NotFound)
+				//                {
+				//                    //TODO UIAlertView
+				//                    await DisplayAlertAsync("Advertencia", "Error al cancelar la recepción", "OK");
+				//                    return;
+				//                }
+				//            }
+				viewModel_Vigilancia.LoadItemsCommand_vigilancia.Execute(null);
             }
         }
 
@@ -167,7 +232,7 @@ namespace iAlmacen
             var item = e.CurrentSelection.FirstOrDefault() as Item_entrada_vigilancia;
             if (item == null)
                 return;
-            if (ValidarFolio(item.folio_orden_))
+            if (await ValidarFolio(item.folio_orden_))
             {
                 Global.folio_orden_ = item.folio_orden_;
                 await Navigation.PushAsync(new Page_Head_OrdenCompra());

@@ -1,9 +1,13 @@
-﻿using iAlmacen.Clases;
+﻿using iAlmacen.Almacen_Refacciones.Salida_Almacen;
+using iAlmacen.Clases;
 using iAlmacen.Models;
 using iAlmacen.WebApi;
+
 using Newtonsoft.Json;
+
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Net;
 using System.Runtime.CompilerServices;
 
@@ -221,7 +225,7 @@ namespace iAlmacen
             lbl_index.Text = "Articulo " + index.ToString() + " de " + Global.Items_orden_.Count.ToString();
         }
 
-        private void Verificar_autorizacion(string clave_aut_)
+        private async Task Verificar_autorizacion(string clave_aut_)
         {
             if (clave_aut_.Trim() == "")
                 return;
@@ -229,47 +233,75 @@ namespace iAlmacen
             string cautorizador_ = "";
 
             string Parametros = $"{clave_aut_}";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+            //HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/GET", Parametros, "spget_login_autorizacion").Result;
+            //using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+            //{
+            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
+            //    string resp = reader.ReadToEnd();
+            //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+            //    foreach (DataRow r in dt.Rows)
+            //    {
+            //        cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
+            //        cautorizador_ = dt.Rows[0][0].ToString(); ;
+            //    }
+            //}
+
+			HttpResponseMessage response;
+            try
             {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
-                    cautorizador_ = dt.Rows[0][0].ToString(); ;
-                }
-            }
+				response = await SesionApi.GetAsync($"api/Operacion/NivelAutorizacion?tProyecto={ConfigAPI.TipoProyecto}&usuario={Global.clave_usuario}&clave_autorizacion={clave_aut_}");
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					if (dt.Rows.Count > 0)
+					{
+						foreach (DataRow r in dt.Rows)
+						{
+							cnivel_autorizacion_ = double.Parse(dt.Rows[0][1].ToString());
+							cautorizador_ = dt.Rows[0][0].ToString();
+						}
+					}
+					else
+					{
+						await DisplayAlertAsync("Advertencia", "Clave Ingresada Incorrecta", "OK");
+						return;
+					}
+				}
 
-            if (cnivel_autorizacion_ < cnivel_limite)
+				if (cnivel_autorizacion_ < cnivel_limite)
+				{
+					await DisplayAlertAsync("Advertencia", "Nivel de Autorizacion Insuficiente", "OK");
+					return;
+				}
+
+				Item_orden_compra item_select_ = BindingContext as Item_orden_compra;
+				switch (cnivel_limite)
+				{
+					case 1:
+						item_select_.nivel_autorizado_ = cnivel_limite;
+						item_select_.autorizado_super_ = true;
+						break;
+
+					case 2:
+						item_select_.nivel_autorizado_ = cnivel_limite;
+						item_select_.autorizado_admin_ = true;
+						break;
+
+					case 3:
+						item_select_.nivel_autorizado_ = cnivel_limite;
+						item_select_.autorizado_admin_ = true;
+						break;
+				}
+				item_select_.autorizador_ = cautorizador_;
+				item_select_.Aplica_Autorizacion_ = true;
+				fvalidacion.BackgroundColor = Color.FromHex("#41CB6F");
+				btn_autorizar.Text = "Autorizado";
+			}
+            catch (Exception ex)
             {
-                DisplayAlertAsync("Advertencia", "Nivel de Autorizacion Insuficiente", "OK");
-                return;
-            }
-
-            Item_orden_compra item_select_ = BindingContext as Item_orden_compra;
-            switch (cnivel_limite)
-            {
-                case 1:
-                    item_select_.nivel_autorizado_ = cnivel_limite;
-                    item_select_.autorizado_super_ = true;
-                    break;
-
-                case 2:
-                    item_select_.nivel_autorizado_ = cnivel_limite;
-                    item_select_.autorizado_admin_ = true;
-                    break;
-
-                case 3:
-                    item_select_.nivel_autorizado_ = cnivel_limite;
-                    item_select_.autorizado_admin_ = true;
-                    break;
-            }
-            item_select_.autorizador_ = cautorizador_;
-            item_select_.Aplica_Autorizacion_ = true;
-            fvalidacion.BackgroundColor = Color.FromHex("#41CB6F");
-            btn_autorizar.Text = "Autorizado";
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}           
         }
 
         private void Iva_SelectedIndexChanged(object sender, EventArgs e)
@@ -321,7 +353,7 @@ namespace iAlmacen
             string result = await DisplayPromptAsync(Titulo, "Ingrese la clave de Autorizacion, para validar el limite.", "OK", "Cancelar", "Clave de Autorizacion", -1, keyboard: Keyboard.Password);
             if (!string.IsNullOrEmpty(result))
             {
-                Verificar_autorizacion(result);
+                await Verificar_autorizacion(result);
             }
         }
 
@@ -378,7 +410,7 @@ namespace iAlmacen
             BuscarUbicacion();
         }
 
-        private void BuscarUbicacion()
+        private async Task BuscarUbicacion()
         {
             string Codigo = Result;
             string[] Valores;
@@ -392,35 +424,68 @@ namespace iAlmacen
             Item_orden_compra item_select_ = BindingContext as Item_orden_compra;
             Boolean UbicacionCorrecta = false;
 
-            string Parametros = "Seccion,Pasillo,Estanteria,Nivel,Tarima,Contenedor,Existencia";
-            string Condicion = $"CodigoArticulo='{item_select_.codigo_articulo_.Trim()}' and Estanteria='{Valores[1]}' and Nivel='{Valores[2]}' and Tarima='{Valores[3]}' and Contenedor='{Valores[4]}'";
-            HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT").Result;
-            using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound) return;
-                string resp = reader.ReadToEnd();
-                DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
-                foreach (DataRow r in dt.Rows)
-                {
-                    UbicacionCorrecta = true;
-                    item_select_.uSeccion = r[0].ToString().Trim();
-                    item_select_.uPasillo = r[1].ToString().Trim();
-                    item_select_.uEstanteria = r[2].ToString().Trim();
-                    item_select_.uNivel = r[3].ToString().Trim();
-                    item_select_.uTarima = r[4].ToString().Trim();
-                    item_select_.uContenedor = r[5].ToString().Trim();
-                    item_select_.uCapturado = true;
+            //string Parametros = "Seccion,Pasillo,Estanteria,Nivel,Tarima,Contenedor,Existencia";
+            //string Condicion = $"CodigoArticulo='{item_select_.codigo_articulo_.Trim()}' and Estanteria='{Valores[1]}' and Nivel='{Valores[2]}' and Tarima='{Valores[3]}' and Contenedor='{Valores[4]}'";
+            //HttpResponseMessage response = ConfigAPI.GetAPI("GET", "api/Operacion/SQL", Parametros, "wsp_execute_qwerty", "CatalogoArticuloUbicacion", Condicion, "SELECT").Result;
+            //using (StreamReader reader = new StreamReader(response.Content.ReadAsStream()))
+            //{
+            //    if (response.StatusCode == HttpStatusCode.NotFound) return;
+            //    string resp = reader.ReadToEnd();
+            //    DataTable dt = (DataTable)JsonConvert.DeserializeObject<DataTable>(resp);
+            //    foreach (DataRow r in dt.Rows)
+            //    {
+            //        UbicacionCorrecta = true;
+            //        item_select_.uSeccion = r[0].ToString().Trim();
+            //        item_select_.uPasillo = r[1].ToString().Trim();
+            //        item_select_.uEstanteria = r[2].ToString().Trim();
+            //        item_select_.uNivel = r[3].ToString().Trim();
+            //        item_select_.uTarima = r[4].ToString().Trim();
+            //        item_select_.uContenedor = r[5].ToString().Trim();
+            //        item_select_.uCapturado = true;
 
-                    lblSeccion.Text = item_select_.uSeccion;
-                    lblPasillo.Text = item_select_.uPasillo;
-                    lblEstanteria.Text = item_select_.uEstanteria;
-                    lblNivel.Text = item_select_.uNivel;
-                    lblTarima.Text = item_select_.uTarima;
-                    lblContenedor.Text = item_select_.uContenedor;
-                }
-            }
+            //        lblSeccion.Text = item_select_.uSeccion;
+            //        lblPasillo.Text = item_select_.uPasillo;
+            //        lblEstanteria.Text = item_select_.uEstanteria;
+            //        lblNivel.Text = item_select_.uNivel;
+            //        lblTarima.Text = item_select_.uTarima;
+            //        lblContenedor.Text = item_select_.uContenedor;
+            //    }
+            //}
 
-            if (!UbicacionCorrecta)
+			HttpResponseMessage response;
+			try
+			{
+				response = await SesionApi.GetAsync($"api/catalogo/Ubicacion?tProyecto={ConfigAPI.TipoProyecto}&codigoArticulo={item_select_.codigo_articulo_.Trim()}&estanteria={Valores[1]}&nivel={Valores[2]}&tarima={Valores[3]}&contenedor={Valores[4]}");
+				if (response.IsSuccessStatusCode)
+				{
+					string jsonResponse = await response.Content.ReadAsStringAsync();
+					DataTable? dt = JsonConvert.DeserializeObject<DataTable>(jsonResponse);
+					foreach (DataRow r in dt.Rows)
+					{
+						UbicacionCorrecta = true;
+						item_select_.uSeccion = r[0].ToString().Trim();
+						item_select_.uPasillo = r[1].ToString().Trim();
+						item_select_.uEstanteria = r[2].ToString().Trim();
+						item_select_.uNivel = r[3].ToString().Trim();
+						item_select_.uTarima = r[4].ToString().Trim();
+						item_select_.uContenedor = r[5].ToString().Trim();
+						item_select_.uCapturado = true;
+
+						lblSeccion.Text = item_select_.uSeccion;
+						lblPasillo.Text = item_select_.uPasillo;
+						lblEstanteria.Text = item_select_.uEstanteria;
+						lblNivel.Text = item_select_.uNivel;
+						lblTarima.Text = item_select_.uTarima;
+						lblContenedor.Text = item_select_.uContenedor;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Login fallo ({SesionApi.BaseAddress}): {ex}");
+			}
+
+			if (!UbicacionCorrecta)
             {
                 item_select_.uSeccion = "";
                 item_select_.uPasillo = "";
@@ -436,7 +501,7 @@ namespace iAlmacen
                 lblNivel.Text = item_select_.uNivel;
                 lblTarima.Text = item_select_.uTarima;
                 lblContenedor.Text = item_select_.uContenedor;
-                DisplayAlertAsync("Advertencia", "Ubicacion Incorrecta", "OK");
+                await DisplayAlertAsync("Advertencia", "Ubicacion Incorrecta", "OK");
             }
         }
 
